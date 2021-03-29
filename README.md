@@ -1,6 +1,16 @@
-# Getting Started
+# Trustee Community
+
+Trustee Community is the code repository a community manager can fork to create a new patient community.
+
+To create a new patient community, a manger will need these four things:
+- An account at DigtialOcean to pay for hosting the community members Trustees (patient-controlled health records),
+- An account at Stripe to collect credit card payments for Trustee subscriptions hosted by the community,
+- A domain name for the community,
+- A privacy policy describing the initial configuration of Trustee access policies and how subscribers can change the policies if they choose.# Getting Started
 
 These steps will get this sample Flask application running for you using DigitalOcean App Platform.
+
+--- More to follow ---
 
 **Note: Following these steps may result in charges for the use of DigitalOcean services**
 
