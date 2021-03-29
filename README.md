@@ -10,6 +10,8 @@ To create a new patient community, a manger will need these four things:
 
 These steps will get this sample Flask application running for you using DigitalOcean App Platform.
 
+# The instructions below will FAIL. There are many problems still to be fixed.
+
 --- More to follow ---
 
 **Note: Following these steps may result in charges for the use of DigitalOcean services**
