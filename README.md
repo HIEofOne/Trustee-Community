@@ -1,5 +1,7 @@
 # Trustee Community
 
+#### Check out the wiki for sequence diagram and more https://github.com/HIEofOne/Trustee-Community/wiki 
+
 Trustee Community is the code repository a community manager can fork to create a new patient community.
 
 To create a new patient community, a manger will need these four things:
@@ -10,9 +12,15 @@ To create a new patient community, a manger will need these four things:
 
 These steps will get this sample Flask application running for you using DigitalOcean App Platform.
 
-# The instructions below will FAIL. There are many problems still to be fixed.
+## The instructions below will FAIL. There are many problems still to be fixed.
 
 --- More to follow ---
+
+
+
+
+
+
 
 **Note: Following these steps may result in charges for the use of DigitalOcean services**
 
