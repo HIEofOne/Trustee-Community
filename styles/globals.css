@@ -1,0 +1,129 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+html,
+body {
+    padding: 0;
+    margin: 20px 40px;
+    background-color: rgb(214, 211, 206);
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+.header {
+    margin-bottom: 40px;
+}
+
+
+/* SECTIONS */
+
+.section {
+    padding-bottom: 20px;
+}
+
+.section-num {
+    display: inline-block;
+    padding: 0px 20px;
+    vertical-align: top
+}
+
+.section-content {
+    display: inline-block;
+    vertical-align: top
+}
+
+
+/* BUTTONS */
+
+.btn {
+    padding: 10px 20px;
+    margin: 0px 15px 15px 0;
+    border-radius: 10px;
+    border-width: 1px;
+}
+
+.btn-accented {
+    background-color: rgb(76, 146, 108);
+    color: white;
+}
+
+.btn-submit {
+    background-color: rgb(73, 0, 107);
+    color: white;
+    border-radius: 3px;
+    padding: 6px 10px;
+}
+
+.btn-simple {
+    background-color: gray;
+    border-width: 0;
+    color: white;
+}
+
+.btn-small {
+    padding: 2px 20px;
+    font-size: 12px;
+    margin: 5px;
+    background-color: white;
+}
+
+
+/* RECORDS */
+
+.record-row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.record-text {
+    width: 75%;
+    padding: 2px;
+    margin: 5px;
+    border: 1px solid black;
+    font-size: 12px;
+    background-color: white;
+}
+
+
+/* OTHER FORMATING */
+
+.ul-noformat {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ul-noformat>* {
+    margin-bottom: 5px;
+}
+
+input {
+    padding: 5px;
+    margin-right: 7px;
+}
+
+label {
+    font-weight: 500;
+}
+
+a {
+    color: blue;
+    text-decoration: none;
+    padding-right: 40px;
+}
+
+p {
+    overflow-wrap: break-word;
+}
+
+.ethereumAccount {
+    padding: 7px 5px;
+    margin: 15px 0;
+    background: rgb(158, 150, 150);
+    border-radius: 7px;
+}
+
+.ethereumAccount>* {
+    margin: 3px;
+}
