@@ -1,0 +1,17 @@
+DOMAIN=http://localhost:3000
+
+#sendgrid
+SENDGRID_API_KEY=
+
+#couchdb
+NEXT_PUBLIC_COUCH_USERNAME=
+NEXT_PUBLIC_COUCH_PASSWORD=
+COUCH_API_SECRET=
+
+#magic
+MAGIC_SECRET_KEY=
+NEXT_PUBLIC_MAGIC_PUB_KEY=
+
+# Visit this website to create a secret api key
+# https://generate-secret.vercel.app/32
+ENCRYPTION_SECRET=
