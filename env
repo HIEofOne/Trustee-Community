@@ -9,8 +9,8 @@ NEXT_PUBLIC_COUCH_PASSWORD=
 COUCH_API_SECRET=
 
 #magic
-MAGIC_SECRET_KEY=sk_live_A4570BC95CAC553F
-NEXT_PUBLIC_MAGIC_PUB_KEY=pk_live_9DBB599DA424C04B
+MAGIC_SECRET_KEY=
+NEXT_PUBLIC_MAGIC_PUB_KEY=
 
 # Visit this website to create a secret api key
 # https://generate-secret.vercel.app/32
