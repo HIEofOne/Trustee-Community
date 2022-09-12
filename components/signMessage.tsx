@@ -13,29 +13,33 @@ export default function SignMessage(props) {
       recoveredAddress.current = address
     },
   })
-  const [val,setVal] = useState("")
-  const {message} = props
+  const [message, setMessage] = useState("")
+  const {req, callback} = props
 
   useEffect(() => {
-    setVal(message);
-  }, [message]);
+    console.log(data, error)
+    if(error) {
+      alert("Error: " + error)
+    } else {
+      callback(data, recoveredAddress, message)
+    }
+  }, [data, error])
 
   return (
     <form
-      onSubmit={(event) => {
+      onSubmit={(event: any) => {
         event.preventDefault()
-        //@ts-ignore
         const formData = new FormData(event.target)
-        const message = formData.get('message')
-        //@ts-ignore
-        signMessage({ message })
+        var message:any = formData.get('message')
+        setMessage(message)
+        message = message + req
+        signMessage({ message: message })
       }}
     >
       <textarea
         id="message"
         name="message"
-        value={val}
-        rows={7}
+        rows={3}
         cols={40}
       /><br/>
       <button disabled={isLoading} className={`btn ${isLoading ? "btn-simple" : "btn-accented"}`} >

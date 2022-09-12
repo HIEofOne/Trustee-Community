@@ -5,6 +5,11 @@ import { Profile } from "../../components/profile";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { ConnectWallet } from "../../components/connectWallet";
 import SignMessage from "../../components/signMessage";
+import { recoverAddress } from "ethers/lib/utils";
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
+
 // import SignInWithEthereum from "../../components/SignInWithEthereum";
 
 //Landing Page
@@ -12,6 +17,8 @@ const RequestAccess = () => {
   const [patient, setPatient] = useState("");
   const [credential, setCredential] = useState("");
   const [request, setRequest] = useState("");
+  const [resourceType, setResourceType] = useState("steps")
+  const [resourceDate, setResourceDate] = useState(new Date());
 
   //Checkboxes
   var scope = ["Read", "Update", "Create"];
@@ -62,12 +69,51 @@ const RequestAccess = () => {
       }
     });
 
-    var request = `Requesting to access records from a patient in the HIE of One Community. The content of this request are as follows:
-    
+    var request = `
+Details of request:    
 Patient: ${patient}
 Scope: ${selectedScope}
 Purpose: ${selectedPurpose}`;
     setRequest(request);
+
+    return [patient, selectedScope, selectedPurpose];
+  };
+
+  // called when sign message is done
+  const callback = async (
+    data: any,
+    recoveredAddress: any,
+    message: string
+  ) => {
+    const req = generateRequest();
+
+    var body = {
+      data: {
+        patient: req[0],
+        clinician: recoveredAddress,
+        scope: req[1],
+        purpose: req[2],
+        message: message,
+        state: "initiated",
+        date: new Date(),
+        request_data: {
+          type: resourceType,
+          from: "Apple Health",
+          date: new Date(),
+        },
+      },
+    };
+    if (data && recoverAddress) {
+      await fetch("/api/couchdb/requests/new", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      })
+        .then((res) => res.json())
+        .then((json) => console.log(json));
+    }
   };
 
   useEffect(() => {
@@ -82,16 +128,26 @@ Purpose: ${selectedPurpose}`;
       </div>
       <div>
         <hr className="solid" />
-        <h2>Patient record address and Scope of access</h2>
+        <h2>Patient email</h2>
         <input
           value={patient}
           onChange={(e) => setPatient(e.target.value)}
-          placeholder="name, email, ect..."
+          placeholder="patient email"
           required
         />
-        <button type="submit" className="btn btn-submit">
+        {/* <button type="submit" className="btn btn-submit">
           Search
-        </button>
+        </button> */}
+        <h3>Requested Data</h3>
+        <div style={{marginTop:"20px"}}>
+          <button className="btn btn-accented">Steps</button>
+          <button className="btn">Medication</button>
+          <button className="btn">Vaccinations</button>
+        </div>
+        <h3>From</h3>
+        <DatePicker selected={resourceDate} onChange={(date:Date) => setResourceDate(date)} />
+        <hr className="solid" />
+        <h2>Scope of access</h2>
         <ul className="ul-noformat">
           {/* @ts-ignore */}
           {scope.map((name, index) => {
@@ -140,7 +196,7 @@ Purpose: ${selectedPurpose}`;
           Your etherium address will be used to access your verifiable
           credentials and to sign your request.
         </p>
-        <Ethereum message={request}>
+        <Ethereum req={request} callback={callback}>
           <input
             value={credential}
             onChange={(e) => setCredential(e.target.value)}
@@ -163,7 +219,7 @@ function Ethereum(props) {
     useConnect();
   const { disconnect } = useDisconnect();
 
-  const { children, message } = props;
+  const { children, req, callback } = props;
 
   if (isConnected) {
     return (
@@ -171,8 +227,8 @@ function Ethereum(props) {
         <ConnectWallet />
         <p>1. Select a Verifiable Credential</p>
         {children}
-        <p>2. Edit Message</p>
-        <SignMessage message={message}></SignMessage>
+        <p>2. Add Message</p>
+        <SignMessage req={req} callback={callback}></SignMessage>
       </div>
     );
   }
