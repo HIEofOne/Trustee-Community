@@ -33,7 +33,7 @@ async function records(req: NextApiRequest, res: NextApiResponse) {
         .status(500)
         .send({ error: response.error, reason: response.reason });
     }
-    res.status(200).json({ response });
+    res.status(200).json(response);
   } catch (error) {
     console.log(5)
     res.status(500).send(error);

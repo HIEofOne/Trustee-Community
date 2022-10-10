@@ -21,7 +21,7 @@ export default function SignMessage(props) {
     if(error) {
       alert("Error: " + error)
     } else {
-      callback(data, recoveredAddress, message)
+      callback(data, recoveredAddress.current, message)
     }
   }, [data, error])
 

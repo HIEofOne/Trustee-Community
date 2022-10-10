@@ -17,7 +17,7 @@ const RequestAccess = () => {
   const [patient, setPatient] = useState("");
   const [credential, setCredential] = useState("");
   const [request, setRequest] = useState("");
-  const [resourceType, setResourceType] = useState("steps")
+  const [resourceType, setResourceType] = useState("Steps");
   const [resourceDate, setResourceDate] = useState(new Date());
 
   //Checkboxes
@@ -39,22 +39,32 @@ const RequestAccess = () => {
     new Array(purpose.length).fill(false)
   );
 
-  //@ts-ignore
-  const updateScope = (position) => {
+
+  const updateScope = (position: number) => {
     const updated = checkedScope.map((item, index) =>
       index === position ? !item : item
     );
 
     setCheckedScope(updated);
   };
-  //@ts-ignore
-  const updatePurpose = (position) => {
+
+  const updatePurpose = (position: number) => {
     const updated = checkedPurpose.map((item, index) =>
       index === position ? !item : item
     );
 
     setCheckedPurpose(updated);
   };
+
+  const formatDate = (d: Date) => {
+
+    var date = d.getDate();
+
+    var month = d.getMonth();
+
+    var year = d.getFullYear();
+    return date + "/" + month + "/" + year
+  }
 
   const generateRequest = () => {
     var selectedScope = scope.filter((item, index) => {
@@ -95,14 +105,15 @@ Purpose: ${selectedPurpose}`;
         purpose: req[2],
         message: message,
         state: "initiated",
-        date: new Date(),
+        date: formatDate(new Date()),
         request_data: {
           type: resourceType,
           from: "Apple Health",
-          date: new Date(),
+          date: formatDate(resourceDate),
         },
       },
     };
+    
     if (data && recoverAddress) {
       await fetch("/api/couchdb/requests/new", {
         method: "PUT",
@@ -139,13 +150,16 @@ Purpose: ${selectedPurpose}`;
           Search
         </button> */}
         <h3>Requested Data</h3>
-        <div style={{marginTop:"20px"}}>
+        <div style={{ marginTop: "20px" }}>
           <button className="btn btn-accented">Steps</button>
           <button className="btn">Medication</button>
           <button className="btn">Vaccinations</button>
         </div>
         <h3>From</h3>
-        <DatePicker selected={resourceDate} onChange={(date:Date) => setResourceDate(date)} />
+        <DatePicker
+          selected={resourceDate}
+          onChange={(date: Date) => setResourceDate(date)}
+        />
         <hr className="solid" />
         <h2>Scope of access</h2>
         <ul className="ul-noformat">
