@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import Cors from "cors";
 import NextCors from "nextjs-cors";
 
 //commands to kill couch db on mac
@@ -22,7 +21,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!email || !data) {
     res.status(500).send("Bad Request: missing items in body");
   }
-
+  console.log(data)
   const patients = nano.use("patients");
   try {
     const response = await patients.get(email);

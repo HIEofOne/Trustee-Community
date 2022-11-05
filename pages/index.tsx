@@ -1,6 +1,6 @@
 import * as React from "react";
-import { useState } from "react";
 import Link from 'next/link'
+import Login from "../components/magicLink/login";
 
 
 
@@ -13,17 +13,7 @@ const Home = () => {
         <hr className="solid" />
         <h2>Patients</h2>
         <div>
-          <Link href="/newPatient">
-            <button className="btn btn-accented">
-              Subscribe to your own Trustee. First month is free, then $2/month
-            </button>
-          </Link>
-          <br></br>
-          <Link href="/myTrustee">
-            <button className="btn">
-              Sign-in and manage your records access policies
-            </button>
-          </Link>
+          <Login />
         </div>
       </div>
       <div>

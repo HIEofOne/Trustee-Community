@@ -18,13 +18,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200,
   });
-
   const {email} = req.query
   if (!email) {
     res.status(500).send("Bad Request: missing email param");
   }
-
-  const patients = nano.db.use("patients");
+  console.log(email)
+  const patients = await nano.db.use("patients");
+  console.log(patients)
   try {
     const responce = await patients.get(email)
     console.log(responce);
@@ -33,6 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
     res.status(200).json({ success: true });
   } catch (error) {
+    console.log(error)
     res.status(500).send(error);
   }
 }

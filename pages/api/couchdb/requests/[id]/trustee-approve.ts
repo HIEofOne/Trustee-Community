@@ -17,9 +17,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   })
   .then((res) => res.json())
 
-  //1. TODO - verify with users access policies
+  //TODO - verify with users access policies
 
-  //2. set state to trustee aproved
+  //set state to trustee aproved
   data.state = "trustee-approved"
   
   //update document

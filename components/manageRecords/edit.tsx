@@ -117,7 +117,6 @@ export default function Edit(props:any) {
             return item;
           }
         });
-    
         var selectedPurpose = purpose.filter((item, index) => {
           if (checkedPurpose[index] == true) {
             return item;
@@ -145,6 +144,8 @@ export default function Edit(props:any) {
               cancel("manageRecords")
           }
         });
+
+      //TODO - update keys of record list in ManageRecords index
     };
 
     const deleteRecord = () => {

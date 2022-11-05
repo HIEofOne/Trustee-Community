@@ -114,7 +114,8 @@ Purpose: ${selectedPurpose}`;
       },
     };
     
-    if (data && recoverAddress) {
+    // if (data && recoverAddress) {
+    if (data) {
       await fetch("/api/couchdb/requests/new", {
         method: "PUT",
         headers: {

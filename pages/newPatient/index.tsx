@@ -1,18 +1,21 @@
 import * as React from "react";
 import { useState } from "react";
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+
 
 
 //Landing Page
 //@ts-ignore
 const NewPatient = (props) => {
-  const [email, setEmail] = useState("");
   const [accountCreated, setAccountCreated] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [error, setError] = useState("");
 
 
   const { children } = props;
+  const router = useRouter();
+  const email = router.query.email;
 
   //@ts-ignore
   const createAccount = async (e) => {
@@ -51,12 +54,19 @@ const NewPatient = (props) => {
       });
   };
 
+  if (!email) {
+    return (
+      <p>Error: No Email Detected</p>
+    )
+  }
+
   return (
     <div className="div">
       <hr className="solid" />
       <h1>New Patient</h1>
       {!accountCreated ? (
         <div className="section">
+          <h4>Email</h4>
           <p>
             Your email address is used to manage your Trustee and recieve
             notification of activity. We will not share this email address
@@ -75,17 +85,6 @@ const NewPatient = (props) => {
             <label htmlFor="privacy">
               I have read the Privacy Policy and agree.
             </label>
-            <br></br>
-            <input
-              type="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <button type="submit" className="btn btn-submit">
-              Submit
-            </button>
           </form>
           {error != "" && (
         <div>

@@ -36,7 +36,7 @@ export function ConnectWallet() {
     <div>
       {connectors.map((connector) => (
         <button
-          disabled={!connector.ready}
+          // disabled={!connector.ready}
           key={connector.id}
           onClick={() => connect({ connector })}
         >

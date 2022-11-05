@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import Cors from "cors";
 import NextCors from "nextjs-cors";
 
 //commands to kill couch db on mac
@@ -34,7 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const doc = await rs_requests.get(id);
     doc.state = state 
     doc.data = data 
-    var response = await rs_requests.insert(doc ) 
+    var response = await rs_requests.insert(doc) 
     if (response.error) {
       res
         .status(500)
