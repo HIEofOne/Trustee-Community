@@ -34,7 +34,7 @@ These steps will get this next.js application running for you using DigitalOcean
     2. Magic cookie can be anything
     3. Leave blind address alone
     4. Set password
-3. Download and deploy app ([recomended tutorial]([url](https://www.coderrocketfuel.com/article/how-to-deploy-a-next-js-website-to-a-digital-ocean-server#create-and-configure-a-digitalocean-server)))
+3. Download and deploy app. Here is a tutorial: https://www.coderrocketfuel.com/article/how-to-deploy-a-next-js-website-to-a-digital-ocean-server#create-and-configure-a-digitalocean-server
 4. Make a new .env.local file (follow instructions in [example](env_setup.md))
 5. rebuild and deploy website
 ```
