@@ -1,4 +1,6 @@
+// @ts-ignore
 import * as React from "react";
+// @ts-ignore
 import { useState } from "react";
 import Link from 'next/link'
 
@@ -7,6 +9,10 @@ import Link from 'next/link'
 //@ts-ignore
 const NewPatient = (props) => {
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [DOB, setDOB] = useState("")
+  const [gender, setGender] = useState("")
   const [accountCreated, setAccountCreated] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [error, setError] = useState("");
@@ -63,6 +69,11 @@ const NewPatient = (props) => {
             beyond our community support and billing activity and you can cancel
             anytime.
           </p>
+          <p>
+            Your name, date of birth, and gender and 4-digit PIN are only used to create your personal 
+            health record. The 4-digit PIN is to encrypt/decrypt your database.
+            We will not save or share your personal information.
+          </p>
           <form onSubmit={createAccount}>
             <input
               type="checkbox"
@@ -76,13 +87,75 @@ const NewPatient = (props) => {
               I have read the Privacy Policy and agree.
             </label>
             <br></br>
+            <label htmlFor="email">Email:</label><br/>
             <input
               type="email"
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+            /><br/><br/>
+            <label htmlFor="firstName">First Name</label><br/>
+            <input
+              type="text"
+              name="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            /><br/><br/>
+            <label htmlFor="lastName">Last Name</label><br/>
+            <input
+              type="text"
+              name="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            /><br/><br/>
+            <label htmlFor="DOB">Date of Birth</label><br/>
+            <input
+              type="date"
+              name="DOB"
+              value={DOB}
+              onChange={(e) => setDOB(e.target.value)}
+              required
+            /><br/><br/>
+            <label htmlFor="gender">Gender</label><br/>
+            <select
+              name="gender"
+              value={gender}
+              onChange={(e) =>setGender(e.target.value)}
+              required
+            >
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+              <option value="unknown">Unknown</option>
+            </select><br/><br/>
+            <label htmlFor="pin">4-Digit PIN</label><br/>
+            <input
+              type="password"
+              name="pin1"
+              required
+              maxlength="1"
             />
+            <input
+              type="password"
+              name="pin2"
+              required
+              maxlength="1"
+            />
+            <input
+              type="password"
+              name="pin3"
+              required
+              maxlength="1"
+            />
+            <input
+              type="password"
+              name="pin4"
+              required
+              maxlength="1"
+            /><br/><br/>
             <button type="submit" className="btn btn-submit">
               Submit
             </button>

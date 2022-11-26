@@ -1,4 +1,4 @@
-DOMAIN=http://localhost:3000
+DOMAIN=https://example.com
 
 #sendgrid
 SENDGRID_API_KEY=
@@ -14,4 +14,11 @@ NEXT_PUBLIC_MAGIC_PUB_KEY=
 
 # Visit this website to create a secret api key
 # https://generate-secret.vercel.app/32
-ENCRYPTION_SECRET=
+ENCRYPTION_SECRET=example.key
+
+#nosh
+USPSTF_KEY=
+UMLS_KEY=
+MOJOAUTH_API_KEY=
+MAGIC_API_KEY=
+OIDC_RELAY_URL=
