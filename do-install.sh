@@ -11,6 +11,9 @@ if [ -d "${HOME}/.nvm/.git" ]; then
   read -e -p "Enter your Root Domain Name (domain.com): " -i "" ROOT_DOMAIN
   read -e -p "Enter your E-Mail address for Let's Encrypt (your@email.com): " -i "" EMAIL
   read -e -p "Enter your CouchDB Password for admin user: " -i "" COUCHDB_PASSWORD
+  TRAEFIK_PASS=$(/usr/bin/htpasswd -nb admin $COUCHDB_PASSWORD)
+  TRAEFIK_PASS=$(echo ${TRAEFIK_PASS} | sed -e 's/\$/\$\$/g')
+  sed -i "s@admin:your_encrypted_password@$TRAEFIK_PASS@" .docker/traefik/docker-compose.yml
   sed -i "s/example@example.com/$EMAIL/" ./docker/traefik/traefik.yml
   sed -i "s/example.com/$ROOT_DOMAIN/" ./docker/traefik/docker-compose.yml
   sed -i "s/example.com/$ROOT_DOMAIN/" ./docker/traefik/routes.yml
@@ -23,6 +26,7 @@ if [ -d "${HOME}/.nvm/.git" ]; then
   cp ./docker/couchdb/env ./docker/couchdb/.env
   sed -i '/^COUCHDB_USER=/s/=.*/='"admin"'/' ./docker/couchdb/.env
   sed -i '/^COUCHDB_PASSWORD=/s/=.*/='"$COUCHDB_PASSWORD"'/' ./docker/couchdb/.env
+  . ~/.nvm/nvm.sh
   nvm install node
   nvm install-latest-npm
   npm install -g pm2
