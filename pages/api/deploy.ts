@@ -18,7 +18,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     // write env file
     var env = {
       // "MOJOAUTH_API_KEY": process.env.MOJOAUTH_API_KEY,
-      // "MAGIC_API_KEY": process.env.MAGIC_API_KEY,
+      "MAGIC_API_KEY": process.env.MAGIC_API_KEY,
       // "MAILGUN_API_KEY": process.env.MAILGUN_API_KEY,
       // "MAILGUN_DOMAIN": process.env.MAILGUN_DOMAIN,
       "COUCHDB_URL": "http://127.0.0.1:5984",
@@ -36,7 +36,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       "NOSH_BIRTHDAY": req.body.dob,
       "NOSH_GENDER": req.body.gender,
       "NOSH_BIRTHGENDER": req.body.birthgender,
-      "AUTH": "mojoauth",
+      "AUTH": "magic",
       // # either [mojoauth, magic]
       "USPSTF_KEY": process.env.USPSTF_KEY,
       "UMLS_KEY": process.env.UMLS_KEY,

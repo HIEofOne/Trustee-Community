@@ -25,13 +25,16 @@ http:
     base:
       loadBalancer:
         servers:
-          - url: http://127.0.0.1:3000
+          - url: http://host.docker.internal:3000
     update:
       loadBalancer:
         servers:
-          - url: http://127.0.0.1:8888
+          - url: http://host.docker.internal:8888
 
   middlewares:
     base-https-redirect:
+      redirectScheme:
+        scheme: https
+    update-https-redirect:
       redirectScheme:
         scheme: https

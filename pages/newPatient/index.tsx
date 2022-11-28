@@ -136,25 +136,25 @@ const NewPatient = (props) => {
               type="password"
               name="pin1"
               required
-              maxlength="1"
+              maxLength={1}
             />
             <input
               type="password"
               name="pin2"
               required
-              maxlength="1"
+              maxLength={1}
             />
             <input
               type="password"
               name="pin3"
               required
-              maxlength="1"
+              maxLength={1}
             />
             <input
               type="password"
               name="pin4"
               required
-              maxlength="1"
+              maxLength={1}
             /><br/><br/>
             <button type="submit" className="btn btn-submit">
               Submit

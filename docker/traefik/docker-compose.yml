@@ -12,6 +12,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/traefik.yml:ro
+      - ./routes.yml:/routes.yml:ro
       - ./volumes/traefik-acme:/acme
     labels:
       - "traefik.enable=true"
@@ -27,3 +28,5 @@ services:
       - "traefik.http.routers.traefik-secure.tls.certresolver=http"
       - "traefik.http.routers.traefik-secure.service=api@internal"
       - "com.centurylinklabs.watchtower.enable=true"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
