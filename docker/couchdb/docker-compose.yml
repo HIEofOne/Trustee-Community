@@ -5,6 +5,9 @@ services:
     container_name: "couchdb"
     ports:
       - "5984:5984"
+    networks:
+      - default
+      - traefik_default
     restart: "always"
     env_file:
       - "./.env"

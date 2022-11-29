@@ -63,7 +63,7 @@ export default function Dashboard() {
     return (
       <div>
         <p>Session expired: Please sign in to continue</p>
-        <Link href="/myTrustee">
+        <Link href="/myTrustee" passHref>
           <button className="btn">Sign In</button>
         </Link>
       </div>

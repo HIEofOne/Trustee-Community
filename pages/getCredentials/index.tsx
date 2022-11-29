@@ -13,7 +13,7 @@ const PolicySummary = () => {
         <p>Community patients can choose to accept this credential in lieu of a specific invitation to access their record.</p>
         <p>Other issuers of standard W3C Verifiable Credentials can request listing in the community default privacy policy by contacting Support.</p>
       </div>
-      <Link href="/"><button className="btn btn-accented">Sign-in to a Doximity Account</button></Link>
+      <Link href="/" passHref><button className="btn btn-accented">Sign-in to a Doximity Account</button></Link>
     </div>
   );
 };

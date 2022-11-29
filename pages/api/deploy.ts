@@ -26,7 +26,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       "COUCHDB_PASSWORD": req.body.pin + '-' + req.body.dob,
       "COUCHDB_ENCRYPT_PIN": req.body.pin,
       "INSTANCE": "docker",
-      "TRUSTEE_URL": protocol + '//' + url + '/trustee',
+      "TRUSTEE_URL": protocol + '//' + host + '/trustee',
       "NOSH_DISPLAY": req.body.first_name + " " + req.body.last_name,
       "NOSH_EMAIL": req.body.email,
       "NOSH_DID": "",
@@ -125,7 +125,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           console.log(`exec error: ${error}`);
       }
     })
-    res.send({url: url})
+    res.send({url: 'https://' + url + '/start'})
   }
 }
 

@@ -16,7 +16,11 @@ const NewPatient = (props) => {
   const [accountCreated, setAccountCreated] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [error, setError] = useState("");
-
+  const [pin1, setPin1] = useState("");
+  const [pin2, setPin2] = useState("");
+  const [pin3, setPin3] = useState("");
+  const [pin4, setPin4] = useState("");
+  const [url, setURL] = useState("");
 
   const { children } = props;
 
@@ -33,28 +37,44 @@ const NewPatient = (props) => {
       email: email
     };
 
-    fetch(`/api/couchdb/newPatient`, {
+    var body1 = {
+      email: email,
+      first_name: firstName,
+      last_name: lastName,
+      dob: DOB,
+      gender: gender,
+      birthGender: gender,
+      pin: pin1 + pin2 + pin3 + pin4
+    };
+
+    var res = await fetch(`/api/couchdb/newPatient`, {
       method: "POST",
       headers : { 
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(body)
     })
-      .then((res) =>  res.json())
-      .then(async (data) => {
-        console.log("response", data);
-        if (data.success) {
-          console.log(1) 
-          setAccountCreated(true);
-        }
-        if (data.error) {
-            if (data.reason == "Document update conflict.") {
-                setError("An account attached to this email already exists.")
-            } else {
-                setError(data.reason)
-            }
-        }
-      });
+    var data = await res.json()
+    console.log("response", data);
+    if (data.success) {
+      setAccountCreated(true);
+    }
+    if (data.error) {
+      if (data.reason == "Document update conflict.") {
+        setError("An account attached to this email already exists.")
+      } else {
+        setError(data.reason)
+      }
+    }
+    var res1 = await fetch('deploy', {
+      method: 'POST',
+      headers : { 
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body1)
+    })
+    var data1 = await res1.json()
+    setURL(data1.url)
   };
 
   return (
@@ -137,24 +157,28 @@ const NewPatient = (props) => {
               name="pin1"
               required
               maxLength={1}
+              onChange={(e) =>setPin1(e.target.value)}
             />
             <input
               type="password"
               name="pin2"
               required
               maxLength={1}
+              onChange={(e) =>setPin2(e.target.value)}
             />
             <input
               type="password"
               name="pin3"
               required
               maxLength={1}
+              onChange={(e) =>setPin3(e.target.value)}
             />
             <input
               type="password"
               name="pin4"
               required
               maxLength={1}
+              onChange={(e) =>setPin4(e.target.value)}
             /><br/><br/>
             <button type="submit" className="btn btn-submit">
               Submit
@@ -164,7 +188,7 @@ const NewPatient = (props) => {
         <div>
             <hr className="solid" />
           <p style={{ color: "red" }}>Error: {error}</p>
-          <Link href="/myTrustee"><button className="btn btn-simple">Sign-in to manage your records access policies</button></Link>
+          <Link href="/myTrustee" passHref><button className="btn btn-simple">Sign-in to manage your records access policies</button></Link>
         </div>
       )}
         </div>
@@ -172,7 +196,8 @@ const NewPatient = (props) => {
         <div>
             <p>Your Trustee Account is now Active!</p>
             <p>After 30 days, an email will ask you to provide payment information for your subscription.</p>
-            <Link href="/myTrustee"><button className="btn btn-accented">Continue to review and modify the policies that controll your Trustee.</button></Link>
+            <p>Your personal health record is <Link href={url} passHref target="_blank">{url}</Link></p>
+            <Link href="/myTrustee" passHref><button className="btn btn-accented">Continue to review and modify the policies that control your Trustee.</button></Link>
         </div>
       )}
     </div>

@@ -23,6 +23,7 @@ export default function SignMessage(props) {
     } else {
       callback(data, recoveredAddress.current, message)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, error])
 
   return (

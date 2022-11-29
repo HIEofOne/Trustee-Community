@@ -39,6 +39,7 @@ export default function NewUser({ email }) {
         }
         setLoading(false);
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getUsers = async () => {

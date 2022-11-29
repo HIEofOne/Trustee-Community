@@ -129,6 +129,7 @@ Purpose: ${selectedPurpose}`;
 
   useEffect(() => {
     generateRequest(); // This is be executed when `loading` state changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patient, scope, purpose]);
 
   return (

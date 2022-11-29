@@ -82,7 +82,7 @@ export default function Edit(props:any) {
       });
       setCheckedPurpose(updated_purpose);
     }
-  });
+  },[]);
   const getUserRecordCount = async () => {
     fetch("/api/couchdb/records/" + props.email, {
       method: "GET",

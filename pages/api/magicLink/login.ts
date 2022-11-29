@@ -5,7 +5,7 @@ import CookieService from '../../../lib/cookie';
 
 //Tutorial: https://vercel.com/guides/add-auth-to-nextjs-with-magic
 //@ts-ignore
-export default async (req, res) => {
+const Login = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
 
   // exchange the did from Magic for some user data
@@ -25,3 +25,5 @@ export default async (req, res) => {
 
   res.end();
 };
+
+export default Login;
