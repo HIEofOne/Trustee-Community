@@ -52,6 +52,10 @@ if [ -d "${HOME}/.nvm/.git" ]; then
   /usr/bin/docker compose up -d
   cd ../couchdb
   /usr/bin/docker compose up -d
+  echo "Initializing CouchDB..."
+  sleep 5
+  curl -X PUT http://admin:$COUCHDB_PASSWORD@localhost:5984/patients
+  echo "Installation complete.  You can now open your browser to https://$ROOT_DOMAIN" 
   exit 0
 else
   echo "NVM not installed.  Installing all dependencies for Trustee-Community..."  

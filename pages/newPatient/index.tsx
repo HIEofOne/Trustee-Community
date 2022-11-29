@@ -37,13 +37,23 @@ const NewPatient = (props) => {
       email: email
     };
 
+    var birthGender = 'UNK';
+    if (gender == 'male') {
+      birthGender = 'M';
+    }
+    if (gender == 'female') {
+      birthGender = 'F';
+    }
+    if (gender == 'other') {
+      birthGender = 'OTH';
+    }
     var body1 = {
       email: email,
       first_name: firstName,
       last_name: lastName,
       dob: DOB,
       gender: gender,
-      birthGender: gender,
+      birthGender: birthGender,
       pin: pin1 + pin2 + pin3 + pin4
     };
 
