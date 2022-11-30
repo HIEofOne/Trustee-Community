@@ -9,7 +9,7 @@ var user = process.env.NEXT_PUBLIC_COUCH_USERNAME;
 var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
 const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
 const url = new URL(domain);
-const nano = require("nano")(url.protocol + `://${user}:${pass}@couchdb.` + url.hostname);
+const nano = require("nano")(url.protocol + `//${user}:${pass}@couchdb.` + url.hostname);
 
 //endpoint to update request progress
 //currently only stupports updates to state and data variables
