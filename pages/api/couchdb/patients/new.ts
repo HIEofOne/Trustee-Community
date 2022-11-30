@@ -7,11 +7,6 @@ var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
 const nano = require("nano")(`http://${user}:${pass}@localhost:5984`);
 const domain = process.env.DOMAIN
 
-
-//commands to kill couch db
-// sudo lsof -i :5984
-//kill "PID"
-
 async function newPatient(req: NextApiRequest, res: NextApiResponse) {  
   await NextCors(req, res, {
     // Options

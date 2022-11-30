@@ -1,23 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
-
 var user = process.env.NEXT_PUBLIC_COUCH_USERNAME;
 var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
 const nano = require("nano")(`http://${user}:${pass}@localhost:5984`);
 const domain = process.env.DOMAIN;
 
-//commands to kill couch db
-// sudo lsof -i :5984
-//kill "PID"
 
-// API endpoint to determine if email is already signed up
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await NextCors(req, res, {
-    // Options
-    methods: ["GET"],
-    origin: process.env.DOMAIN,
-    optionsSuccessStatus: 200,
-  });
+async function getPatientFromEmail(req: NextApiRequest, res: NextApiResponse) {
   const {email} = req.query
   if (!email) {
     res.status(500).send("Bad Request: missing email param");
@@ -36,4 +24,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default handler;
+export default getPatientFromEmail;
