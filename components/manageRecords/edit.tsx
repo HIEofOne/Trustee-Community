@@ -82,6 +82,7 @@ export default function Edit(props:any) {
       });
       setCheckedPurpose(updated_purpose);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
   const getUserRecordCount = async () => {
     fetch("/api/couchdb/records/" + props.email, {

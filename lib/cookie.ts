@@ -45,5 +45,5 @@ function removeCookies(res) {
 function getAuthToken(cookies) {
   return cookies[TOKEN_NAME];
 }
-
+//@ts-ignore
 export default { setTokenCookie, getAuthToken, removeCookies };

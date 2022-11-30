@@ -53,6 +53,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           "env_file": [
             "./.env"
           ],
+          "networks:": [
+            "default",
+            "traefik_default"
+          ],
           "environment": {
             "COUCHDB_USER": "${COUCHDB_USER}",
             "COUCHDB_PASSWORD": "${COUCHDB_PASSWORD}"
@@ -84,6 +88,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           "restart": "always",
           "env_file": [
             "./.env"
+          ],
+          "networks:": [
+            "default",
+            "traefik_default"
           ],
           "labels": [
             "traefik.enable=true",
