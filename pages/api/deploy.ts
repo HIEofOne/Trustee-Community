@@ -10,7 +10,7 @@ import writeYamlFile from 'write-yaml-file'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { protocol, host } = absoluteUrl(req)
-  const id = uuidv4()
+  const id = uuidv4().replaceAll('-', '')
   const path = process.cwd() + '/trustees/' + id
   const url = id + '.' + host
   if (!fs.existsSync(path)) {
@@ -49,10 +49,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       "services": {
         "couchdb": {
           "image": "couchdb:latest",
-          "container_name": "couchdb",
-          "ports": [
-            "5984:5984"
-          ],
           "restart": "always",
           "env_file": [
             "./.env"
@@ -85,10 +81,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         },
         "nosh": {
           "image": "shihjay2/nosh3",
-          "container_name": "nosh",
-          "ports": [
-            "4000:4000"
-          ],
           "restart": "always",
           "env_file": [
             "./.env"

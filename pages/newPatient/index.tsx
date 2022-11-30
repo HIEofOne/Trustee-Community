@@ -76,7 +76,7 @@ const NewPatient = (props) => {
         setError(data.reason)
       }
     }
-    var res1 = await fetch('deploy', {
+    var res1 = await fetch('/api/deploy', {
       method: 'POST',
       headers : { 
         'Content-Type': 'application/json',
