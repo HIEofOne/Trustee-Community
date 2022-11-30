@@ -5,26 +5,20 @@ var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
 const nano = require("nano")(`http://${user}:${pass}@localhost:5984`);
 const domain = process.env.DOMAIN;
 
-async function records(req: NextApiRequest, res: NextApiResponse) {
-
-  const {id} = req.query
-  if (!id) {
-    res.status(500).send("Bad Request: missing id param");
-  }
+async function getAllRequests(req: NextApiRequest, res: NextApiResponse) {
   
-  const rs_requests = nano.use("rs_requests");
+  const requests = await nano.use("rs_requests");
   try {
-    const response = await rs_requests.get(id);
-    console.log(response)
+    const response = await requests.list()
     if (response.error) {
       res
         .status(500)
         .send({ error: response.error, reason: response.reason });
     }
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } catch (error) {
-    res.status(500).send(error);
+    return res.status(500).send(error);
   }
 }
 
-export default records;
+export default getAllRequests;

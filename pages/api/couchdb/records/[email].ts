@@ -1,22 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
 
-//commands to kill couch db on mac
-//sudo lsof -i :5984
-//kill "PID"
 var user = process.env.NEXT_PUBLIC_COUCH_USERNAME;
 var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
 const nano = require("nano")(`http://${user}:${pass}@localhost:5984`);
 const domain = process.env.DOMAIN;
 
-async function records(req: NextApiRequest, res: NextApiResponse) {
-
-  await NextCors(req, res, {
-    // Options
-    methods: ["GET"],
-    origin: process.env.DOMAIN,
-    optionsSuccessStatus: 200,
-  });
+async function getRecordsFromEmail(req: NextApiRequest, res: NextApiResponse) {
 
   const {email} = req.query
   if (!email) {
@@ -34,9 +23,8 @@ async function records(req: NextApiRequest, res: NextApiResponse) {
     }
     res.status(200).json({ records: records });
   } catch (error) {
-    console.log(5)
     res.status(500).send(error);
   }
 }
 
-export default records;
+export default getRecordsFromEmail;

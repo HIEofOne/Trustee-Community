@@ -92,7 +92,11 @@ export default function Edit(props:any) {
     })
       .then((res) => res.json())
       .then((json) => {
-        setUserRecordCount(json.records.length)
+        if (json.records) {
+          setUserRecordCount(json.records.length)
+        } else {
+          setUserRecordCount(0)
+        }
       });
   };
 
@@ -128,7 +132,7 @@ export default function Edit(props:any) {
       //Request body
       const body = {
           "email" : props.email,
-          "data": update
+          "record": update
       }
       //Update couchdb
       fetch("/api/couchdb/records/update", {
@@ -140,6 +144,7 @@ export default function Edit(props:any) {
       })
         .then((res) => res.json())
         .then((json) => {
+          console.log(json)
           if (json.success) {
               cancel("manageRecords")
           }

@@ -63,7 +63,7 @@ export default function Dashboard() {
     return (
       <div>
         <p>Session expired: Please sign in to continue</p>
-        <Link href="/myTrustee">
+        <Link href="/">
           <button className="btn">Sign In</button>
         </Link>
       </div>
@@ -79,7 +79,7 @@ export default function Dashboard() {
           "Loading..."
         ) : (
           <div>
-            <PolicySummary records={records} />
+            <PolicySummary records={records} email={user.email} />
 
             <button className="btn" onClick={() => logout()}>
               Logout

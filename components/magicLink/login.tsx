@@ -11,8 +11,8 @@ export default function Login() {
     const { elements } = event.target;
 
     //Check if user has an acount
-    const isRegistered = await fetch(
-      "/api/couchdb/isPatient/" + elements.email.value,
+    const patient = await fetch(
+      "/api/couchdb/patients/" + elements.email.value,
       {
         method: "GET",
         headers: {
@@ -21,13 +21,12 @@ export default function Login() {
       }
     )
       .then((res) => res.json())
-      .then((json) => json.success);
 
     if (typeof window === "undefined") return;
     const did = await new Magic(
       //@ts-ignore
       process.env.NEXT_PUBLIC_MAGIC_PUB_KEY
-    ).auth.loginWithMagicLink({ email: elements.email.value });
+    ).auth.loginWithMagicLink({ email: elements.email.value});
 
     // Once we have the did from magic, login with our own API
     const authRequest = await fetch("/api/magicLink/login", {
@@ -37,15 +36,26 @@ export default function Login() {
 
     if (authRequest.ok) {
       // Magic Link login successful!
-      // Check if email is registered
-      if (isRegistered) {
+      // Check if patient exists
+      //TODO - Stripe payment varified
+      if (patient && patient.acceptsTerms) {
         router.push("/myTrustee/dashboard");
       } else {
         // add account to couchdb
-        router.push({
-          pathname: "/newPatient",
-          query: { email: elements.email.value },
-        });
+        var body = {
+          email: elements.email.value
+        };
+        //create new patient in db if doesnt alr exist
+        await fetch(`/api/couchdb/patients/new`, {
+          method: "POST",
+          headers : { 
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        })
+        //continue with signup
+        router.push("/newPatient/" + elements.email.value);
+        
       }
     } else {
       /* handle errors */
@@ -56,7 +66,7 @@ export default function Login() {
     <div>
       <div>
         <form onSubmit={handleSubmit}>
-          <p>Subscribe to your own Trustee or Login with existing account</p>
+          <p><strong>Subscribe</strong> to your own Trustee or <strong>Login</strong> with existing account.</p>
           <input name="email" type="email" placeholder="Email Address" />
           <button className="btn btn-submit">Submit</button>
         </form>

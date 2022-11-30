@@ -1,24 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
 
-//commands to kill couch db on mac
-//sudo lsof -i :5984
-//kill "PID"
 var user = process.env.NEXT_PUBLIC_COUCH_USERNAME;
 var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
 const nano = require("nano")(`http://${user}:${pass}@localhost:5984`);
 const domain = process.env.DOMAIN;
 
 //endpoint to update request progress
-//currently only stupports updates to state and data variables
+//currently only supports updates to state and data variables
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await NextCors(req, res, {
-    // Options
-    methods: ["PUT"],
-    origin: process.env.DOMAIN,
-    optionsSuccessStatus: 200,
-  });
+async function updateRequestAtId(req: NextApiRequest, res: NextApiResponse) {
 
   const {id} = req.query
   const {state, data} = req.body
@@ -29,7 +19,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   const rs_requests = await nano.use("rs_requests");
   try {
-    //get request rev id
     const doc = await rs_requests.get(id);
     doc.state = state 
     doc.data = data 
@@ -45,4 +34,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default handler;
+export default updateRequestAtId;

@@ -7,8 +7,9 @@ const PolicySummary = (props:any) => {
     <div>
       <div>
         <h1>Privacy Policy Summary</h1>
+        <h4>Signed-in as {props.email}</h4>
         <hr className="solid" />
-        <h4>Policies for everyone in the adriang.xyz community:</h4>
+        <h4>Policies for everyone in the trustee.health community:</h4>
         <ul>
           <li>
             We collect emails to conact and identify you but we do not share

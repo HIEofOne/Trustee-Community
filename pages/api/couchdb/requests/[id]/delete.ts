@@ -1,21 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
-
-//commands to kill couch db on mac
-//sudo lsof -i :5984
-//kill "PID"
 var user = process.env.NEXT_PUBLIC_COUCH_USERNAME;
 var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
 const nano = require("nano")(`http://${user}:${pass}@localhost:5984`);
 const domain = process.env.DOMAIN;
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await NextCors(req, res, {
-    // Options
-    methods: ["DELETE"],
-    origin: process.env.DOMAIN,
-    optionsSuccessStatus: 200,
-  });
+async function getResourceRequestFromId(req: NextApiRequest, res: NextApiResponse) {
 
   const {id} = req.query
   if (!id) {
@@ -27,7 +16,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const doc = await rs_requests.get(id);
     const rev = doc._rev
     const response = await rs_requests.destroy(id, rev)
-
     if (response.error) {
       res
         .status(500)
@@ -35,9 +23,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
     res.status(200).json({ success: true });
   } catch (error) {
-    console.log(5)
     res.status(500).send(error);
   }
 }
 
-export default handler;
+export default getResourceRequestFromId;
