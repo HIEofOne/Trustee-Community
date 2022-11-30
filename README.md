@@ -42,3 +42,14 @@ npm install
 npm run build
 pm2 restart website
 ```
+
+## Developer Api
+
+Get all patients
+
+`GET /api/couchdb/patients/all`
+
+Get all rs requests
+
+`GET /api/couchdb/requests/all`
+
