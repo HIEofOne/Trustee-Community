@@ -6,15 +6,17 @@ if [[ $EUID -ne 0 ]]; then
 	exit 1
 fi
 if [ -d "${HOME}/.nvm/.git" ]; then
-  echo "Now is a good time to edit the env file in this directory.  Please edit the following:"
-  echo "SENDGRID_API_KEY, USPSTF_KEY, UMLS_KEY, MAGIC_API_KEY, MAGIC_SECRET_KEY, NEXT_PUBLIC_MAGIC_PUB_KEY"
-  echo "Now is also a good time to make sure your domain name is associated with the public IP of this droplet."
-  echo "Afterwards, logout and log back in and run cd Truste-Community;./do-install.sh again"
   echo "NVM installed.  Personalizing Trustee-Community..."
   # set domain entries
   read -e -p "Enter your Root Domain Name (domain.com): " -i "" ROOT_DOMAIN
   read -e -p "Enter your E-Mail address for Let's Encrypt (your@email.com): " -i "" EMAIL
-  read -e -p "Enter your CouchDB Password for admin user: " -i "" COUCHDB_PASSWORD
+  read -e -p "Enter your CouchDB/Traefik Password for admin user: " -i "" COUCHDB_PASSWORD
+  read -e -p "Enter your Sendgrid API Key: " -i "" SENDGRID_API_KEY
+  read -e -p "Enter your Magic Secret: " -i "" MAGIC_SECRET_KEY
+  read -e -p "Enter your Magic API Key for Trustee: " -i "" NEXT_PUBLIC_MAGIC_PUB_KEY
+  read -e -p "Enter your Magic API Key for NOSH: " -i "" MAGIC_API_KEY 
+  read -e -p "Enter your USPSTF API Key for NOSH: " -i "" USPSTF_KEY
+  read -e -p "Enter your UMLS API Key for NOSH: " -i "" UMLS_KEY
   sed -i "s/example@example.com/$EMAIL/" ./docker/traefik/traefik.yml
   sed -i "s/example.com/$ROOT_DOMAIN/" ./docker/traefik/docker-compose.yml
   sed -i "s/example.com/$ROOT_DOMAIN/" ./docker/couchdb/docker-compose.yml
@@ -25,6 +27,12 @@ if [ -d "${HOME}/.nvm/.git" ]; then
   sed -i "s/example.key/$KEY/" ./.env.local
   sed -i '/^NEXT_PUBLIC_COUCH_USERNAME=/s/=.*/='"admin"'/' ./.env.local
   sed -i '/^NEXT_PUBLIC_COUCH_PASSWORD=/s/=.*/='"$COUCHDB_PASSWORD"'/' ./.env.local
+  sed -i '/^SENDGRID_API_KEY=/s/=.*/='"$SENDGRID_API_KEY"'/' ./.env.local
+  sed -i '/^MAGIC_SECRET_KEY=/s/=.*/='"$MAGIC_SECRET_KEY"'/' ./.env.local
+  sed -i '/^NEXT_PUBLIC_MAGIC_PUB_KEY=/s/=.*/='"$NEXT_PUBLIC_MAGIC_PUB_KEY"'/' ./.env.local
+  sed -i '/^MAGIC_API_KEY=/s/=.*/='"$MAGIC_API_KEY"'/' ./.env.local
+  sed -i '/^USPSTF_KEY=/s/=.*/='"$USPSTF_KEY"'/' ./.env.local
+  sed -i '/^UMLS_KEY=/s/=.*/='"$UMLS_KEY"'/' ./.env.local
   cp ./docker/couchdb/env ./docker/couchdb/.env
   sed -i '/^COUCHDB_USER=/s/=.*/='"admin"'/' ./docker/couchdb/.env
   sed -i '/^COUCHDB_PASSWORD=/s/=.*/='"$COUCHDB_PASSWORD"'/' ./docker/couchdb/.env
@@ -61,15 +69,13 @@ else
   echo "NVM not installed.  Installing all dependencies for Trustee-Community..."  
   apt update
   # install dependencies
-  apt install apt-transport-https ca-certificates curl software-properties-common
+  apt install -y apt-transport-https ca-certificates curl software-properties-common
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+  add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
   apt-get update
   apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
   # get nvm
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
-  echo "Now is a good time to edit the env file in this directory.  Please edit the following:"
-  echo "SENDGRID_API_KEY, USPSTF_KEY, UMLS_KEY, MAGIC_API_KEY, MAGIC_SECRET_KEY, NEXT_PUBLIC_MAGIC_PUB_KEY"
   echo "Now is also a good time to make sure your domain name is associated with the public IP of this droplet."
   echo "Afterwards, logout and log back in and run cd Truste-Community;./do-install.sh again"
   exit 0
