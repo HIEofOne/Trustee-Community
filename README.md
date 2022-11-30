@@ -53,3 +53,7 @@ Get all rs requests
 
 `GET /api/couchdb/requests/all`
 
+Get all logs 
+
+`pm2 logs`
+
