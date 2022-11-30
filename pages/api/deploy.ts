@@ -53,7 +53,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           "env_file": [
             "./.env"
           ],
-          "networks:": [
+          "networks": [
             "default",
             "traefik_default"
           ],
@@ -89,7 +89,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           "env_file": [
             "./.env"
           ],
-          "networks:": [
+          "networks": [
             "default",
             "traefik_default"
           ],

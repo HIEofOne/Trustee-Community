@@ -1,22 +1,22 @@
 http:
   routers:
     base:
-      rule: "Host(`example.com`)"
+      rule: "Host(`trustee.example.com`)"
       service: base
       middlewares:
         - base-https-redirect
     base-secure:
-      rule: "Host(`example.com`)"
+      rule: "Host(`trustee.example.com`)"
       service: base
       tls:
         certResolver: http
     update:
-      rule: "Host(`update.example.com`)"
+      rule: "Host(`updater.example.com`)"
       service: update
       middlewares:
         - update-https-redirect
     update-secure:
-      rule: "Host(`update.example.com`)"
+      rule: "Host(`updater.example.com`)"
       service: update
       tls:
         certResolver: http
