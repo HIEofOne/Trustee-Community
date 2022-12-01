@@ -49,7 +49,7 @@ if [ -d "${HOME}/.nvm/.git" ]; then
   pm2 startup systemd
   pm2 install pm2-githook
   echo "Set your Github Webhook with these settings:"
-  echo "Payload URL - https://update.$ROOT_DOMAIN/trustee"
+  echo "Payload URL - https://updater.$ROOT_DOMAIN/trustee"
   echo "Secret - trustee"
   pm2 set pm2-githook:apps "{\"trustee\":{\"secret\":\"trustee\",\"prehook\":\"npm ci && npm run build\",\"posthook\":\"echo done\",\"errorhook\":\"echo error\",\"service\":\"github\"}}"
   pm2 start --name=Trustee-Community npm -- start
