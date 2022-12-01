@@ -63,7 +63,7 @@ if [ -d "${HOME}/.nvm/.git" ]; then
   echo "Initializing CouchDB..."
   sleep 5
   curl -X PUT http://admin:$COUCHDB_PASSWORD@localhost:5984/patients
-  echo "Installation complete.  You can now open your browser to https://$ROOT_DOMAIN" 
+  echo "Installation complete.  You can now open your browser to https://trustee.$ROOT_DOMAIN" 
   exit 0
 else
   echo "NVM not installed.  Installing all dependencies for Trustee-Community..."  
@@ -77,6 +77,6 @@ else
   # get nvm
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
   echo "Now is also a good time to make sure your domain name is associated with the public IP of this droplet."
-  echo "Afterwards, logout and log back in and run cd Truste-Community;./do-install.sh again"
+  echo "Afterwards, logout and log back in and run cd Trustee-Community;./do-install.sh again"
   exit 0
 fi
