@@ -21,7 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       "MAGIC_API_KEY": process.env.MAGIC_API_KEY,
       // "MAILGUN_API_KEY": process.env.MAILGUN_API_KEY,
       // "MAILGUN_DOMAIN": process.env.MAILGUN_DOMAIN,
-      "COUCHDB_URL": "http://127.0.0.1:5984",
+      "COUCHDB_URL": "http://couchdb:5984",
       "COUCHDB_USER": "admin",
       "COUCHDB_PASSWORD": req.body.pin + '-' + req.body.dob,
       "COUCHDB_ENCRYPT_PIN": req.body.pin,
@@ -68,7 +68,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           "labels": [
             "traefik.enable=true",
             "traefik.docker.network=traefik_default",
-            "traefik.http.services." + id + "-couchdb.loadbalancer.server.port=5984",
             "traefik.http.routers." + id + "-couchdb.entrypoints=http",
             "traefik.http.routers." + id + "-couchdb.rule=Host(`" + url + "`) && PathPrefix(`/couchdb`)",
             "traefik.http.middlewares." + id + "-https-redirect.redirectscheme.scheme=https",
@@ -80,6 +79,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             "traefik.http.routers." + id + "-couchdb-secure.service=" + id + "-couchdb",
             "traefik.http.routers." + id + "-couchdb-secure.middlewares=" + id + "-couchdb-stripprefix",
             "traefik.http.middlewares." + id + "-couchdb-stripprefix.stripprefix.prefixes=/couchdb",
+            "traefik.http.services." + id + "-couchdb-secure.loadbalancer.server.port=5984",
             "com.centurylinklabs.watchtower.enable=true"
           ]
         },
@@ -92,6 +92,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           "networks": [
             "default",
             "traefik_default"
+          ],
+          "links": [
+            "couchdb"
           ],
           "labels": [
             "traefik.enable=true",
