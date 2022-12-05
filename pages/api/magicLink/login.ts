@@ -2,6 +2,8 @@
 import { Magic } from '@magic-sdk/admin';
 import Iron from '@hapi/iron';
 import CookieService from '../../../lib/cookie';
+import getConfig from "next/config";
+const { serverRuntimeConfig } = getConfig();
 
 //Tutorial: https://vercel.com/guides/add-auth-to-nextjs-with-magic
 //@ts-ignore
@@ -11,14 +13,14 @@ const Login = async (req, res) => {
   // exchange the did from Magic for some user data
   const did = req.headers.authorization.split('Bearer').pop().trim();
   const user = await new Magic(
-    process.env.MAGIC_SECRET_KEY,
+    serverRuntimeConfig.MAGIC_SECRET_KEY,
   ).users.getMetadataByToken(did);
 
   // Author a couple of cookies to persist a user's session
   const token = await Iron.seal(
     user,
     //@ts-ignore
-    process.env.ENCRYPTION_SECRET,
+    serverRuntimeConfig.ENCRYPTION_SECRET,
     Iron.defaults,
   );
   CookieService.setTokenCookie(res, token);

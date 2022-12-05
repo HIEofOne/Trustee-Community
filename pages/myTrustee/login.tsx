@@ -1,6 +1,8 @@
 // pages/login.js
 import { useRouter } from "next/router";
 import { Magic } from "magic-sdk";
+import getConfig from "next/config";
+const { serverRuntimeConfig } = getConfig();
 
 export default function Login() {
   const router = useRouter();
@@ -27,7 +29,7 @@ export default function Login() {
       if (typeof window === "undefined") return;
       const did = await new Magic(
         //@ts-ignore
-        process.env.NEXT_PUBLIC_MAGIC_PUB_KEY
+        serverRuntimeConfig.NEXT_PUBLIC_MAGIC_PUB_KEY
       ).auth.loginWithMagicLink({ email: elements.email.value });
 
       // Once we have the did from magic, login with our own API

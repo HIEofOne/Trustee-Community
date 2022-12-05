@@ -2,6 +2,8 @@
 
 import Iron from '@hapi/iron';
 import CookieService from '../../../lib/cookie';
+import getConfig from "next/config";
+const { serverRuntimeConfig } = getConfig();
 
 //@ts-ignore
 const User = async (req, res) => {
@@ -10,7 +12,7 @@ const User = async (req, res) => {
     user = await Iron.unseal(
       CookieService.getAuthToken(req.cookies),
       //@ts-ignore
-      process.env.ENCRYPTION_SECRET,
+      serverRuntimeConfig.ENCRYPTION_SECRET,
       Iron.defaults,
     );
   } catch (error) {

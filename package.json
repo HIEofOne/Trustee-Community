@@ -19,6 +19,7 @@
         "@sendgrid/mail": "^7.6.2",
         "@types/pouchdb": "^6.4.0",
         "cors": "^2.8.5",
+        "digitalocean-js": "^2.0.2",
         "dotenv": "^16.0.0",
         "envfile": "^6.18.0",
         "ethers": "5.5.1",

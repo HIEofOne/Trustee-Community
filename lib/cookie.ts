@@ -1,5 +1,7 @@
 
 import { serialize } from 'cookie';
+import getConfig from "next/config";
+const { serverRuntimeConfig } = getConfig();
 
 const TOKEN_NAME = 'api_token';
 const MAX_AGE = 60 * 60 * 8;
@@ -9,7 +11,7 @@ function createCookie(name, data, options = {}) {
   return serialize(name, data, {
     maxAge: MAX_AGE,
     expires: new Date(Date.now() + MAX_AGE * 1000),
-    secure: process.env.NODE_ENV === 'production',
+    secure: serverRuntimeConfig.NODE_ENV === 'production',
     path: '/',
     httpOnly: true,
     sameSite: 'lax',
@@ -37,8 +39,8 @@ function setTokenCookie(res, token) {
 //@ts-ignore
 function removeCookies(res) {
     res.setHeader('Set-Cookie', [
-        removeCookie(TOKEN_NAME, "removed"),
-        removeCookie('authed', false, { httpOnly: false }),
+      removeCookie(TOKEN_NAME, "removed"),
+      removeCookie('authed', false, { httpOnly: false }),
     ])
 }
 //@ts-ignore
@@ -46,4 +48,5 @@ function getAuthToken(cookies) {
   return cookies[TOKEN_NAME];
 }
 //@ts-ignore
-export default { setTokenCookie, getAuthToken, removeCookies };
+const cookieFunctions = { setTokenCookie, getAuthToken, removeCookies };
+export default cookieFunctions;

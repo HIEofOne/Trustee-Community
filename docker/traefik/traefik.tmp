@@ -12,7 +12,7 @@ providers:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
   file:
-    filename: routes.yml
+    directory: routes
     watch: true
 
 certificatesResolvers:

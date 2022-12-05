@@ -1,9 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import NextCors from "nextjs-cors";
+import getConfig from "next/config";
+const { serverRuntimeConfig } = getConfig();
 
-var user = process.env.NEXT_PUBLIC_COUCH_USERNAME;
-var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
-const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
+var user = serverRuntimeConfig.NEXT_PUBLIC_COUCH_USERNAME;
+var pass = serverRuntimeConfig.NEXT_PUBLIC_COUCH_PASSWORD;
+const domain: string = serverRuntimeConfig.DOMAIN !== undefined ? serverRuntimeConfig.DOMAIN: '';
 const url = new URL(domain);
 const nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
 
@@ -17,7 +19,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
     // Options
     methods: ["GET"],
-    origin: process.env.DOMAIN,
+    origin: serverRuntimeConfig.DOMAIN,
     optionsSuccessStatus: 200,
   });
 

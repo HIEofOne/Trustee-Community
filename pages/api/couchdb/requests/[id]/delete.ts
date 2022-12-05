@@ -1,13 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
 import NextCors from "nextjs-cors";
+import getConfig from "next/config";
+const { serverRuntimeConfig } = getConfig();
 
 //commands to kill couch db on mac
 //sudo lsof -i :5984
 //kill "PID"
-var user = process.env.NEXT_PUBLIC_COUCH_USERNAME;
-var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
-const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
+var user = serverRuntimeConfig.NEXT_PUBLIC_COUCH_USERNAME;
+var pass = serverRuntimeConfig.NEXT_PUBLIC_COUCH_PASSWORD;
+const domain: string = serverRuntimeConfig.DOMAIN !== undefined ? serverRuntimeConfig.DOMAIN: '';
 const url = new URL(domain);
 const nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
 
@@ -15,7 +17,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
     // Options
     methods: ["DELETE"],
-    origin: process.env.DOMAIN,
+    origin: serverRuntimeConfig.DOMAIN,
     optionsSuccessStatus: 200,
   });
 

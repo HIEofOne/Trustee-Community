@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import useAuth from "../../lib/useAuth";
 import Record from "./record";
 import Nano from "nano";
+import getConfig from "next/config";
+const { serverRuntimeConfig } = getConfig();
 
-var user = process.env.NEXT_PUBLIC_COUCH_USERNAME;
-var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
-const domain = process.env.DOMAIN;
+var user = serverRuntimeConfig.NEXT_PUBLIC_COUCH_USERNAME;
+var pass = serverRuntimeConfig.NEXT_PUBLIC_COUCH_PASSWORD;
+const domain = serverRuntimeConfig.DOMAIN;
 
 // This page displays all of a users records 
 // and allows them to edit and create new ones
