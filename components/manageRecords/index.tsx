@@ -3,12 +3,10 @@ import { useEffect, useState } from "react";
 import useAuth from "../../lib/useAuth";
 import Record from "./record";
 import Nano from "nano";
-import getConfig from "next/config";
-const { serverRuntimeConfig } = getConfig();
 
-var user = serverRuntimeConfig.NEXT_PUBLIC_COUCH_USERNAME;
-var pass = serverRuntimeConfig.NEXT_PUBLIC_COUCH_PASSWORD;
-const domain = serverRuntimeConfig.DOMAIN;
+var user = process.env.COUCHDB_USER;
+var pass = process.env.COUCHDB_PASSWORD;
+const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
 
 // This page displays all of a users records 
 // and allows them to edit and create new ones

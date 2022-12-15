@@ -9,12 +9,16 @@ RUN npm run build
 FROM node:slim
 LABEL Maintainer Michael Shihjay Chen <shihjay2@gmail.com>
 WORKDIR /usr/src/app
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-COPY --from=builder --chown=nextjs:nodejs /usr/src/app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /usr/src/app/.next/static ./.next/static
-VOLUME /hostpipe
-USER nextjs
+ENV NODE_ENV production
+COPY --from=builder /usr/src/app/.next/standalone ./
+COPY --from=builder /usr/src/app/.next/static ./.next/static
+COPY entrypoint.sh .
+COPY env.production .
+COPY env.production .env.production.local
+RUN mkdir -p /usr/src/app/trustees
+RUN mkdir -p /usr/src/app/routes
+RUN mkdir -p /usr/src/hostpipe
+RUN ["chmod", "+x", "./entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
 EXPOSE 3000
-
 CMD ["node", "server.js"]

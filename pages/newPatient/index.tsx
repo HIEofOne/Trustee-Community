@@ -12,7 +12,7 @@ const NewPatient = (props) => {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [DOB, setDOB] = useState("")
-  const [gender, setGender] = useState("")
+  const [gender, setGender] = useState("male")
   const [accountCreated, setAccountCreated] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [error, setError] = useState("");

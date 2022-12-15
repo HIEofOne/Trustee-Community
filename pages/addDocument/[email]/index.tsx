@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import getConfig from "next/config";
-const { serverRuntimeConfig } = getConfig();
 
 //commands to kill couch db
 // sudo lsof -i :5984
@@ -13,8 +11,8 @@ export default function NewUser({ email }) {
   const [isLoading, setLoading] = useState(false);
   const [users, setUsers] = useState("");
 
-  var user = serverRuntimeConfig.NEXT_PUBLIC_COUCH_USERNAME;
-  var pass = serverRuntimeConfig.NEXT_PUBLIC_COUCH_PASSWORD;;
+  var user = process.env.COUCHDB_USER;
+  var pass = process.env.COUCHDB_PASSWORD;
   var url = "http://127.0.0.1:5984/users/";
 
   var document = {

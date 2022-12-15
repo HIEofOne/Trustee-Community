@@ -1,11 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import NextCors from "nextjs-cors";
-import getConfig from "next/config";
-const { serverRuntimeConfig } = getConfig();
 
-var user = serverRuntimeConfig.NEXT_PUBLIC_COUCH_USERNAME;
-var pass = serverRuntimeConfig.NEXT_PUBLIC_COUCH_PASSWORD;
-const domain: string = serverRuntimeConfig.DOMAIN !== undefined ? serverRuntimeConfig.DOMAIN: '';
+var user = process.env.COUCHDB_USER;
+var pass = process.env.COUCHDB_PASSWORD;
+const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
 const url = new URL(domain);
 const nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
 
@@ -16,7 +14,7 @@ async function newPatient(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
     // Options
     methods: ["PUT"],
-    origin: serverRuntimeConfig.DOMAIN,
+    origin: process.env.DOMAIN,
     optionsSuccessStatus: 200,
   });
   

@@ -1,43 +1,48 @@
 version: '3.1'
 services:
-couchdb:
-  image: "couchdb:latest"
-  container_name: "couchdb"
-  ports:
-    - "5984:5984"
-  networks:
-    - default
-    - traefik_default
-  restart: "always"
-  env_file:
-    - "./.env.local"
-  volumes:
-    - "./dbdata:/opt/couchdb/data"
-    - "./dbconfig:/opt/couchdb/etc/local.d"
-  labels:
-    - "traefik.enable=true"
-    - "traefik.docker.network=traefik_default"
-    - "traefik.http.services.couchdb.loadbalancer.server.port=5984"
-    - "traefik.http.routers.couchdb.entrypoints=http"
-    - "traefik.http.routers.couchdb.rule=Host(`db.example.com`)"
-    - "traefik.http.middlewares.couchdb-https-redirect.redirectscheme.scheme=https"
-    - "traefik.http.routers.couchdb.middlewares=couchdb-https-redirect"
-    - "traefik.http.routers.couchdb-secure.entrypoints=https"
-    - "traefik.http.routers.couchdb-secure.rule=Host(`db.example.com`)"
-    - "traefik.http.routers.couchdb-secure.tls=true"
-    - "traefik.http.routers.couchdb-secure.tls.certresolver=http"
-    - "traefik.http.routers.couchdb-secure.service=couchdb"
-    - "com.centurylinklabs.watchtower.enable=true"
-  trusteecommunity:
-    image: shihjay2/trusteecommunity 
-    container_name: trusteecommunity 
-    links:
-      - couchdb
-    restart: always
+  couchdb:
+    image: "couchdb:latest"
+    container_name: "couchdb"
+    ports:
+      - "5984:5984"
+    networks:
+      - default
+      - traefik_default
+    restart: "always"
     env_file:
       - "./.env.local"
     volumes:
-      - "/root/Trustee-Community/docker/traefik/pipe:/hostpipe"
+      - "./dbdata:/opt/couchdb/data"
+      - "./dbconfig:/opt/couchdb/etc/local.d"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_default"
+      - "traefik.http.services.couchdb.loadbalancer.server.port=5984"
+      - "traefik.http.routers.couchdb.entrypoints=http"
+      - "traefik.http.routers.couchdb.rule=Host(`db.example.com`)"
+      - "traefik.http.middlewares.couchdb-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.couchdb.middlewares=couchdb-https-redirect"
+      - "traefik.http.routers.couchdb-secure.entrypoints=https"
+      - "traefik.http.routers.couchdb-secure.rule=Host(`db.example.com`)"
+      - "traefik.http.routers.couchdb-secure.tls=true"
+      - "traefik.http.routers.couchdb-secure.tls.certresolver=http"
+      - "traefik.http.routers.couchdb-secure.service=couchdb"
+      - "com.centurylinklabs.watchtower.enable=true"
+  trusteecommunity:
+    image: "shihjay2/trusteecommunity"
+    container_name: "trusteecommunity" 
+    links:
+      - couchdb
+    networks:
+      - default
+      - traefik_default
+    restart: "always"
+    env_file:
+      - "./.env.local"
+    volumes:
+      - "/root/Trustee-Community/docker/traefik/pipe:/usr/src/app/hostpipe"
+      - "./trustees:/usr/src/app/trustees"
+      - "/root/Trustee-Community/docker/traefik/routes:/usr/src/app/routes"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_default"
@@ -52,3 +57,6 @@ couchdb:
       - "traefik.http.routers.trusteecommunity-secure.tls.certresolver=http"
       - "traefik.http.routers.trusteecommunity-secure.service=trusteecommunity"
       - "com.centurylinklabs.watchtower.enable=true"
+networks:
+  traefik_default:
+    external: true

@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import getConfig from "next/config";
-const { serverRuntimeConfig } = getConfig();
 
-const domain = serverRuntimeConfig.DOMAIN;
+const domain = process.env.DOMAIN;
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 

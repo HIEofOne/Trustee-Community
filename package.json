@@ -26,6 +26,7 @@
         "framer-motion": "^6.5.1",
         "fs": "^0.0.1-security",
         "iron-session": "^6.1.2",
+        "is-reachable": "^5.2.1",
         "magic-sdk": "^8.1.1",
         "nano": "^10.0.0",
         "next": "^12.1.7-canary.6",

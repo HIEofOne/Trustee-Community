@@ -1,7 +1,5 @@
 
 import { serialize } from 'cookie';
-import getConfig from "next/config";
-const { serverRuntimeConfig } = getConfig();
 
 const TOKEN_NAME = 'api_token';
 const MAX_AGE = 60 * 60 * 8;
@@ -11,7 +9,7 @@ function createCookie(name, data, options = {}) {
   return serialize(name, data, {
     maxAge: MAX_AGE,
     expires: new Date(Date.now() + MAX_AGE * 1000),
-    secure: serverRuntimeConfig.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production',
     path: '/',
     httpOnly: true,
     sameSite: 'lax',

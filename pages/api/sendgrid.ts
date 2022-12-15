@@ -1,16 +1,14 @@
 import sendgrid from "@sendgrid/mail";
 import NextCors from "nextjs-cors";
-import getConfig from "next/config";
-const { serverRuntimeConfig } = getConfig();
 
 //@ts-ignore
-sendgrid.setApiKey(serverRuntimeConfig.SENDGRID_API_KEY);
+sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 //@ts-ignore
 async function sendEmail(req, res) {
   await NextCors(req, res, {
     // Options
     methods: ["POST"],
-    origin: serverRuntimeConfig.DOMAIN,
+    origin: process.env.DOMAIN,
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   });
   try {

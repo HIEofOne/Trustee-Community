@@ -4,18 +4,17 @@ DOMAIN=https://example.com
 SENDGRID_API_KEY=
 
 #couchdb
-NEXT_PUBLIC_COUCH_USERNAME=admin
-NEXT_PUBLIC_COUCH_PASSWORD=
 COUCH_API_SECRET=
 COUCHDB_USER=admin
 COUCHDB_PASSWORD=
 
 #digitalocean
 DIGITALOCEAN_SSH_KEY_ID=
+DIGITALOCEAN_API_TOKEN=
 
 #magic
 MAGIC_SECRET_KEY=
-NEXT_PUBLIC_MAGIC_PUB_KEY=
+MAGIC_PUB_KEY=
 
 # Visit this website to create a secret api key
 # https://generate-secret.vercel.app/32
