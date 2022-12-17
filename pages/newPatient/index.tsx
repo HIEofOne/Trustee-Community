@@ -4,7 +4,6 @@ import * as React from "react";
 import { useState } from "react";
 import Link from 'next/link'
 
-
 //Landing Page
 //@ts-ignore
 const NewPatient = (props) => {
@@ -21,6 +20,7 @@ const NewPatient = (props) => {
   const [pin3, setPin3] = useState("");
   const [pin4, setPin4] = useState("");
   const [url, setURL] = useState("");
+  const [linkTitle, setLinkTitle] = useState("");
 
   const { children } = props;
 
@@ -64,8 +64,7 @@ const NewPatient = (props) => {
       },
       body: JSON.stringify(body)
     })
-    var data = await res.json()
-    console.log("response", data);
+    var data = await res.json();
     if (data.success) {
       setAccountCreated(true);
     }
@@ -76,6 +75,7 @@ const NewPatient = (props) => {
         setError(data.reason)
       }
     }
+    setLinkTitle('being built.  Please wait...');
     var res1 = await fetch('/api/deploy', {
       method: 'POST',
       headers : { 
@@ -83,8 +83,10 @@ const NewPatient = (props) => {
       },
       body: JSON.stringify(body1)
     })
-    var data1 = await res1.json()
-    setURL(data1.url)
+    var data1 = await res1.json();
+    setURL(data1.url);
+    setLinkTitle(data1.url);
+    setError(data1.error);
   };
 
   return (
@@ -206,7 +208,7 @@ const NewPatient = (props) => {
         <div>
             <p>Your Trustee Account is now Active!</p>
             <p>After 30 days, an email will ask you to provide payment information for your subscription.</p>
-            <p>Your personal health record is <Link href={url} passHref target="_blank">{url}</Link></p>
+            <p>Your personal health record is <Link href={url} passHref target="_blank">{linkTitle}</Link></p>
             <Link href="/myTrustee" passHref><button className="btn btn-accented">Continue to review and modify the policies that control your Trustee.</button></Link>
         </div>
       )}

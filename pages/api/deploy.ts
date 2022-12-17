@@ -110,7 +110,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       "NOSH_GENDER": req.body.gender,
       "NOSH_BIRTHGENDER": req.body.birthGender,
       "AUTH": "magic",
-      // # either [mojoauth, magic]
       "USPSTF_KEY": process.env.USPSTF_KEY,
       "UMLS_KEY": process.env.UMLS_KEY,
       "OIDC_RELAY_URL": process.env.OIDC_RELAY_URL
@@ -126,6 +125,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             port + ":80",
           ],
           "restart": "always",
+          "depends_on": [
+            "watchtower"
+          ],
           "volumes": [
             "/var/run/docker.sock:/var/run/docker.sock:ro"
           ],
@@ -144,6 +146,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         "couchdb": {
           "image": "couchdb:latest",
           "restart": "always",
+          "depends_on": [
+            "router",
+            "watchtower"
+          ],
           "env_file": [
             "./.env"
           ],
@@ -169,6 +175,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           "image": "shihjay2/nosh3",
           "links": [
             "couchdb"
+          ],
+          "depends_on": [
+            "router",
+            "couchdb",
+            "watchtower"
           ],
           "init": true,
           "restart": "always",
@@ -253,14 +264,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await patients.insert(doc_patient);
     var b = false;
     var c = 0;
-    while (!b && c < 40) {
+    while (!b && c < 400) {
       b = await isReachable('https://' + url + '/ready');
-      if (b || c == 39) {
-        res.send({url: 'https://' + url + '/start'});
+      if (b || c == 399) {
         break;
       } else {
         c++;
+        console.log(c);
       }
+    }
+    if (b) {
+      res.send({url: 'https://' + url + '/start', error: ''});
+    } else {
+      console.log('error failure deploying NOSH');
+      res.send({url: '', error: 'Failure in deploying NOSH.  Please try again.'});
     }
   }
 }
