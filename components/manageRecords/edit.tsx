@@ -93,7 +93,11 @@ export default function Edit(props:any) {
     })
       .then((res) => res.json())
       .then((json) => {
-        setUserRecordCount(json.records.length)
+        if (json.records) {
+          setUserRecordCount(json.records.length)
+        } else {
+          setUserRecordCount(0)
+        }
       });
   };
 
@@ -118,7 +122,6 @@ export default function Edit(props:any) {
             return item;
           }
         });
-    
         var selectedPurpose = purpose.filter((item, index) => {
           if (checkedPurpose[index] == true) {
             return item;
@@ -130,7 +133,7 @@ export default function Edit(props:any) {
       //Request body
       const body = {
           "email" : props.email,
-          "data": update
+          "record": update
       }
       //Update couchdb
       fetch("/api/couchdb/records/update", {
@@ -146,6 +149,8 @@ export default function Edit(props:any) {
               cancel("manageRecords")
           }
         });
+
+        //TODO - update keys of record list in ManageRecords index
     };
 
     const deleteRecord = () => {

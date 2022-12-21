@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import Cors from "cors";
 import NextCors from "nextjs-cors";
 
 //commands to kill couch db on mac

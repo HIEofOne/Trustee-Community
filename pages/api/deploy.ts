@@ -17,15 +17,16 @@ const nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostna
 const droplets = nano.db.use("droplets");
 const patients = nano.db.use("patients");
 const do_client = new DigitalOcean(do_token);
-const pipePath = process.cwd() + "/hostpipe"
+const pipePath = process.cwd() + "/hostpipe";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { protocol, host } = absoluteUrl(req)
-  const id = uuidv4().replaceAll('-', '')
-  const path = process.cwd() + '/trustees/' + id
-  const host_path = '/root/Trustee-Community/docker/trusteecommunity/trustees/' + id
-  const route_path = process.cwd() + '/routes/' + id + '.yml'
-  const url = id + '.' + host
+  const { protocol, host } = absoluteUrl(req);
+  const id = uuidv4().replaceAll('-', '');
+  const path = process.cwd() + '/trustees/' + id;
+  const host_path = '/root/Trustee-Community/docker/trusteecommunity/trustees/' + id;
+  const route_path = process.cwd() + '/routes/' + id + '.yml';
+  const url = id + '.' + host;
+  const url_full = 'http://' + url + '/start';
   const do_request = {
     name: 'Trustee Droplet 0',
     region: 'nyc3',
@@ -274,7 +275,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     }
     if (b) {
-      res.send({url: 'https://' + url + '/start', error: ''});
+      const sendgrid = await fetch(domain + "/api/sendgrid", {
+        body: JSON.stringify({
+          email: req.body.email,
+          subject: "HIE of One - Personal Health Record Confirmation",
+          html: `<div><h1>Your HIE of One Trustee Personal Health Record (NOSH) has been created!</h1><h1><a href=${url_full}>Your Personal Health Record</a></h1></div>`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+      });
+      const { error } = await sendgrid.json();
+      if (error) {
+        console.log(error);
+        res.status(500).send(error.message);
+      } else {
+        res.send({url: 'https://' + url + '/start', error: ''});
+      }
     } else {
       console.log('error failure deploying NOSH');
       res.send({url: '', error: 'Failure in deploying NOSH.  Please try again.'});

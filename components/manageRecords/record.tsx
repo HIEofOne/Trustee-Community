@@ -8,7 +8,7 @@ export default function Record(props:any) {
   if (data.scope) {
     return (
       <div className="record-row">
-        <p style={{width: "20px", margin: "5px", fontWeight: "600"}}>{data.id}</p>
+        <p style={{width: "20px", margin: "5px", fontWeight: 600}}>{data.id}</p>
         <div style={{width: "100%", maxWidth:"600px"}}>
           <div className="record-row">
             <p className="record-text">
@@ -18,7 +18,7 @@ export default function Record(props:any) {
           </div>
           <div className="record-row">
             <p className="record-text">{data.url}</p>
-            <p style={{ fontSize: "12px", fontWeight: "800", width: "50px"}}>
+            <p style={{ fontSize: "12px", fontWeight: 800, width: "50px"}}>
               {data.scope.join(", ")}
             </p>
           </div>

@@ -2,7 +2,7 @@
 import * as React from "react";
 // @ts-ignore
 import { useState } from "react";
-import Link from 'next/link'
+import Link from 'next/link';
 
 //Landing Page
 //@ts-ignore

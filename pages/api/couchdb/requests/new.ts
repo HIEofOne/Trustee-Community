@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import Cors from "cors";
 import NextCors from "nextjs-cors";
 
 //commands to kill couch db on mac
@@ -10,6 +9,8 @@ var pass = process.env.COUCHDB_PASSWORD;
 const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
 const url = new URL(domain);
 const nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
+const db = nano.db.use("patients")
+db.info().then(console.log)
 
 //Endpoint for clinicans to create requests for patient records in RS
 //send data in body formated as :
@@ -43,7 +44,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.status(500).send("Bad Request: missing items in request");
   }
 
-  const rs_requests = await nano.use("rs_requests");
+  const rs_requests = await nano.db.use("rs_requests");
   try {
     const response = await rs_requests.insert(data)
     if (response.error) {
@@ -53,7 +54,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
     res.status(200).json(response);
   } catch (error) {
-    console.log(5)
+    console.log(error)
     res.status(500).send(error);
   }
 }

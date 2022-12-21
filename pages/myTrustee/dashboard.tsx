@@ -69,7 +69,7 @@ export default function Dashboard() {
       </div>
     );
   }
-
+  //Toggle between pages
   if (page == "dashboard") {
     return (
       <div>
