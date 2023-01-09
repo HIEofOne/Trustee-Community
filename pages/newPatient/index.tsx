@@ -3,11 +3,11 @@ import * as React from "react";
 // @ts-ignore
 import { useState } from "react";
 import Link from 'next/link';
+import { useRouter } from 'next/router'
 
 //Landing Page
 //@ts-ignore
 const NewPatient = (props) => {
-  const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [DOB, setDOB] = useState("")
@@ -23,19 +23,17 @@ const NewPatient = (props) => {
   const [linkTitle, setLinkTitle] = useState("");
 
   const { children } = props;
+  const router = useRouter();
+  const email = router.query.email;
 
   //@ts-ignore
   const createAccount = async (e) => {
     e.preventDefault();
-
     //user must accept privacy
     if (!privacy) {
       return;
     }
-
-    var body = {
-      email: email
-    };
+    var body = { email: email };
 
     var birthGender = 'UNK';
     if (gender == 'male') {
@@ -56,17 +54,18 @@ const NewPatient = (props) => {
       birthGender: birthGender,
       pin: pin1 + pin2 + pin3 + pin4
     };
-
-    var res = await fetch(`/api/couchdb/newPatient`, {
-      method: "POST",
-      headers : { 
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body)
-    })
+    var res = await fetch(`/api/couchdb/newPatient`, 
+      { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) });
     var data = await res.json();
     if (data.success) {
       setAccountCreated(true);
+      setLinkTitle('being built.  Please wait...');
+      var res1 = await fetch('/api/deploy', 
+        { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body1) });
+      var data1 = await res1.json();
+      setURL(data1.url);
+      setLinkTitle(data1.url);
+      setError(data1.error);
     }
     if (data.error) {
       if (data.reason == "Document update conflict.") {
@@ -75,19 +74,13 @@ const NewPatient = (props) => {
         setError(data.reason)
       }
     }
-    setLinkTitle('being built.  Please wait...');
-    var res1 = await fetch('/api/deploy', {
-      method: 'POST',
-      headers : { 
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body1)
-    })
-    var data1 = await res1.json();
-    setURL(data1.url);
-    setLinkTitle(data1.url);
-    setError(data1.error);
   };
+
+  if (!email) {
+    return (
+      <p>Error: No Email Detected</p>
+    )
+  }
 
   return (
     <div className="div">
@@ -95,6 +88,7 @@ const NewPatient = (props) => {
       <h1>New Patient</h1>
       {!accountCreated ? (
         <div className="section">
+          <h4>Email: {email}</h4>
           <p>
             Your email address is used to manage your Trustee and recieve
             notification of activity. We will not share this email address
@@ -119,14 +113,6 @@ const NewPatient = (props) => {
               I have read the Privacy Policy and agree.
             </label>
             <br></br>
-            <label htmlFor="email">Email:</label><br/>
-            <input
-              type="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            /><br/><br/>
             <label htmlFor="firstName">First Name</label><br/>
             <input
               type="text"

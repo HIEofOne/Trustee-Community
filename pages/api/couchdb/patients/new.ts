@@ -7,27 +7,25 @@ const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: ''
 const url = new URL(domain);
 const nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function newPatient(req: NextApiRequest, res: NextApiResponse) {  
   await NextCors(req, res, {
-    methods: ["GET"],
+    methods: ["PUT"],
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
-  const {email} = req.query
-  if (!email) {
-    res.status(500).send("Bad Request: missing email parameter");
-  }
-  const patients = await nano.db.use("patients");
+  const patients = nano.db.use("patients");
   try {
-    const response = await patients.get(email)
-    console.log(response);
+    const response = await patients.insert(
+      { email: req.body.email },
+      req.body.email
+    );
     if (response.error) {
-      res.status(500).send({ error: response.error, reason: response.reason });
+      res.status(500).send({error: response.error, reason:response.reason});
     }
-    res.status(200).json({ success: true });
-  } catch (error) {
+    res.status(200).json({success: true});
+  } catch (error){
     res.status(500).send(error);
   }
 }
 
-export default handler;
+export default newPatient;

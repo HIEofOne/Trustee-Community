@@ -7,37 +7,20 @@ export default function Login() {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-
     const { elements } = event.target;
-
-    //Check if user has an account
-    const isRegistered = await fetch(
-      "/api/couchdb/isPatient/" + elements.email.value,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((json) => json.success);
-
+    // Check if user has an account
+    const isRegistered = await fetch("/api/couchdb/isPatient/" + elements.email.value,
+      { method: "GET", headers: {"Content-Type": "application/json"} })
+      .then((res) => res.json()).then((json) => json.success);
     if (typeof window === "undefined") return;
-    const magicKey = await fetch("/api/magicLink/key", {
-      method: "POST"
-    });
+    const magicKey = await fetch("/api/magicLink/key", 
+      { method: "POST" });
     var magicKeyData = await magicKey.json();
-    const did = await new Magic(
-      magicKeyData.key
-    ).auth.loginWithMagicLink({ email: elements.email.value });
+    const did = await new Magic(magicKeyData.key).auth.loginWithMagicLink({ email: elements.email.value });
 
     // Once we have the did from magic, login with our own API
-    const authRequest = await fetch("/api/magicLink/login", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${did}` },
-    });
-
+    const authRequest = await fetch("/api/magicLink/login", 
+      { method: "POST", headers: { Authorization: `Bearer ${did}` }});
     if (authRequest.ok) {
       // Magic Link login successful!
       // Check if email is registered

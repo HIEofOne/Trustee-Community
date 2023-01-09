@@ -32,19 +32,17 @@ const RequestAccess = () => {
     "Clinical-emergency",
     "Research",
     "Customer support",
-    "Other",
+    "Other"
   ];
 
   const [checkedPurpose, setCheckedPurpose] = useState(
     new Array(purpose.length).fill(false)
   );
 
-
   const updateScope = (position: number) => {
     const updated = checkedScope.map((item, index) =>
       index === position ? !item : item
     );
-
     setCheckedScope(updated);
   };
 
@@ -52,16 +50,12 @@ const RequestAccess = () => {
     const updated = checkedPurpose.map((item, index) =>
       index === position ? !item : item
     );
-
     setCheckedPurpose(updated);
   };
 
   const formatDate = (d: Date) => {
-
     var date = d.getDate();
-
     var month = d.getMonth();
-
     var year = d.getFullYear();
     return date + "/" + month + "/" + year
   }
@@ -85,7 +79,6 @@ Patient: ${patient}
 Scope: ${selectedScope}
 Purpose: ${selectedPurpose}`;
     setRequest(request);
-
     return [patient, selectedScope, selectedPurpose];
   };
 
@@ -109,21 +102,15 @@ Purpose: ${selectedPurpose}`;
         request_data: {
           type: resourceType,
           from: "Apple Health",
-          date: formatDate(resourceDate),
-        },
-      },
+          date: formatDate(resourceDate)
+        }
+      }
     };
     
     if (data) {
-      await fetch("/api/couchdb/requests/new", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      })
-        .then((res) => res.json())
-        .then((json) => console.log(json));
+      await fetch("/api/couchdb/requests/new", 
+        { method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body) })
+        .then((res) => res.json()).then((json) => console.log(json));
     }
   };
 

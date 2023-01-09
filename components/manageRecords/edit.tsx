@@ -37,14 +37,12 @@ export default function Edit(props:any) {
     const updated = checkedPurpose.map((item, index) =>
       index === position ? !item : item
     );
-
     setCheckedPurpose(updated);
   };
 
   // Check for record data and display it
   // When page loads
   useEffect(() => {
-
     getUserRecordCount()
     // To initate a new empty record
     // pass data="new"
@@ -85,94 +83,76 @@ export default function Edit(props:any) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
   const getUserRecordCount = async () => {
-    fetch("/api/couchdb/records/" + props.email, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-      .then((res) => res.json())
-      .then((json) => {
+    await fetch("/api/couchdb/records/" + props.email, 
+      { method: "GET", headers: {"Content-Type": "application/json"} })
+      .then((res) => res.json()).then((json) => {
         if (json.records) {
-          setUserRecordCount(json.records.length)
+          setUserRecordCount(json.records.length);
         } else {
-          setUserRecordCount(0)
+          setUserRecordCount(0);
         }
       });
   };
 
-    //save / update couch db
-    const saveRecord = async(duplicate: Boolean) => {
-      //update json object with edited values
-      var update = data;
-      if (newRecord || duplicate) {
-        console.log(userRecordCount)
-        update = {
-          "id": duplicate ? (userRecordCount + 1) : data.id,
-          "date": new Date().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"}),
-          "credential": "NPI - Verified by Doximity - issued by trustee.health"
+  //save / update couch db
+  const saveRecord = async(duplicate: Boolean) => {
+    //update json object with edited values
+    var update = data;
+    if (newRecord || duplicate) {
+      console.log(userRecordCount);
+      update = {
+        "id": duplicate ? (userRecordCount + 1) : data.id,
+        "date": new Date().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"}),
+        "credential": "NPI - Verified by Doximity - issued by trustee.health"
+      }
+    }
+    console.log(update)
+    update.name = recordName;
+    update.url = resourceURL;
+    //Format scope and purpose
+    var selectedScope = scope.filter((item, index) => {
+        if (checkedScope[index] == true) {
+          return item;
         }
-      }
-      console.log(update)
-      update.name = recordName;
-      update.url = resourceURL;
-      //Format scope and purpose
-      var selectedScope = scope.filter((item, index) => {
-          if (checkedScope[index] == true) {
-            return item;
-          }
-        });
-        var selectedPurpose = purpose.filter((item, index) => {
-          if (checkedPurpose[index] == true) {
-            return item;
-          }
-        });
-      update.scope = selectedScope
-      update.purpose = selectedPurpose
-  
-      //Request body
-      const body = {
-          "email" : props.email,
-          "record": update
-      }
-      //Update couchdb
-      fetch("/api/couchdb/records/update", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body)
-      })
-        .then((res) => res.json())
-        .then((json) => {
-          if (json.success) {
-              cancel("manageRecords")
-          }
-        });
+      });
+      var selectedPurpose = purpose.filter((item, index) => {
+        if (checkedPurpose[index] == true) {
+          return item;
+        }
+      });
+    update.scope = selectedScope
+    update.purpose = selectedPurpose
 
-        //TODO - update keys of record list in ManageRecords index
-    };
-
-    const deleteRecord = () => {
-      const body = {
-        "email" : props.email,
-        "recordId": data.id
+    //Request body
+    const body = {
+      "email" : props.email,
+      "record": update
     }
     //Update couchdb
-    fetch("/api/couchdb/records/delete", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body)
-    })
-      .then((res) => res.json())
-      .then((json) => {
+    await fetch("/api/couchdb/records/update", 
+      { method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body) })
+      .then((res) => res.json()).then((json) => {
+        if (json.success) {
+          cancel("manageRecords")
+        }
+      });
+
+      //TODO - update keys of record list in ManageRecords index
+  };
+
+  const deleteRecord = async() => {
+    const body = {
+      "email" : props.email,
+      "recordId": data.id
+    }
+    //Update couchdb
+    await fetch("/api/couchdb/records/delete", { method: "DELETE", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body) })
+      .then((res) => res.json()).then((json) => {
         if (json.success) {
             cancel("manageRecords")
         }
       });
-    }
+    };
 
   return (
     <div>

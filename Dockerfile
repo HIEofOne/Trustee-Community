@@ -17,7 +17,6 @@ COPY env.production .
 COPY env.production .env.production.local
 RUN mkdir -p /usr/src/app/trustees
 RUN mkdir -p /usr/src/app/routes
-RUN mkdir -p /usr/src/hostpipe
 RUN ["chmod", "+x", "./entrypoint.sh"]
 ENTRYPOINT ["./entrypoint.sh"]
 EXPOSE 3000

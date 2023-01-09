@@ -8,26 +8,22 @@ const PolicySummary = (props:any) => {
       <div>
         <h1>Privacy Policy Summary</h1>
         <hr className="solid" />
-        <h4>Policies for everyone in the adriang.xyz community:</h4>
+        <h4>Policies for everyone in the Trustee community:</h4>
         <ul>
           <li>
-            We collect emails to conact and identify you but we do not share
-            them with anyone.
+            We collect emails to contact and identify you but we do not share them with anyone.
           </li>
           <li>
-            We use Stripe. We do not have access to your credit card information
+            We use Stripe. We do not have access to your credit card information.
           </li>
           <li>
-            We do not read or use your information except as directed by
-            policies you can customize.
+            We do not read or use your information except as directed by policies you can customize.
           </li>
           <li>
-            adriang.xyz community issues access credentials based on active
-            Doximity accounts.
+            Trustee Community issues access credentials based on active Doximity accounts.
           </li>
         </ul>
       </div>
-
       <div>
         <hr className="solid" />
         <h4>Default data use policies you can customize:</h4>

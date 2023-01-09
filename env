@@ -25,3 +25,4 @@ USPSTF_KEY=
 UMLS_KEY=
 MAGIC_API_KEY=
 OIDC_RELAY_URL=https://dir.hieofone.org
+APP_URL=

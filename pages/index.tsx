@@ -1,28 +1,16 @@
 import * as React from "react";
 import Link from 'next/link';
-
-
+import Login from "../components/magicLink/login";
 
 //Landing Page
 const Home = () => {
-  
   return (
     <div>
       <div>
         <hr className="solid" />
         <h2>Patients</h2>
         <div>
-          <Link href="/newPatient" passHref>
-            <button className="btn btn-accented">
-              Subscribe to your own Trustee. First month is free, then $2/month
-            </button>
-          </Link>
-          <br></br>
-          <Link href="/myTrustee" passHref>
-            <button className="btn">
-              Sign-in and manage your records access policies
-            </button>
-          </Link>
+          <Login />
         </div>
       </div>
       <div>

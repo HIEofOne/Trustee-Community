@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import Link from 'next/link';
+import Login from '../../components/magicLink/login';
 export default function Home() {
   return (
     <>
@@ -17,9 +17,7 @@ export default function Home() {
       <div>
         <hr className="solid" />
         <h2>MyTrustee</h2>
-        <Link href="/myTrustee/login">
-          <a><button className="btn">Login</button></a>
-        </Link>
+        <Login />
       </div>
     </>
   );

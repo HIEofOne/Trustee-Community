@@ -19,10 +19,9 @@ export default function Dashboard() {
 
   //clears cookies but does not logout from
   //Magic Link. Session will automaticaly timeout.
-  const logout = async () => {
-    fetch(`/api/magicLink/logout`, {
-      method: "POST",
-    }).then(() => {
+  const logout = async() => {
+    await fetch(`/api/magicLink/logout`, { method: "POST" })
+      .then(() => {
       router.push("/");
     });
   };
@@ -40,16 +39,11 @@ export default function Dashboard() {
     }
   };
 
-  const getRecords = async () => {
+  const getRecords = async() => {
     if (user) {
-      fetch("/api/couchdb/records/" + user.email, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((json) => {
+      await fetch("/api/couchdb/records/" + user.email, 
+        { method: "GET", headers: {"Content-Type": "application/json"} })
+        .then((res) => res.json()).then((json) => {
           setRecords(json.records);
         });
     }

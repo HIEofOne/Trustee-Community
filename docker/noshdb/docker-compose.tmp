@@ -1,0 +1,33 @@
+version: '3.1'
+services:
+  couchdb:
+    image: "couchdb:latest"
+    container_name: "nosh_couchdb"
+    ports:
+      - "5985:5984"
+    networks:
+      - default
+      - traefik_default
+    restart: "always"
+    env_file:
+      - "./.env.local"
+    volumes:
+      - "./dbdata:/opt/couchdb/data"
+      - "./dbconfig:/opt/couchdb/etc/local.d"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_default"
+      - "traefik.http.services.noshdb.loadbalancer.server.port=5984"
+      - "traefik.http.routers.noshdb.entrypoints=http"
+      - "traefik.http.routers.noshdb.rule=Host(`noshdb.example.com`)"
+      - "traefik.http.middlewares.noshdb-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.noshdb.middlewares=noshdb-https-redirect"
+      - "traefik.http.routers.noshdb-secure.entrypoints=https"
+      - "traefik.http.routers.noshdb-secure.rule=Host(`noshdb.example.com`)"
+      - "traefik.http.routers.noshdb-secure.tls=true"
+      - "traefik.http.routers.noshdb-secure.tls.certresolver=http"
+      - "traefik.http.routers.noshdb-secure.service=noshdb"
+      - "com.centurylinklabs.watchtower.enable=true"
+networks:
+  traefik_default:
+    external: true

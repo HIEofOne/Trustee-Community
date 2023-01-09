@@ -1,10 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import Cors from "cors";
 import NextCors from "nextjs-cors";
 
-//commands to kill couch db on mac
-//sudo lsof -i :5984
-//kill "PID"
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
 const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
@@ -13,31 +9,24 @@ const nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostna
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
-    // Options
     methods: ["DELETE"],
     origin: process.env.DOMAIN,
-    optionsSuccessStatus: 200,
+    optionsSuccessStatus: 200
   });
-
   const {id} = req.query
   if (!id) {
     res.status(500).send("Bad Request: missing id param");
   }
-  
   const rs_requests = nano.use("rs_requests");
   try {
     const doc = await rs_requests.get(id);
     const rev = doc._rev
     const response = await rs_requests.destroy(id, rev)
-
     if (response.error) {
-      res
-        .status(500)
-        .send({ error: response.error, reason: response.reason});
+      res.status(500).send({ error: response.error, reason: response.reason});
     }
     res.status(200).json({ success: true });
   } catch (error) {
-    console.log(5)
     res.status(500).send(error);
   }
 }

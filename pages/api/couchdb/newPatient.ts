@@ -30,23 +30,23 @@ async function newPatient(req: NextApiRequest, res: NextApiResponse) {
     //account succesfully created
     //Send confirmation email
     //** Insecure -- email needs to be encripted to prevent middle man attacks
-    const sendgrid = await fetch(domain + "/api/sendgrid", {
-      body: JSON.stringify({
-        email: req.body.email,
-        subject: "HIE of One - Account Confirmation",
-        html: `<div><h1>Your HIE of One Trustee Account has been created!</h1><h1><a href=${domain}/myTrustee>Your Account</a></h1></div>`,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-    });
+    // const sendgrid = await fetch(domain + "/api/sendgrid", {
+    //   body: JSON.stringify({
+    //     email: req.body.email,
+    //     subject: "HIE of One - Account Confirmation",
+    //     html: `<div><h1>Your HIE of One Trustee Account has been created!</h1><h1><a href=${domain}/myTrustee>Your Account</a></h1></div>`,
+    //   }),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   method: "POST",
+    // });
     
-    const { error } = await sendgrid.json();
-    if (error) {
-      console.log(error);
-      res.status(500).send(error.message);
-    }
+    // const { error } = await sendgrid.json();
+    // if (error) {
+    //   console.log(error);
+    //   res.status(500).send(error.message);
+    // }
     res.status(200).json({success: true})
   } catch (error){
     res.status(500).send(error)
