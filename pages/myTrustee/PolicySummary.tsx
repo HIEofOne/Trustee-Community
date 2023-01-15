@@ -6,7 +6,7 @@ const PolicySummary = (props:any) => {
   return (
     <div>
       <div>
-        <h1>Privacy Policy Summary</h1>
+        <h2>Privacy Policy Summary</h2>
         <hr className="solid" />
         <h4>Policies for everyone in the Trustee community:</h4>
         <ul>

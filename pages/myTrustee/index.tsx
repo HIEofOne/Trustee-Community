@@ -15,8 +15,7 @@ export default function Home() {
         />
       </Head>
       <div>
-        <hr className="solid" />
-        <h2>MyTrustee</h2>
+        <h2>My Trustee</h2>
         <Login />
       </div>
     </>

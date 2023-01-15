@@ -3,6 +3,9 @@ import { useSignMessage } from 'wagmi'
 import { verifyMessage } from 'ethers/lib/utils'
 import { useEffect, useState } from 'react';
 
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+
 //@ts-ignore
 export default function SignMessage(props) {
   const recoveredAddress = React.useRef<string>()
@@ -43,9 +46,9 @@ export default function SignMessage(props) {
         rows={3}
         cols={40}
       /><br/>
-      <button disabled={isLoading} className={`btn ${isLoading ? "btn-simple" : "btn-accented"}`} >
+      <Button disabled={isLoading} variant={`${isLoading ? "outlined" : "contained"}`} >
         {isLoading ? 'Check Wallet' : 'Sign Request'}
-      </button>
+      </Button>
 
       {data && (
         <div>

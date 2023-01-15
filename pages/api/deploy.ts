@@ -7,7 +7,11 @@ var pass = process.env.COUCHDB_PASSWORD;
 // const do_token: string = process.env.DIGITALOCEAN_API_TOKEN !== undefined ? process.env.DIGITALOCEAN_API_TOKEN: '';
 const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
 const url = new URL(domain);
-const nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
+if (process.env.NODE_ENV === 'development') {
+  var nano = require("nano")(`http://${user}:${pass}@127.0.0.1:5984`);
+} else {
+  var nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
+}
 const patients = nano.db.use("patients");
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

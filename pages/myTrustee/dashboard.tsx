@@ -2,11 +2,12 @@ import * as React from "react";
 import PolicySummary from "./PolicySummary";
 import useAuth from "../../lib/useAuth";
 import router from "next/router";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import ManageRecords from "../../components/manageRecords";
 import Edit from "../../components/manageRecords/edit";
 
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 //Landing Page
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -57,9 +58,9 @@ export default function Dashboard() {
     return (
       <div>
         <p>Session expired: Please sign in to continue</p>
-        <Link href="/myTrustee" passHref>
-          <button className="btn">Sign In</button>
-        </Link>
+        <Button variant="contained" component="a" href="/myTrustee" >
+          Sign In
+        </Button>
       </div>
     );
   }
@@ -67,23 +68,20 @@ export default function Dashboard() {
   if (page == "dashboard") {
     return (
       <div>
-        <hr className="solid" />
         {/* @ts-ignore */}
         {loading ? (
           "Loading..."
         ) : (
           <div>
             <PolicySummary records={records} />
-
-            <button className="btn" onClick={() => logout()}>
-              Logout
-            </button>
-            <button
-              className="btn btn-accented"
-              onClick={() => changePage("manageRecords")}
-            >
-              {records? "Review and Edit My Policies" : "Create New Policies"}
-            </button>
+            <Stack spacing={2} direction="row">
+              <Button variant="contained" onClick={() => logout()}>
+                Logout
+              </Button>
+              <Button variant="contained" onClick={() => changePage("manageRecords")}>
+                {records? "Review and Edit My Policies" : "Create New Policies"}
+              </Button>
+            </Stack>
           </div>
         )}
       </div>

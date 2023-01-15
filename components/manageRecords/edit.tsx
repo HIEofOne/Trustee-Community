@@ -1,6 +1,18 @@
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import records from "../../pages/api/couchdb/records/[email]";
+
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Checkbox from '@mui/material/Checkbox';
+import { FormControl, List } from "@mui/material";
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
 export default function Edit(props:any) {
   const { data, cancel } = props;
@@ -24,11 +36,11 @@ export default function Edit(props:any) {
   };
   //Purpose
   var purpose = [
-    "Clinical-routine",
-    "Clinical-emergency",
+    "Clinical - Routine",
+    "Clinical - Emergency",
     "Research",
-    "Customer support",
-    "Other",
+    "Customer Support",
+    "Other"
   ];
   const [checkedPurpose, setCheckedPurpose] = useState(
     new Array(purpose.length).fill(false)
@@ -157,79 +169,74 @@ export default function Edit(props:any) {
   return (
     <div>
       <div>
-        <hr className="solid" />
         <h2>Access Policy for Record #{data.id}</h2>
-        <input
-          style={{ marginBottom: "10px", width: "100%", maxWidth: "400px" }}
-          placeholder="Record Name"
-          onChange={(e) => setRecordName(e.target.value)}
-          value={recordName}
-        ></input>
-        <br />
-        <input
-          style={{ marginBottom: "10px", width: "100%", maxWidth: "400px" }}
-          placeholder="Recource URL"
-          onChange={(e) => setResourceURL(e.target.value)}
-          value={resourceURL}
-        ></input>
-        <br />
-        <a target="_blank" href={resourceURL} rel="noopener noreferrer" style={{padding: 0}}>
-          <button className="btn">Preview</button>
-        </a>
-        <button className="btn" onClick={() => saveRecord(true)}>Duplicate</button>
-        <button className="btn" onClick={() => deleteRecord()}>Delete</button>
+        <Stack spacing={2}>
+          <TextField
+            variant="standard"
+            label="Record Name"
+            value={recordName}
+            onChange={(e) => setRecordName(e.target.value)}
+            required />
+          <TextField
+            variant="standard"
+            label="Recource URL"
+            value={resourceURL}
+            onChange={(e) => setResourceURL(e.target.value)}
+            required />
+          <Stack spacing={2} direction="row">
+            <Button variant="contained" component="a" href={resourceURL}>Preview</Button>
+            <Button variant="contained" onClick={() => saveRecord(true)}>Duplicate</Button>
+            <Button variant="contained" onClick={() => deleteRecord()}>Delete</Button>
+          </Stack>
+        </Stack>
       </div>
+      <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2, pb: 2 }}>
+        <Card sx={{ minWidth: 275 }}>
+          <CardContent>
+            <Typography variant="h5">Scope</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+              <FormGroup>
+                {scope.map((name, index) => {
+                  return (
+                    <FormControlLabel key={index} label={name} control={<Checkbox id={`custom-checkbox-${index}`}
+                      name={name}
+                      value={name}
+                      checked={checkedScope[index]}
+                      onChange={() => updateScope(index)} />} />
+                  );
+                })}
+              </FormGroup>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card sx={{ minWidth: 275 }}>
+          <CardContent>
+            <Typography variant="h5">Purpose</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+              <FormGroup>
+                {purpose.map((name, index) => {
+                  return (
+                    <FormControlLabel key={index} label={name} control={<Checkbox id={`custom-checkbox-${index}`}
+                      name={name}
+                      value={name}
+                      checked={checkedPurpose[index]}
+                      onChange={() => updatePurpose(index)} />} />
+                  );
+                })}
+              </FormGroup>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
       <div>
-        <hr className="solid" />
-        <h2>Scope</h2>
-        <ul className="ul-noformat">
-          {/* @ts-ignore */}
-          {scope.map((name, index) => {
-            return (
-              <li key={index}>
-                <input
-                  type="checkbox"
-                  id={`custom-checkbox-${index}`}
-                  name={name}
-                  value={name}
-                  checked={checkedScope[index]}
-                  onChange={() => updateScope(index)}
-                />
-                <label htmlFor={`custom-checkbox-${index}`}>{name}</label>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-      <div>
-        <hr className="solid" />
-        <h2>Purpose</h2>
-        <ul className="ul-noformat">
-          {/* @ts-ignore */}
-          {purpose.map((name, index) => {
-            return (
-              <li key={index}>
-                <input
-                  type="checkbox"
-                  id={`custom-checkbox-${index}`}
-                  name={name}
-                  value={name}
-                  checked={checkedPurpose[index]}
-                  onChange={() => updatePurpose(index)}
-                />
-                <label htmlFor={`custom-checkbox-${index}`}>{name}</label>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-      <div>
-        <hr className="solid" />
-        <br />
-        <button className="btn" onClick={() => cancel("manageRecords")}>Cancel</button>
-        <button className="btn btn-accented" onClick={() => saveRecord(false)}>
-          {newRecord? "Save new record access policy" : "Update your records access policies"}
-        </button>
+        <Stack spacing={2} direction="row">
+          <Button variant="contained" onClick={() => cancel("manageRecords")}>
+            Cancel
+          </Button>
+          <Button variant="contained" onClick={() => saveRecord(false)}>
+            {newRecord? "Save new record access policy" : "Update your records access policies"}
+          </Button>
+        </Stack>
       </div>
     </div>
   );

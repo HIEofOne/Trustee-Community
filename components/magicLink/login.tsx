@@ -2,6 +2,10 @@
 import { useRouter } from "next/router";
 import { Magic } from "magic-sdk";
 
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+
 export default function Login() {
   const router = useRouter();
 
@@ -17,7 +21,6 @@ export default function Login() {
       { method: "POST" });
     var magicKeyData = await magicKey.json();
     const did = await new Magic(magicKeyData.key).auth.loginWithMagicLink({ email: elements.email.value });
-
     // Once we have the did from magic, login with our own API
     const authRequest = await fetch("/api/magicLink/login", 
       { method: "POST", headers: { Authorization: `Bearer ${did}` }});
@@ -28,10 +31,7 @@ export default function Login() {
         router.push("/myTrustee/dashboard");
       } else {
         // add account to couchdb
-        router.push({
-          pathname: "/newPatient",
-          query: { email: elements.email.value },
-        });
+        router.push("/newPatient/" + elements.email.value);
       }
     } else {
       /* handle errors */
@@ -41,11 +41,19 @@ export default function Login() {
   return (
     <div>
       <div>
-        <form onSubmit={handleSubmit}>
-          <p>Subscribe to your own Trustee or Login with existing account</p>
-          <input name="email" type="email" placeholder="Email Address" />
-          <button className="btn btn-submit">Submit</button>
-        </form>
+          <Box
+            component="form"
+            sx={{
+              '& .MuiTextField-root': { m: 1, width: '25ch' },
+            }}
+            noValidate
+            autoComplete="off"
+            onSubmit={handleSubmit}
+          >
+            <p>Subscribe to your own Trustee or Login with an existing account</p>
+            <TextField name="email" type="email" placeholder="Email Address" variant="standard"/>
+            <Button variant="contained" type="submit">Submit</Button>
+          </Box>
       </div>
     </div>
   );
