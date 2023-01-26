@@ -2,11 +2,12 @@ import * as React from "react";
 import PolicySummary from "./PolicySummary";
 import useAuth from "../../lib/useAuth";
 import router from "next/router";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import ManageRecords from "../../components/manageRecords";
 import Edit from "../../components/manageRecords/edit";
 
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 //Landing Page
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -19,10 +20,9 @@ export default function Dashboard() {
 
   //clears cookies but does not logout from
   //Magic Link. Session will automaticaly timeout.
-  const logout = async () => {
-    fetch(`/api/magicLink/logout`, {
-      method: "POST",
-    }).then(() => {
+  const logout = async() => {
+    await fetch(`/api/magicLink/logout`, { method: "POST" })
+      .then(() => {
       router.push("/");
     });
   };
@@ -40,16 +40,11 @@ export default function Dashboard() {
     }
   };
 
-  const getRecords = async () => {
+  const getRecords = async() => {
     if (user) {
-      fetch("/api/couchdb/records/" + user.email, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((json) => {
+      await fetch("/api/couchdb/records/" + user.email, 
+        { method: "GET", headers: {"Content-Type": "application/json"} })
+        .then((res) => res.json()).then((json) => {
           setRecords(json.records);
         });
     }
@@ -63,33 +58,30 @@ export default function Dashboard() {
     return (
       <div>
         <p>Session expired: Please sign in to continue</p>
-        <Link href="/myTrustee">
-          <button className="btn">Sign In</button>
-        </Link>
+        <Button variant="contained" component="a" href="/myTrustee" >
+          Sign In
+        </Button>
       </div>
     );
   }
-
+  //Toggle between pages
   if (page == "dashboard") {
     return (
       <div>
-        <hr className="solid" />
         {/* @ts-ignore */}
         {loading ? (
           "Loading..."
         ) : (
           <div>
             <PolicySummary records={records} />
-
-            <button className="btn" onClick={() => logout()}>
-              Logout
-            </button>
-            <button
-              className="btn btn-accented"
-              onClick={() => changePage("manageRecords")}
-            >
-              {records? "Review and Edit My Policies" : "Create New Policies"}
-            </button>
+            <Stack spacing={2} direction="row">
+              <Button variant="contained" onClick={() => logout()}>
+                Logout
+              </Button>
+              <Button variant="contained" onClick={() => changePage("manageRecords")}>
+                {records? "Review and Edit My Policies" : "Create New Policies"}
+              </Button>
+            </Stack>
           </div>
         )}
       </div>

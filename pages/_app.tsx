@@ -1,5 +1,7 @@
 import Layout from "../components/layout";
-import "../styles/globals.css";
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from "@mui/material";
+import { appTheme } from "../styles/theme";
 import {
   WagmiConfig,
   createClient,
@@ -15,12 +17,14 @@ import { InjectedConnector } from 'wagmi/connectors/injected'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 
-const alchemyId = process.env.ALCHEMY_ID
+import '@fontsource/nunito/300.css';
+import '@fontsource/nunito/400.css';
+import '@fontsource/nunito/500.css';
+import '@fontsource/nunito/700.css';
 
 // Configure chains & providers with the Alchemy provider.
 // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
 const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
-  alchemyProvider({ alchemyId }),
   publicProvider(),
 ])
 
@@ -28,7 +32,7 @@ const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
 const client = createClient({
   autoConnect: true,
   connectors: [
-    // new MetaMaskConnector({ chains }),
+    new MetaMaskConnector({ chains }),
     new CoinbaseWalletConnector({
       chains,
       options: {
@@ -52,15 +56,17 @@ const client = createClient({
   provider,
   webSocketProvider,
 })
-
 //@ts-ignore
 const MyApp = ({ Component, pageProps, auth }) => {
   return (
     //@ts-ignore
     <WagmiConfig client={client}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <ThemeProvider theme={appTheme}>
+        <CssBaseline />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </ThemeProvider>
     </WagmiConfig>
   );
 };

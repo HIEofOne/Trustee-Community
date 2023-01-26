@@ -11,8 +11,8 @@ export default function NewUser({ email }) {
   const [isLoading, setLoading] = useState(false);
   const [users, setUsers] = useState("");
 
-  var user = process.env.NEXT_PUBLIC_COUCH_USERNAME;
-  var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;;
+  var user = process.env.COUCHDB_USER;
+  var pass = process.env.COUCHDB_PASSWORD;
   var url = "http://127.0.0.1:5984/users/";
 
   var document = {
@@ -39,6 +39,7 @@ export default function NewUser({ email }) {
         }
         setLoading(false);
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getUsers = async () => {
