@@ -1,25 +1,33 @@
 import { NextApiRequest, NextApiResponse } from "next";
-var user = process.env.NEXT_PUBLIC_COUCH_USERNAME;
-var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
-const nano = require("nano")(`http://${user}:${pass}@localhost:5984`);
-const domain = process.env.DOMAIN;
+import NextCors from "nextjs-cors";
 
-async function getResourceRequestFromId(req: NextApiRequest, res: NextApiResponse) {
+var user = process.env.COUCHDB_USER;
+var pass = process.env.COUCHDB_PASSWORD;
+const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
+const url = new URL(domain);
+if (process.env.NODE_ENV === 'development') {
+  var nano = require("nano")(`http://${user}:${pass}@127.0.0.1:5984`);
+} else {
+  var nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
+}
 
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+  await NextCors(req, res, {
+    methods: ["DELETE"],
+    origin: process.env.DOMAIN,
+    optionsSuccessStatus: 200
+  });
   const {id} = req.query
   if (!id) {
     res.status(500).send("Bad Request: missing id param");
   }
-  
   const rs_requests = nano.use("rs_requests");
   try {
     const doc = await rs_requests.get(id);
     const rev = doc._rev
     const response = await rs_requests.destroy(id, rev)
     if (response.error) {
-      res
-        .status(500)
-        .send({ error: response.error, reason: response.reason});
+      res.status(500).send({ error: response.error, reason: response.reason});
     }
     res.status(200).json({ success: true });
   } catch (error) {
@@ -27,4 +35,4 @@ async function getResourceRequestFromId(req: NextApiRequest, res: NextApiRespons
   }
 }
 
-export default getResourceRequestFromId;
+export default handler;

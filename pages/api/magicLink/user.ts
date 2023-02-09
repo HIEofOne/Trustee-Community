@@ -4,7 +4,7 @@ import Iron from '@hapi/iron';
 import CookieService from '../../../lib/cookie';
 
 //@ts-ignore
-export default async (req, res) => {
+const User = async (req, res) => {
   let user;
   try {
     user = await Iron.unseal(
@@ -23,3 +23,5 @@ export default async (req, res) => {
 
   res.json(user);
 };
+
+export default User;

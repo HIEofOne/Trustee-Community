@@ -37,13 +37,14 @@ function setTokenCookie(res, token) {
 //@ts-ignore
 function removeCookies(res) {
     res.setHeader('Set-Cookie', [
-        removeCookie(TOKEN_NAME, "removed"),
-        removeCookie('authed', false, { httpOnly: false }),
+      removeCookie(TOKEN_NAME, "removed"),
+      removeCookie('authed', false, { httpOnly: false }),
     ])
 }
 //@ts-ignore
 function getAuthToken(cookies) {
   return cookies[TOKEN_NAME];
 }
-
-export default { setTokenCookie, getAuthToken, removeCookies };
+//@ts-ignore
+const cookieFunctions = { setTokenCookie, getAuthToken, removeCookies };
+export default cookieFunctions;

@@ -1,39 +1,45 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import NextCors from "nextjs-cors";
 
-var user = process.env.NEXT_PUBLIC_COUCH_USERNAME;
-var pass = process.env.NEXT_PUBLIC_COUCH_PASSWORD;
-const nano = require("nano")(`http://${user}:${pass}@localhost:5984`);
-const domain = process.env.DOMAIN;
+var user = process.env.COUCHDB_USER;
+var pass = process.env.COUCHDB_PASSWORD;
+const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
+const url = new URL(domain);
+if (process.env.NODE_ENV === 'development') {
+  var nano = require("nano")(`http://${user}:${pass}@127.0.0.1:5984`);
+} else {
+  var nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
+}
 
-async function updateRecordWithEmail(req: NextApiRequest, res: NextApiResponse) {
-
-  const data = req.body
-  if (!data) {
-    return res.status(500).send("Bad Request: missing items in data");
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+  await NextCors(req, res, {
+    methods: ["PUT"],
+    origin: process.env.DOMAIN,
+    optionsSuccessStatus: 200
+  });
+  const {email, record} = req.body
+  if (!email || !record) {
+    res.status(500).send("Bad Request: missing items in body");
   }
-
   const patients = nano.use("patients");
   try {
-    const patient = await patients.get(data.email);
-
-    // update/add record at index (id)
-    if (patient.records) {
-      patient.records[data.record.id - 1] = data.record
+    const response = await patients.get(email);
+    const rev = response._rev
+    if (response.records) {
+      response.records[record.id - 1] = record
+      patients.insert({_id:email, _rev: rev, records: response.records} )
     } else {
-      patient.records = [data.record]
+      patients.insert({_id:email, _rev: rev, records: [record]} )
     }
-    const result = await patients.insert(patient)
-
-    if (result.error) {
-      return res.status(500).send({ error: result.error, reason: result.reason});
+    if (response.error) {
+      res.status(500).send({ error: response.error, reason: response.reason});
     }
-    
-    return res.status(200).json({ success: true });
-
+    res.status(200).json({ success: true });
   } catch (error) {
-    return res.status(500).send(error);
+    console.log(req.body)
+    console.log(error)
+    res.status(500).send(error);
   }
 }
 
-export default updateRecordWithEmail;
+export default handler;

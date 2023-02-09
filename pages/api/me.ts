@@ -13,7 +13,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 }
 
-
 export default withIronSessionApiRoute(handler, {
     cookieName: 'siwe',
     password: `yGB%@)'8FPudp5";E{s5;fq>c7:evVeU`,
