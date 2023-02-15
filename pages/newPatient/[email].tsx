@@ -106,7 +106,7 @@ const NewPatient = () => {
       birthGender: birthGender,
       pin: pin
     };
-    var res = await fetch(`/api/couchdb/newPatient`, 
+    var res = await fetch(`/api/couchdb/patients/new`, 
       { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) });
     var data = await res.json();
     if (data.success) {
