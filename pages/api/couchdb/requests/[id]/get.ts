@@ -21,7 +21,7 @@ async function records(req: NextApiRequest, res: NextApiResponse) {
   if (!id) {
     res.status(500).send("Bad Request: missing id param");
   }
-  const rs_requests = nano.use("rs_requests");
+  const rs_requests = await nano.use("rs_requests");
   try {
     const response = await rs_requests.get(id);
     if (response.error) {

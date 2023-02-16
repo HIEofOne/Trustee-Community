@@ -2,7 +2,7 @@
 import * as React from "react";
 // @ts-ignore
 import { useState } from "react";
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 import moment from "moment";
 
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';

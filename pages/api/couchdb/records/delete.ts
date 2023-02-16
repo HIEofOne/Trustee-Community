@@ -21,7 +21,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!email || !recordId) {
     res.status(500).send("Bad Request: missing items in body");
   }
-  const patients = nano.use("patients");
+  const patients = await nano.use("patients");
   try {
     const doc = await patients.get(email);
     const rev = doc._rev

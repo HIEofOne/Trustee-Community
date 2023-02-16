@@ -35,6 +35,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const url_full = new_pt.data.url;
   const doc_patient = await patients.get(req.body.email);
   doc_patient.phr = url_full;
+  doc_patient.resource_server = new_pt.data.patient_id;
   await patients.insert(doc_patient);
   const sendgrid = await fetch(domain + "/api/sendgrid", 
   {

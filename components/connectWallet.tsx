@@ -6,6 +6,8 @@ import {
   useEnsName,
 } from "wagmi";
 
+import Button from '@mui/material/Button';
+
 export function ConnectWallet() {
   const { address, connector, isConnected } = useAccount();
   const { data: ensAvatar } = useEnsAvatar({ addressOrName: address });
@@ -27,7 +29,7 @@ export function ConnectWallet() {
         <div>Address: {ensName ? `${ensName} (${address})` : address}</div>
         
         {/* @ts-ignore */}
-        <button onClick={disconnect} className="btn">Disconnect</button>
+        <Button variant="contained" onClick={disconnect}>Disconnect</Button>
       </div>
     );
   }
@@ -35,7 +37,8 @@ export function ConnectWallet() {
   return (
     <div>
       {connectors.map((connector) => (
-        <button
+        <Button
+          variant="contained"
           // disabled={!connector.ready}
           key={connector.id}
           onClick={() => connect({ connector })}
@@ -45,7 +48,7 @@ export function ConnectWallet() {
           {isLoading &&
             connector.id === pendingConnector?.id &&
             " (connecting)"}
-        </button>
+        </Button>
       ))}
 
       {error && <div>{error.message}</div>}

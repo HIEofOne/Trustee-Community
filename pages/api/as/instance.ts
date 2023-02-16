@@ -13,32 +13,34 @@ if (process.env.NODE_ENV === 'development') {
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
-    methods: ["PUT"],
+    methods: ["POST"],
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
-  const {email, record} = req.body
-  if (!email || !record) {
-    res.status(500).send("Bad Request: missing items in body");
+  const { id } = req.body
+  if (!id) {
+    res.status(200).json({error: "Bad Request: missing items in body"});
   }
-  const patients = await nano.use("patients");
+  const gnap = await nano.use("gnap");
+  const q = {
+    selector: {
+      interact_nonce: {"$eq": id}
+    }
+  };
   try {
-    const response = await patients.get(email);
-    const rev = response._rev
-    if (response.records) {
-      response.records[record.id - 1] = record
-      await patients.insert({_id:email, _rev: rev, records: response.records} )
+    const response = await gnap.find(q);
+    if (response.docs[0]) {
+      res.status(200).json({ success: response.docs[0] });
     } else {
-      await patients.insert({_id:email, _rev: rev, records: [record]} )
+      res.status(200).json({ error: "no record" });
     }
     if (response.error) {
-      res.status(500).send({ error: response.error, reason: response.reason});
+      res.status(200).json({ error: response.error, reason: response.reason});
     }
-    res.status(200).json({ success: true });
   } catch (error) {
     console.log(req.body)
     console.log(error)
-    res.status(500).send(error);
+    res.status(200).json(error);
   }
 }
 

@@ -11,7 +11,6 @@ async function sendEmail(req, res) {
     optionsSuccessStatus: 200
   });
   try {
-    console.log("REQ.BODY", req.body);
     await sendgrid.send({
       to: `${req.body.email}`, // Your email where you'll receive emails
       from: "support@hieofone.com", // your website email address here
@@ -23,7 +22,6 @@ async function sendEmail(req, res) {
     //@ts-ignore
     return res.status(error.statusCode || 500).json({ error: error.message });
   }
-
   return res.status(200).json({ error: "" });
 }
 

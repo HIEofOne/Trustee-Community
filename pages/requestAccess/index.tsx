@@ -38,8 +38,8 @@ const RequestAccess = () => {
   const [request, setRequest] = useState("");
   const [resourceType, setResourceType] = useState<string[]>([]);
   const [resourceDate, setResourceDate] = useState(new Date());
-  const [formatedDate, setFormatedDate] = useState("")
-  const [nextReady, setNextReady] = useState(true)
+  const [formatedDate, setFormatedDate] = useState("");
+  const [nextReady, setNextReady] = useState(true);
   const steps = ['Select Patient', 'Requested Data', 'From Date', 'Scope of Access', 'Purpose', 'Gather Credentials'];
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set<number>());
@@ -401,14 +401,21 @@ Purpose: ${selectedPurpose}`;
                     credentials and to sign your request.
                   </p>
                   <Ethereum req={request} callback={callback}>
-                    <input
-                      value={credential}
-                      onChange={(e) => {setCredential(e.target.value); setNextReady(false);}}
-                      placeholder="verifiable credential"
-                      required />
-                    <Button variant="contained" type="submit">
-                      Search
-                    </Button>
+                    <Box
+                      sx={{
+                        '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      }}
+                    >
+                      <TextField
+                        variant="standard"
+                        value={credential}
+                        onChange={(e) => {setCredential(e.target.value); setNextReady(false);}}
+                        placeholder="Verifiable Credential"
+                        required />
+                      <Button variant="contained" type="submit">
+                        Search
+                      </Button>
+                    </Box>
                   </Ethereum>
                 </div>
               </Box>
@@ -491,8 +498,6 @@ function Ethereum(props) {
       </div>
     )
   }
-
-  return <ConnectWallet />;
 }
 
 export default RequestAccess;

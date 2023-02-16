@@ -88,7 +88,7 @@ ssh_post_data1()
           {"key": "COUCHDB_USER", "value": "admin"},
           {"key": "COUCHDB_PASSWORD", "value": "$COUCHDB_PASSWORD"},
           {"key": "INSTANCE", "value": "digitalocean"},
-          {"key": "TRUSTEE_URL", "value": "https://$ROOT_DOMAIN/trustee"},
+          {"key": "TRUSTEE_URL", "value": "https://$ROOT_DOMAIN"},
           {"key": "NOSH_ROLE", "value": "patient"},
           {"key": "AUTH", "value": "magic"},
           {"key": "USPSTF_KEY", "value": "$USPSTF_KEY"},
@@ -140,6 +140,9 @@ EOF
   echo "Initializing CouchDB and Trustee Community..."
   sleep 5
   curl -X PUT http://admin:$COUCHDB_PASSWORD@localhost:5984/patients
+  curl -X PUT http://admin:$COUCHDB_PASSWORD@localhost:5984/gnap
+  curl -X PUT http://admin:$COUCHDB_PASSWORD@localhost:5984/gnap_resources
+  curl -X PUT http://admin:$COUCHDB_PASSWORD@localhost:5984/gnap_public_keys
   echo "Installation complete.  You can now open your browser to https://$ROOT_DOMAIN" 
   exit 0
 else
