@@ -13,9 +13,10 @@ export default function Login() {
     event.preventDefault();
     const { elements } = event.target;
     // Check if user has an account
-    const isRegistered = await fetch("/api/couchdb/isPatient/" + elements.email.value,
+    const isRegistered = await fetch("/api/couchdb/patients/" + elements.email.value,
       { method: "GET", headers: {"Content-Type": "application/json"} })
       .then((res) => res.json()).then((json) => json.success);
+    //login with magic  
     if (typeof window === "undefined") return;
     const magicKey = await fetch("/api/magicLink/key", 
       { method: "POST" });
