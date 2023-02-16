@@ -1,34 +1,46 @@
-import * as React from 'react';
-import { useSignMessage } from 'wagmi'
-import { verifyMessage } from 'ethers/lib/utils'
-import { useEffect, useState } from 'react';
+import * as React from "react";
+import { useSignMessage } from "wagmi";
+import { verifyMessage } from "ethers/lib/utils";
+import { useEffect, useState } from "react";
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+
 
 //@ts-ignore
 export default function SignMessage(props) {
-  const recoveredAddress = React.useRef<string>()
+  const recoveredAddress = React.useRef<string>();
   const { data, error, isLoading, signMessage } = useSignMessage({
     onSuccess(data, variables) {
       // Verify signature when sign message succeeds
-      const address = verifyMessage(variables.message, data)
-      recoveredAddress.current = address
+      const address = verifyMessage(variables.message, data);
+      recoveredAddress.current = address;
     },
-  })
-  const [message, setMessage] = useState("")
-  const {req, callback} = props
+  });
+  const [message, setMessage] = useState("");
+  const { req, callback } = props;
 
   useEffect(() => {
     if (error) {
       alert("Error: " + error)
     } else {
-      callback(data, recoveredAddress.current, message)
+      callback(data, recoveredAddress.current, message);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, error])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, error]);
+
+  const sign = () => {
+    // var message:any = formData.get('message')
+    // setMessage(message)
+    const str = message + "\n" + req;
+    signMessage({ message: str });
+  };
+
+  const handleChange = (event:any) => {
+    setMessage(event.target.value);
+  };
 
   return (
     <Box
@@ -39,12 +51,7 @@ export default function SignMessage(props) {
       noValidate
       autoComplete="off"
       onSubmit={(event: any) => {
-        event.preventDefault()
-        const formData = new FormData(event.target)
-        var message:any = formData.get('message')
-        setMessage(message)
-        message = message + req
-        signMessage({ message: message })
+        event.preventDefault();
       }}
     >
       <TextField
