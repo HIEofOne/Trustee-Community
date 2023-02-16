@@ -60,10 +60,15 @@ export default function SignMessage(props) {
         variant="standard"
         id="message"
         name="message"
+        onChange={handleChange}
         maxRows={4}
       /><br/>
-      <Button disabled={isLoading} type="submit" variant={`${isLoading ? "outlined" : "contained"}`} >
-        {isLoading ? 'Check Wallet' : 'Sign Request'}
+      <Button
+        disabled={isLoading}
+        onClick={sign}
+        variant={`${isLoading ? "outlined" : "contained"}`}
+      >
+        {isLoading ? "Check Wallet" : "Sign Request"}
       </Button>
 
       {data && (
