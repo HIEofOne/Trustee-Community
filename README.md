@@ -66,4 +66,99 @@ Get all rs requests
 ```
 GET /api/couchdb/requests/all
 ```
+## Grant Negotiation and Authorization Protocol (GNAP)
+Trustee also functions as an Authorization Server as specified by the [Grant Negotiation and Authorization Protocol](https://www.ietf.org/archive/id/draft-ietf-gnap-core-protocol-12.html#name-introduction). Below is the protocol sequence and exposed endpoints.
+
+#### 1. Requesting Access
+Client sends HTTP POST to the grant endpoint of Trustee with the following headers and body.  The Content-Digest, Signature, and Signature-Input fields and how they are constructed are [described here](https://www.ietf.org/archive/id/draft-ietf-gnap-core-protocol-12.html#name-http-message-signatures).  It is imperative that the processes outlined in the aformentioned link are followed explicitly as Trustee verifies these header fields with the public key presented in the request body (client.key field)
+NOTE: Trustee currently only accepts JSON Web Keys for the public key presentation at this time (in the client.key field)
+```
+POST /api/as/tx
+Content-Type: application/json
+Signature-Input: sig1=...
+Signature: sig1=:...
+Content-Digest: sha-256=...
+{
+  "access_token": {
+    "access": [
+      {
+        "type": "app",
+        "actions": {
+          "read",
+          "write"
+        },
+        "locations": [
+          "https://nosh-app-mj3xd.ondigitalocean.app/app/chart/nosh_49798bcb-c617-4165-beb6-05442152c99a"
+        ],
+        "datatypes": [
+          "application"
+        ]
+      },
+      {
+        "type": "conditions",
+        "actions": {
+          "read",
+          "write"
+        },
+        "locations": [
+          "https://nosh-app-mj3xd.ondigitalocean.app/fhir/api/Condition"
+        ],
+        "datatypes": [
+          "application/json"
+        ]
+      }
+    ]
+  },
+  "client": {
+    "display": {
+      "name": "My Client Display Name",
+      "uri": "https://client.example.net"
+    },
+    "key": {
+      "proof": "httpsig",
+      "jwk": {
+        "kty": "RSA",
+        "e": "AQAB",
+        "kid": "xyz-1",
+        "alg": "RS256",
+        "n": "kOB5rR4Jv0GMeL...."
+      }
+    }
+  },
+  "interact": {
+    "start": ["redirect"],
+    "finish": {
+      "method": "redirect",
+      "uri": "https://client.example.net/return/123455",
+      "nonce": "LKLTI25DK82FX4T4QFZC"
+    }
+  },
+  "subject": {
+    "sub_id_formats": ["iss_sub", "opaque"],
+    "assertion_formats": ["id_token"]
+  }
+}
+
+```
+If verified successfuly, Trustee responds with:
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+
+{
+    "interact": {
+      "redirect":
+        "https://server.example.com/api/as/interact/4CF492MLVMSW9MKM",
+      "finish": "MBDOFXG4Y5CVJCX821LH"
+    }
+    "continue": {
+      "access_token": {
+        "value": "80UPRY5NM33OMUKMKSKU"
+      },
+      "uri": "https://server.example.com/api/as/continue"
+    },
+    "instance_id": "7C7C4AZ9KHRS6X63AJAO"
+}
+```
 

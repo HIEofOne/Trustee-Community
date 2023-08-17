@@ -21,7 +21,7 @@ async function records(req: NextApiRequest, res: NextApiResponse) {
   if (!email) {
     res.status(500).send("Bad Request: missing email param");
   }
-  const patients = nano.use("patients");
+  const patients = await nano.use("patients");
   try {
     const response = await patients.get(email);
     const records = response.records;

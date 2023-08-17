@@ -25,7 +25,7 @@ async function patientAcceptTerms(req: NextApiRequest, res: NextApiResponse) {
   try {
     const response = await patients.get(email);
     response.acceptsTerms = true;
-    patients.insert(response);
+    await patients.insert(response);
     if (response.error) {
       res.status(500).send({ error: response.error, reason: response.reason });
     }

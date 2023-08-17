@@ -1,27 +1,27 @@
-// @ts-ignore
-import * as React from "react";
-// @ts-ignore
-import { useState } from "react";
-import { useRouter } from 'next/router'
-import moment from "moment";
+import { MouseEvent, useState } from "react";
+import { useRouter } from 'next/router';
+import moment, { Moment } from "moment";
+import { isLoggedIn } from "../../lib/auth";
+import { withIronSessionSsr } from "iron-session/next";
+import { sessionOptions } from "../../lib/session";
 
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import { FormControl } from "@mui/material";
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
 import Link from '@mui/material/Link';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import MenuItem from '@mui/material/MenuItem';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
+import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Visibility from '@mui/icons-material/Visibility';
@@ -43,12 +43,11 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
 }
 
 //Landing Page
-//@ts-ignore
 const NewPatient = () => {
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [DOB, setDOB] = useState("")
-  const [gender, setGender] = useState("male")
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [DOB, setDOB] = useState(moment());
+  const [gender, setGender] = useState("male");
   const [accountCreated, setAccountCreated] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [error, setError] = useState("");
@@ -57,36 +56,36 @@ const NewPatient = () => {
   const [linkTitle, setLinkTitle] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showProgressBar, setShowProgressBar] = useState(false);
-  const [progress, setProgress] = useState(1)
-
+  const [progress, setProgress] = useState(1);
   const router = useRouter();
   const { email } = router.query;
 
-  if (!email) {
-    return <p>Error: No Email Detected</p>;
-  }
-
-  const handleChange = (newValue: string | null) => {
+  const handleChange = (newValue: Moment | null) => {
     if (newValue !== null) {
-      setDOB(moment(newValue).format('YYYY-MM-DD'));
+      setDOB(newValue);
     }
+  };
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleConfirm = (e: { target: { value: string; }; }) => {
+    if (e.target.value !== pin) {
+      setError("PINs do not match");
+    } else {
+      setError("");
+    }
+  };
+  const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
   };
   const handlePIN = (e: { target: { value: string; }; }) => {
     setPin(e.target.value.slice(0,4));
-  }
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
   };
-  //@ts-ignore
-  const createAccount = async (e) => {
+  const createAccount = async (e:any) => {
     e.preventDefault();
     //user must accept privacy
     if (!privacy) {
       return;
     }
     var body = { email: email };
-
     var birthGender = 'UNK';
     if (gender == 'male') {
       birthGender = 'M';
@@ -101,14 +100,14 @@ const NewPatient = () => {
       email: email,
       first_name: firstName,
       last_name: lastName,
-      dob: DOB,
+      dob: DOB.format('YYYY-MM-DD'),
       gender: gender,
       birthGender: birthGender,
       pin: pin
     };
-    var res = await fetch(`/api/couchdb/patients/new`, 
-      { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) });
-    var data = await res.json();
+    const data = await fetch(`/api/couchdb/patients/new`, 
+      { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) })
+      .then((res) => res.json());
     if (data.success) {
       setAccountCreated(true);
       setShowProgressBar(true);
@@ -119,11 +118,11 @@ const NewPatient = () => {
           setShowProgressBar(false);
         }
       }, 500);
-      var res1 = await fetch('/api/deploy', 
-        { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body1) });
-      var data1 = await res1.json();
+      const data1 = await fetch('/api/deploy', 
+        { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body1) })
+        .then((res) => res.json());
       if (data1.url) {
-        setProgress(100)
+        setProgress(100);
         setShowProgressBar(false);
       }
       setURL(data1.url);
@@ -132,9 +131,9 @@ const NewPatient = () => {
     }
     if (data.error) {
       if (data.reason == "Document update conflict.") {
-        setError("An account attached to this email already exists.")
+        setError("An account attached to this email already exists.");
       } else {
-        setError(data.reason)
+        setError(data.reason);
       }
     }
   };
@@ -178,71 +177,109 @@ const NewPatient = () => {
                 />} label="I have read the Privacy Policy and agree." 
               />
             </FormGroup>
-            <TextField variant="standard" 
-              type="text"
-              name="firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              label="First Name"
-              required
-            />
-            <TextField variant="standard" 
-              type="text"
-              name="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              label="Last Name"
-              required
-            />
-            <LocalizationProvider dateAdapter={AdapterMoment}>
-              <DatePicker
-                label="Date of Birth"
-                inputFormat="YYYY-MM-DD"
-                value={DOB}
-                onChange={handleChange}
-                renderInput={(params) => <TextField variant="standard" {...params} />}
-              />
-            </LocalizationProvider>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-              <InputLabel id="gender">Gender</InputLabel>
-              <Select
-                labelId="gender"
-                name="gender"
-                value={gender}
-                onChange={(e) =>setGender(e.target.value)}
-                required
-              >
-                <MenuItem value="male">Male</MenuItem>
-                <MenuItem value="female">Female</MenuItem>
-                <MenuItem value="other">Other</MenuItem>
-                <MenuItem value="unknown">Unknown</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ m: 1, width: '25ch' }} variant="standard">
-              <InputLabel htmlFor="standard-adornment-pin">4-digit PIN</InputLabel>
-              <Input
-                id="standard-adornment-pin"
-                name="pin"
-                type={showPassword ? 'text' : 'password'}
-                required
-                inputProps={{ maxLength: 4 }}
-                onChange={handlePIN}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            </FormControl>
-            <Button variant="contained" type="submit" className="btn btn-submit">
-              Submit
-            </Button>
+            <Grid container spacing={2}>
+              <Grid item>
+                <TextField variant="standard" 
+                  type="text"
+                  name="firstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  label="First Name"
+                  required
+                />
+              </Grid>
+              <Grid item>
+                <TextField variant="standard" 
+                  type="text"
+                  name="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  label="Last Name"
+                  required
+                />
+              </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+              <Grid item>
+                <DatePicker
+                  label="Date of Birth"
+                  value={DOB}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item>
+                <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                  <InputLabel id="gender">Gender</InputLabel>
+                  <Select
+                    labelId="gender"
+                    name="gender"
+                    value={gender}
+                    onChange={(e) =>setGender(e.target.value)}
+                    required
+                  >
+                    <MenuItem value="male">Male</MenuItem>
+                    <MenuItem value="female">Female</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                    <MenuItem value="unknown">Unknown</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+              <Grid item>
+                <FormControl sx={{ m: 1, width: '25ch' }} variant="standard">
+                  <InputLabel htmlFor="standard-adornment-pin">4-digit PIN</InputLabel>
+                  <Input
+                    id="standard-adornment-pin"
+                    name="pin"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    inputProps={{ maxLength: 4 }}
+                    onChange={handlePIN}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item>
+                <FormControl sx={{ m: 1, width: '25ch' }} variant="standard">
+                  <InputLabel htmlFor="standard-adornment-pin">Confirm 4-digit PIN</InputLabel>
+                  <Input
+                    id="standard-adornment-pin"
+                    name="pin"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    inputProps={{ maxLength: 4 }}
+                    onChange={handleConfirm}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+            <Stack spacing={1}>
+              <Button variant="contained" type="submit" className="btn btn-submit">
+                Submit
+              </Button>
+            </Stack>
           </Box>
           {error != "" && (
             <div>
@@ -273,5 +310,27 @@ const NewPatient = () => {
     </div>
   );
 };
+
+export const getServerSideProps = withIronSessionSsr(async function ({
+  req,
+  res,
+  resolvedUrl
+}) {
+    if (!isLoggedIn(req)) {
+      return {
+        redirect: {
+          destination: `/?from=${encodeURIComponent(resolvedUrl)}`,
+          permanent: false
+        }
+      };
+    }
+    return {
+      props: {
+        userId: req.session.userId ?? null
+      }
+    };
+  },
+  sessionOptions
+);
 
 export default NewPatient;

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import router from "next/router";
 
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -8,7 +9,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -17,6 +17,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import PolicyIcon from '@mui/icons-material/Policy';
@@ -142,6 +143,10 @@ const Layout = (props: any) => {
   const home = () => {
     window.location.href = '/'
   }
+  const logout = async() => {
+    await fetch(`/api/auth/logout`, { method: "POST" });
+    router.push("/");
+  };
   return (
     <Box sx={{ display: 'flex' }}>
       {/* <CssBaseline /> */}
@@ -199,6 +204,16 @@ const Layout = (props: any) => {
               <ListItemText primary="Support" />
             </ListItemButton>
           </ListItem>
+          {props.userId ? (
+            <ListItem disablePadding key="3">
+              <ListItemButton component="a" onClick={() => logout()}>
+                <ListItemIcon>
+                  <LogoutIcon />
+                </ListItemIcon>
+                <ListItemText primary="Logout" />
+              </ListItemButton>
+            </ListItem>
+          ) : (<></>)}
         </List>
       </Drawer>
       <LayoutDialog

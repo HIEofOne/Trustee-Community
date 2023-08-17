@@ -1,6 +1,10 @@
 import Head from 'next/head';
 import Login from '../../components/magicLink/login';
-export default function Home() {
+import { withIronSessionSsr } from "iron-session/next";
+import { generateChallenge, isLoggedIn } from "../../lib/auth";
+import { sessionOptions } from "../../lib/session";
+
+export default function Home({ challenge }: { challenge: string }) {
   return (
     <>
       <Head>
@@ -16,8 +20,27 @@ export default function Home() {
       </Head>
       <div>
         <h2>My Trustee</h2>
-        <Login />
+        <Login challenge={challenge} authonly={false}/>
       </div>
     </>
   );
 }
+
+export const getServerSideProps = withIronSessionSsr(async function ({
+  req,
+  res,
+}) {
+  if (isLoggedIn(req)) {
+    return {
+      redirect: {
+        destination: "/myTrustee/dashboard",
+        permanent: false,
+      },
+    };
+  }
+  const challenge = generateChallenge();
+  req.session.challenge = challenge;
+  await req.session.save();
+  return { props: { challenge } };
+},
+sessionOptions);

@@ -13,7 +13,7 @@ const PolicySummary = () => {
         <p>Community patients can choose to accept this credential in lieu of a specific invitation to access their record.</p>
         <p>Other issuers of standard W3C Verifiable Credentials can request listing in the community default privacy policy by contacting Support.</p>
       </div>
-      <Button component="a" href="/" variant="contained">
+      <Button component="a" href="https://dir.hieofone.org/doximity" target="_blank" variant="contained">
         Sign-in to a Doximity Account
       </Button>
     </div>

@@ -17,10 +17,10 @@ async function newPatient(req: NextApiRequest, res: NextApiResponse) {
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
-  const patients = nano.db.use("patients");
+  const patients = await nano.db.use("patients");
   try {
     const response = await patients.insert(
-      { email: req.body.email },
+      { email: req.body.email, did: req.body.did },
       req.body.email
     );
     if (response.error) {

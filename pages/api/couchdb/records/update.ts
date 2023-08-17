@@ -21,23 +21,23 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!email || !record) {
     res.status(500).send("Bad Request: missing items in body");
   }
-  const patients = nano.use("patients");
+  const patients = await nano.use("patients");
   try {
     const response = await patients.get(email);
     const rev = response._rev
     if (response.records) {
       response.records[record.id - 1] = record
-      patients.insert({_id:email, _rev: rev, records: response.records} )
+      await patients.insert({_id:email, _rev: rev, records: response.records} )
     } else {
-      patients.insert({_id:email, _rev: rev, records: [record]} )
+      await patients.insert({_id:email, _rev: rev, records: [record]} )
     }
     if (response.error) {
       res.status(500).send({ error: response.error, reason: response.reason});
     }
     res.status(200).json({ success: true });
   } catch (error) {
-    console.log(req.body)
-    console.log(error)
+    console.log(req.body);
+    console.log(error);
     res.status(500).send(error);
   }
 }

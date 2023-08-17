@@ -35,6 +35,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const url_full = new_pt.data.url;
   const doc_patient = await patients.get(req.body.email);
   doc_patient.phr = url_full;
+  doc_patient.resource_server = new_pt.data.patient_id;
   await patients.insert(doc_patient);
   const sendgrid = await fetch(domain + "/api/sendgrid", 
   {
@@ -45,7 +46,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     body: JSON.stringify({
       email: req.body.email,
       subject: "HIE of One - New Account Confirmation",
-      html: `<div><h1>Your HIE of One Trustee Account has been created!</h1><h2><a href=${domain}/myTrustee>Your HIE of One Trustee Account Dashboard</a></h2><h2><a href=${url_full}>Your Personal Health Record</a></h2></div>`,
+      html: `<div><h1>Your HIE of One Trustee Account has been created!</h1><h2><a href="${domain}/myTrustee">Your HIE of One Trustee Account Dashboard</a></h2><h2><a href="${url_full}">Your Personal Health Record</a></h2></div>`,
     })
   });
   const { error } = await sendgrid.json();

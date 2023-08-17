@@ -1,7 +1,6 @@
 import CookieService from "../../../lib/cookie";
 
-//@ts-ignore
-const Logout = async (req, res) => {
+const Logout = async (req: any, res: any) => {
   if (req.method !== "POST") return res.status(405).end();
   //Removes cookies but does not logout user from magic link
   //Users session will expire with time

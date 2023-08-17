@@ -1,14 +1,10 @@
-import Link from "next/link";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Profile } from "../../components/profile";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { ConnectWallet } from "../../components/connectWallet";
 import SignMessage from "../../components/signMessage";
-import { recoverAddress } from "ethers/lib/utils";
-import moment from "moment";
+import moment, { Moment } from "moment";
 
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -17,7 +13,6 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import InputLabel from '@mui/material/InputLabel';
 import ListItemText from '@mui/material/ListItemText';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import MenuItem from '@mui/material/MenuItem';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -37,9 +32,10 @@ const RequestAccess = () => {
   const [credential, setCredential] = useState("");
   const [request, setRequest] = useState("");
   const [resourceType, setResourceType] = useState<string[]>([]);
-  const [resourceDate, setResourceDate] = useState(new Date());
-  const [formatedDate, setFormatedDate] = useState("")
-  const [nextReady, setNextReady] = useState(true)
+  // const [resourceDate, setResourceDate] = useState(new Date());
+  const [resourceDate, setResourceDate] = useState(moment());
+  const [formatedDate, setFormatedDate] = useState("");
+  const [nextReady, setNextReady] = useState(true);
   const steps = ['Select Patient', 'Requested Data', 'From Date', 'Scope of Access', 'Purpose', 'Gather Credentials'];
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set<number>());
@@ -57,7 +53,12 @@ const RequestAccess = () => {
     }
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped(newSkipped);
-    setNextReady(true);
+    if (activeStep === 1) {
+      setFormatedDate(resourceDate.format('MM/DD/YYYY'));
+      setNextReady(false);
+    } else {
+      setNextReady(true);
+    }
   };
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -78,12 +79,11 @@ const RequestAccess = () => {
   const handleReset = () => {
     setActiveStep(0);
   };
-  const handleDateChange = (newValue: Date | null) => {
+  const handleDateChange = (newValue: Moment | null) => {
     if (newValue !== null) {
-      setResourceDate(newValue)
-      const value = moment(newValue).format('MM/DD/YYYY')
-      setFormatedDate(value)
-      setNextReady(false)
+      setResourceDate(newValue);
+      setFormatedDate(newValue.format('MM/DD/YYYY'));
+      setNextReady(false);
     }
   };
   const ITEM_HEIGHT = 48;
@@ -174,22 +174,22 @@ const RequestAccess = () => {
     const all_find = arr_value.find((a)=> a === 'all')
     if (all_find) {
       if (resourceType.length === 0) {
-        var all: Array<string> = []
+        var all: Array<string> = [];
         resources.map((resource, index) => (
           all.push(resource.resource)
-        ))
-        setResourceType(all)
-        setSelectedResource(all)
-        setNextReady(false)
+        ));
+        setResourceType(all);
+        setSelectedResource(all);
+        setNextReady(false);
       } else {
-        setResourceType([])
-        setSelectedResource([])
-        setNextReady(true)
+        setResourceType([]);
+        setSelectedResource([]);
+        setNextReady(true);
       }
     } else {
-      setResourceType(arr_value)
-      setSelectedResource(arr_value)
-      setNextReady(false)
+      setResourceType(arr_value);
+      setSelectedResource(arr_value);
+      setNextReady(false);
     }
   }
   const [selectedResource, setSelectedResource] = useState<string[]>([]);
@@ -220,7 +220,7 @@ const RequestAccess = () => {
       }
     });
     setSelectedScope(value);
-    setNextReady(false)
+    setNextReady(false);
   };
   const updatePurpose = (position: number) => {
     const updated = checkedPurpose.map((item, index) =>
@@ -232,8 +232,8 @@ const RequestAccess = () => {
         return item;
       }
     });
-    setSelctedPurpose(value)
-    setNextReady(false)
+    setSelctedPurpose(value);
+    setNextReady(false);
   };
   const generateRequest = () => {
     var request = `
@@ -263,7 +263,7 @@ Purpose: ${selectedPurpose}`;
         request_data: {
           type: resourceType,
           from: "Apple Health",
-          date: moment(resourceDate).format('MM/DD/YYYY')
+          date: resourceDate.format('MM/DD/YYYY')
         }
       }
     };
@@ -355,15 +355,11 @@ Purpose: ${selectedPurpose}`;
               </div>
              ) : activeStep === 2 ? (
               <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                <LocalizationProvider dateAdapter={AdapterMoment}>
-                  <DatePicker
-                    label="Date"
-                    inputFormat="YYYY-MM-DD"
-                    value={resourceDate}
-                    onChange={handleDateChange}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                </LocalizationProvider>
+                <DatePicker
+                  label="Date"
+                  value={resourceDate}
+                  onChange={handleDateChange}
+                />
               </Box>
              ) : activeStep === 3 ? (
               <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -401,14 +397,21 @@ Purpose: ${selectedPurpose}`;
                     credentials and to sign your request.
                   </p>
                   <Ethereum req={request} callback={callback}>
-                    <input
-                      value={credential}
-                      onChange={(e) => {setCredential(e.target.value); setNextReady(false);}}
-                      placeholder="verifiable credential"
-                      required />
-                    <Button variant="contained" type="submit">
-                      Search
-                    </Button>
+                    <Box
+                      sx={{
+                        '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      }}
+                    >
+                      <TextField
+                        variant="standard"
+                        value={credential}
+                        onChange={(e) => {setCredential(e.target.value); setNextReady(false);}}
+                        placeholder="Verifiable Credential"
+                        required />
+                      <Button variant="contained" type="submit">
+                        Search
+                      </Button>
+                    </Box>
                   </Ethereum>
                 </div>
               </Box>
@@ -491,8 +494,6 @@ function Ethereum(props) {
       </div>
     )
   }
-
-  return <ConnectWallet />;
 }
 
 export default RequestAccess;

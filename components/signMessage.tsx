@@ -3,8 +3,10 @@ import { useSignMessage } from "wagmi";
 import { verifyMessage } from "ethers/lib/utils";
 import { useEffect, useState } from "react";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
 
 //@ts-ignore
 export default function SignMessage(props) {
@@ -20,10 +22,8 @@ export default function SignMessage(props) {
   const { req, callback } = props;
 
   useEffect(() => {
-    console.log("test");
-    console.log(data, error);
     if (error) {
-      alert("Error: " + error);
+      alert("Error: " + error)
     } else {
       callback(data, recoveredAddress.current, message);
     }
@@ -42,20 +42,26 @@ export default function SignMessage(props) {
   };
 
   return (
-    <form
+    <Box
+      component="form"
+      sx={{
+        '& .MuiTextField-root': { m: 1, width: '25ch' },
+      }}
+      noValidate
+      autoComplete="off"
       onSubmit={(event: any) => {
         event.preventDefault();
       }}
     >
-      <textarea
+      <TextField
+        multiline
+        placeholder="Message" 
+        variant="standard"
         id="message"
         name="message"
-        value={message}
         onChange={handleChange}
-        rows={3}
-        cols={40}
-      />
-      <br />
+        maxRows={4}
+      /><br/>
       <Button
         disabled={isLoading}
         onClick={sign}
@@ -72,6 +78,6 @@ export default function SignMessage(props) {
       )}
 
       {error && <div>{error.message}</div>}
-    </form>
-  );
+    </Box>
+  )
 }

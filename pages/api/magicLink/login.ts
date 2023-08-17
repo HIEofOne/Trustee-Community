@@ -1,11 +1,9 @@
-
 import { Magic } from '@magic-sdk/admin';
 import Iron from '@hapi/iron';
 import CookieService from '../../../lib/cookie';
 
 //Tutorial: https://vercel.com/guides/add-auth-to-nextjs-with-magic
-//@ts-ignore
-const Login = async (req, res) => {
+const Login = async (req: any, res: any) => {
   if (req.method !== 'POST') return res.status(405).end();
 
   // exchange the did from Magic for some user data

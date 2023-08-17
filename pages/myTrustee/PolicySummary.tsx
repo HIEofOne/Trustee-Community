@@ -23,13 +23,13 @@ const PolicySummary = (props:any) => {
             Trustee Community issues access credentials based on active Doximity accounts.
           </li>
         </ul>
-      </div>
-      <div>
-        <hr className="solid" />
-        <h4>Default data use policies you can customize:</h4>
+        <h4>Optional Policies Available:</h4>
         <ul>
           <li>
-            You currently have {props.records ? props.records.length : 0} policy forms{props.records ? " last modified: " + props.records[props.records.length - 1].date : "."}
+            NPI (npi): Any user with a Verifiable Credential including the <a href="https://npiregistry.cms.hhs.gov/search" target="_blank">NPI (National Provider Identifier)</a> can access (or edit) the resource.
+          </li>
+          <li>
+            Offline (offline): Any user can access (or edit) the resource wihthout your authorization.
           </li>
         </ul>
       </div>
