@@ -1,60 +1,33 @@
 import * as React from "react";
 import PolicySummary from "./PolicySummary";
-import useAuth from "../../lib/useAuth";
+import { isLoggedIn } from "../../lib/auth";
 import router from "next/router";
-import { useEffect, useState } from "react";
-import ManageRecords from "../../components/manageRecords";
-import Edit from "../../components/manageRecords/edit";
+import { useState } from "react";
+import Policies from "../../components/policies";
+import { withIronSessionSsr } from "iron-session/next";
+import { sessionOptions } from "../../lib/session";
+import { InferGetServerSidePropsType } from "next";
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-//Landing Page
-export default function Dashboard() {
-  const { user, loading } = useAuth();
-  //for switching between views
-  //dashboard - manageRecords - editRecord
+
+export default function Dashboard({
+  userId, jwt
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [page, setPage] = useState("dashboard");
-  const [pageData, setPageData] = useState();
-  //Users records and access policies
-  const [records, setRecords] = useState([{}]);
 
-  //clears cookies but does not logout from
-  //Magic Link. Session will automaticaly timeout.
+  // Close out of current page and choose next page to display. Pass data to next page.
+  const changePage = (page: string) => {
+    setPage(page);
+  };
+
+  //clears cookies but does not logout from MagicLink and Passkey. Session will automaticaly timeout.
   const logout = async() => {
-    await fetch(`/api/magicLink/logout`, { method: "POST" })
-      .then(() => {
-      router.push("/");
-    });
+    await fetch(`/api/auth/logout`, { method: "POST" });
+    router.push("/");
   };
 
-  // Close out of current page and choose next page
-  // to display. Pass data to next page.
-  const changePage = (page: string, data?: any) => {
-    if (data) {
-      if (page == "editRecord") {
-        setPageData(data);
-        setPage(page);
-      }
-    } else {
-      setPage(page);
-    }
-  };
-
-  const getRecords = async() => {
-    if (user) {
-      await fetch("/api/couchdb/records/" + user.email, 
-        { method: "GET", headers: {"Content-Type": "application/json"} })
-        .then((res) => res.json()).then((json) => {
-          setRecords(json.records);
-        });
-    }
-  };
-
-  useEffect(() => {
-    getRecords();
-  });
-
-  if (!user) {
+  if (userId === null) {
     return (
       <div>
         <p>Session expired: Please sign in to continue</p>
@@ -64,42 +37,56 @@ export default function Dashboard() {
       </div>
     );
   }
-  //Toggle between pages
   if (page == "dashboard") {
     return (
       <div>
-        {/* @ts-ignore */}
-        {loading ? (
-          "Loading..."
-        ) : (
-          <div>
-            <PolicySummary records={records} />
-            <Stack spacing={2} direction="row">
-              <Button variant="contained" onClick={() => logout()}>
-                Logout
-              </Button>
-              <Button variant="contained" onClick={() => changePage("manageRecords")}>
-                {records? "Review and Edit My Policies" : "Create New Policies"}
-              </Button>
-            </Stack>
-          </div>
-        )}
+        <div>
+          <PolicySummary />
+          <Stack spacing={2} direction="row">
+            <Button variant="contained" onClick={() => logout()}>
+              Logout
+            </Button>
+            <Button variant="contained" onClick={() => changePage("policies")}>
+              Review and Edit My Resources and Policies
+            </Button>
+          </Stack>
+        </div>
       </div>
     );
-  } else if (page == "manageRecords") {
+  } else if (page == "policies") {
     return (
       <div>
-        <ManageRecords
-          email={user.email}
+        <Policies
+          email={userId}
+          jwt={jwt}
           changePage={changePage}
-          records={records}
         />
       </div>
     );
-  } else if (page == "editRecord" && pageData) {
-    //display editRecord
-    return <Edit data={pageData} cancel={changePage} email={user.email} />;
   } else {
     return <div></div>;
   }
 }
+
+export const getServerSideProps = withIronSessionSsr(async function ({
+  req,
+  res,
+  resolvedUrl
+}) {
+    if (!isLoggedIn(req)) {
+      return {
+        redirect: {
+          destination: `/?from=${encodeURIComponent(resolvedUrl)}`,
+          permanent: false
+        }
+      };
+    }
+    return {
+      props: {
+        userId: req.session.userId ?? null,
+        jwt: req.session.jwt ?? null,
+      }
+    };
+  },
+  sessionOptions
+);

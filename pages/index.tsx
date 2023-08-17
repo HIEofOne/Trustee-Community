@@ -1,5 +1,8 @@
 import * as React from "react";
 import Login from "../components/magicLink/login";
+import { withIronSessionSsr } from "iron-session/next";
+import { generateChallenge } from "../lib/auth";
+import { sessionOptions } from "../lib/session";
 
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -11,12 +14,23 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 //Landing Page
-const Home = () => {
-  const [expanded, setExpanded] = React.useState<string | false>(false);
+const Home = ({ challenge }: { challenge: string }) => {
+  const [expanded, setExpanded] = React.useState<string | false>('panel1');
   const handleChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false);
     };
+  const getStarted = React.useCallback(async() => {
+    const resources = await fetch("/api/start",
+      { method: "GET", headers: {"Content-Type": "application/json"} })
+      .then((res) => res.json());
+    console.log(resources);
+  }, []);
+  
+  React.useEffect(() => {
+    getStarted().catch(console.error);
+  },[getStarted]);
+  
   return (
     <div>
       <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
@@ -25,12 +39,12 @@ const Home = () => {
           aria-controls="panel1bh-content"
           id="panel1bh-header"
         >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          <Typography sx={{ width: '33%', flexShrink: 0, fontWeight: 'bold' }}>
             Patients
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Login />
+          <Login challenge={challenge} authonly={false}/>
         </AccordionDetails>
       </Accordion>
       <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
@@ -39,7 +53,7 @@ const Home = () => {
           aria-controls="panel1bh-content"
           id="panel1bh-header"
         >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          <Typography sx={{ width: '33%', flexShrink: 0, fontWeight: 'bold' }}>
             Clinicians and Care Team
           </Typography>
         </AccordionSummary>
@@ -60,7 +74,7 @@ const Home = () => {
           aria-controls="panel1bh-content"
           id="panel1bh-header"
         >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          <Typography sx={{ width: '33%', flexShrink: 0, fontWeight: 'bold' }}>
           Patient Community Organizers
           </Typography>
         </AccordionSummary>
@@ -73,5 +87,16 @@ const Home = () => {
     </div>
   );
 };
+
+export const getServerSideProps = withIronSessionSsr(async function ({
+  req,
+  res,
+}) {
+  const challenge = generateChallenge();
+  req.session.challenge = challenge;
+  await req.session.save();
+  return { props: { challenge } };
+},
+sessionOptions);
 
 export default Home;

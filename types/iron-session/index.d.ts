@@ -5,5 +5,9 @@ declare module 'iron-session' {
   interface IronSessionData {
     nonce?: string;
     siwe?: SiweMessage;
+    userId?: string;
+    challenge?: string;
+    token?: string;
+    jwt?: string;
   }
 }

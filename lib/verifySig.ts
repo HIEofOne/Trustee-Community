@@ -1,44 +1,23 @@
-import crypto from 'crypto';
-const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
-const url = new URL(domain);
+import * as jose from "jose";
+import { Component, createVerifier, httpis } from "http-message-signatures";
+import objectPath from "object-path";
 
 async function verifySig(req: any) {
-  // verify digest
-  const digest = <string>req.headers['content-digest'];
-  const digest_arr = digest.split("=:");
-  const hash = crypto.createHash(digest_arr[0].replace('-', '')).update(JSON.stringify(req.body)).digest('hex');
-  if (hash === digest_arr[1]) {
-    // verify signature
-    const signature = <string>req.headers['signature'];
-    var signature_input = <string>req.headers['signature-input'];
-    const signature1 = signature.replace('sig1=', '');
-    const components = signature_input.substring(signature_input.indexOf("(") +1, signature_input.lastIndexOf(")")).split(' ');
-    const url1 = new URL(<string>req.url, `http://${req.headers.host}`)
-    const parts = components.map((component) => {
-      let value;
-      if (component.startsWith('"@')) {
-        if (component === '"@method"') {
-          value = req.method;
-        }
-        if (component === '"@target-uri"') {
-          value = url.protocol + `//` + url.hostname + url1.pathname;
-        }
-      } else {
-        value = req.headers[component.toLowerCase().replaceAll('"', '')];
-      }
-      return`${component.toLowerCase()}: ${value}`;
-    })
-    const sig1 = signature_input.replace('sig1=','')
-    parts.push(`"@signature-params": ${sig1}`)
-    const data = parts.join('\n');
-    const key = req.body.client.key.jwk
-    // @ts-ignore
-    const verify = crypto.createVerify('sha256').update(data).verify({key: key, format: 'jwk', padding: crypto.RSA_PKCS1_PADDING}, signature1, 'base64');
-    if (verify) {
-      return true;
-    } else {
-      return false;
-    }
+  if (objectPath.has(req, 'body.client.key.jwk')) {
+    const signature = httpis.extractHeader(req, 'signature').replace('sig1=:', '').slice(0,-1);
+    const signature_input = httpis.extractHeader(req, 'signature-input').replace('sig1=', '');
+    const key = await jose.importJWK(req.body.client.key.jwk, req.body.client.key.alg);
+    //@ts-ignore
+    const verifier = createVerifier('rsa-v1_5-sha256', key);
+    const components: Component[] = [
+      '@method',
+      '@target-uri',
+      'content-digest',
+      'content-type'
+    ];
+    const data = httpis.buildSignedData(req, components, signature_input);
+    const verify = await verifier(Buffer.from(data), Buffer.from(signature, 'base64'));
+    return verify;
   } else {
     return false;
   }

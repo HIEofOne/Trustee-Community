@@ -15,7 +15,6 @@ async function getPatientFromEmail(req: NextApiRequest, res: NextApiResponse) {
   if (!email) {
     res.status(500).send("Bad Request: missing email parameter");
   }
-  console.log("email:", email)
   const patients = await nano.db.use("patients");
   try {
     const response = await patients.get(email)

@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import NextCors from "nextjs-cors";
-import crypto from 'crypto';
 import verifySig from "../../../lib/verifySig";
-import parseSig from "../../../lib/parseSig";
-import objectPath from 'object-path'
+import verifyJWT from "../../../lib/verifyJWT";
+import objectPath from 'object-path';
+import { v4 as uuidv4 } from 'uuid';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -17,26 +17,106 @@ if (process.env.NODE_ENV === 'development') {
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
-    methods: ["POST"],
+    methods: ["POST", "PUT", "DELETE"],
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
   if (await verifySig(req)) {
     const gnap_resources = await nano.db.use("gnap_resources");
-    // associate patient email to resource before insertion
-    for (var a of req.body.access) {
-      const doc = {
-        type: a.type,
-        actions: a.actions,
-        datatypes: a.datatypes,
-        resource_server: req.body.resource_server,
-        allow: []
+    var proceed = false;
+    // body: {"resources": [
+    //  {
+    //    "type": "resource name",
+    //    "actions": ["read", "write", "delete"],
+    //    "datatypes": ["image", "metadata", "json"],
+    //    "identifier": "chart identifier",
+    //    "locations": ["https://resource.server1.url", "https://resource.server2.url"],
+    //    "privileges": ["email@of.resource.owner", "npi", "offline"],
+    //    "ro": "email@of.resource.owner"
+    //  },
+    //  { ... }
+    // ]}
+    if (req.method === 'POST') {
+      if (objectPath.has(req, 'body.resources') && req.body.resources.length > 0) {
+        if (req.headers['authorization'] !== undefined) {
+          const jwt = req.headers['authorization'].split(' ')[1];
+          if (await verifyJWT(jwt, objectPath.get(req, 'body.resources.0.ro'))) {
+            proceed = true;
+          }
+        }
+        if (proceed) {
+          for (var a of req.body.resources) {
+            const doc = {
+              type: a.type,
+              actions: a.actions,
+              locations: a.locations,
+              datatypes: a.datatypes,
+              resource_server: req.body.resource_server,
+              identifier: a.identifier,
+              privileges: a.privileges,
+              ro: a.ro
+            }
+            const nonce = uuidv4();
+            await gnap_resources.insert(doc, nonce);
+          }
+          res.status(200).json({success: true});
+        } else {
+          res.status(401).send('Unauthorized');
+        }
+      } else {
+        res.status(500).send("Invalid format")
       }
-      for (var b of req.body.access.locations) {
-        const doc1 = JSON.parse(JSON.stringify(doc))
-        objectPath.set(doc1, 'location', b);
-        const nonce = crypto.randomBytes(16).toString('base64url');
-        await gnap_resources.insert(doc1, nonce);
+    }
+    // body: {"resource": {
+    //    "type": "resource name",
+    //    "actions": ["read", "write", "delete"],
+    //    "datatypes": ["image", "metadata", "json"],
+    //    "identifier": "chart identifier",
+    //    "locations": ["https://resource.server1.url", "https://resource.server2.url"],
+    //    "privileges": ["email@of.resource.owner", "npi", "offline"],
+    //    "ro": "email@of.resource.owner"
+    //  }}
+    if (req.method === 'PUT') {
+      if (objectPath.has(req, 'body.resource')) {
+        if (req.headers['authorization'] !== undefined) {
+          const jwt = req.headers['authorization'].split(' ')[1];
+          if (await verifyJWT(jwt, objectPath.get(req, 'body.resource.ro'))) {
+            proceed = true;
+          }
+        }
+        if (proceed) {
+          try {
+            const doc = await gnap_resources.get(req.body.resource._id);
+            objectPath.set(req, 'body.resource._rev', doc._rev);
+            await gnap_resources.insert(req.body.resource);
+            res.status(200).json({success: true});
+          } catch (e) {
+            res.status(401).send('Unauthorized');
+          }
+        } else {
+          res.status(401).send('Unauthorized');
+        }
+      } else {
+        res.status(500).send('Invalid format');
+      }
+    }
+    if (req.method === 'DELETE') {
+      if (objectPath.has(req, 'body.resource')) {
+        if (req.headers['authorization'] !== undefined) {
+          const jwt = req.headers['authorization'].split(' ')[1];
+          if (await verifyJWT(jwt, objectPath.get(req, 'body.resource.ro'))) {
+            proceed = true;
+          }
+        }
+        if (proceed) {
+          const doc = await gnap_resources.get(req.body.resource._id);
+          await gnap_resources.destroy(doc);
+          res.status(200).json({success: true});
+        } else {
+          res.status(401).send('Unauthorized');
+        }
+      } else {
+        res.status(500).send('Invalid format');
       }
     }
   } else {

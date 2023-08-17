@@ -5,8 +5,7 @@ import { useEffect, useState } from "react";
 // sudo lsof -i :5984
 //kill "PID"
 
-//@ts-ignore
-export default function NewUser({ email }) {
+export default function NewUser({ email }: { email:string }) {
   const [success, setSuccess] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [users, setUsers] = useState("");

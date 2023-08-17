@@ -139,10 +139,6 @@ EOF
   /usr/bin/docker compose up -d
   echo "Initializing CouchDB and Trustee Community..."
   sleep 5
-  curl -X PUT http://admin:$COUCHDB_PASSWORD@localhost:5984/patients
-  curl -X PUT http://admin:$COUCHDB_PASSWORD@localhost:5984/gnap
-  curl -X PUT http://admin:$COUCHDB_PASSWORD@localhost:5984/gnap_resources
-  curl -X PUT http://admin:$COUCHDB_PASSWORD@localhost:5984/gnap_public_keys
   echo "Installation complete.  You can now open your browser to https://$ROOT_DOMAIN" 
   exit 0
 else

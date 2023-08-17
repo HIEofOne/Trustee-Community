@@ -3,8 +3,7 @@
 import Iron from '@hapi/iron';
 import CookieService from '../../../lib/cookie';
 
-//@ts-ignore
-const User = async (req, res) => {
+const User = async (req: any, res: any) => {
   let user;
   try {
     user = await Iron.unseal(

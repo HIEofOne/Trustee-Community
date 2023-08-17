@@ -17,30 +17,30 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
-  const { id } = req.body
+  const { id } = req.body;
   if (!id) {
     res.status(200).json({error: "Bad Request: missing items in body"});
-  }
-  const gnap = await nano.use("gnap");
-  const q = {
-    selector: {
-      interact_nonce: {"$eq": id}
+  } else {
+    const gnap = await nano.use("gnap");
+    const q = {
+      selector: {
+        "interact_nonce.value": {"$eq": id}
+      }
+    };
+    try {
+      const response = await gnap.find(q);
+      if (response.docs[0]) {
+        if (response.docs[0].state === 'pending') {
+          res.status(200).json({ success: response.docs[0] });
+        } else {
+          res.status(200).json({ error: "no record" });
+        }
+      } else {
+        res.status(200).json({ error: "no record" });
+      }
+    } catch (error) {
+      res.status(200).json(error);
     }
-  };
-  try {
-    const response = await gnap.find(q);
-    if (response.docs[0]) {
-      res.status(200).json({ success: response.docs[0] });
-    } else {
-      res.status(200).json({ error: "no record" });
-    }
-    if (response.error) {
-      res.status(200).json({ error: response.error, reason: response.reason});
-    }
-  } catch (error) {
-    console.log(req.body)
-    console.log(error)
-    res.status(200).json(error);
   }
 }
 

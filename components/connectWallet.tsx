@@ -10,6 +10,7 @@ import Button from '@mui/material/Button';
 
 export function ConnectWallet() {
   const { address, connector, isConnected } = useAccount();
+  //@ts-ignore
   const { data: ensAvatar } = useEnsAvatar({ addressOrName: address });
   const { data: ensName } = useEnsName({ address });
   const { connect, connectors, error, isLoading, pendingConnector } =

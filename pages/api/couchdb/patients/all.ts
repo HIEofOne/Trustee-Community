@@ -12,7 +12,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 async function getAllPatients(req: NextApiRequest, res: NextApiResponse) {
-  //TODO - Fix Cors
   await NextCors(req, res, {
     methods: ["GET"],
     origin: process.env.DOMAIN,

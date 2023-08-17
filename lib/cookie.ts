@@ -4,8 +4,7 @@ import { serialize } from 'cookie';
 const TOKEN_NAME = 'api_token';
 const MAX_AGE = 60 * 60 * 8;
 
-//@ts-ignore
-function createCookie(name, data, options = {}) {
+function createCookie(name: any, data: any, options = {}) {
   return serialize(name, data, {
     maxAge: MAX_AGE,
     expires: new Date(Date.now() + MAX_AGE * 1000),
@@ -16,8 +15,7 @@ function createCookie(name, data, options = {}) {
     ...options,
   });
 }
-//@ts-ignore
-function removeCookie(name, data, options = {}) {
+function removeCookie(name: any, data: any, options = {}) {
     return serialize(name, data, {
       expires: new Date(Date.now() - 86400000),
       path: '/',
@@ -27,24 +25,20 @@ function removeCookie(name, data, options = {}) {
     });
   }
   
-//@ts-ignore
-function setTokenCookie(res, token) {
+function setTokenCookie(res: any, token: any) {
   res.setHeader('Set-Cookie', [
     createCookie(TOKEN_NAME, token),
     createCookie('authed', true, { httpOnly: false }),
   ]);
 }
-//@ts-ignore
-function removeCookies(res) {
+function removeCookies(res: any) {
     res.setHeader('Set-Cookie', [
       removeCookie(TOKEN_NAME, "removed"),
       removeCookie('authed', false, { httpOnly: false }),
     ])
 }
-//@ts-ignore
-function getAuthToken(cookies) {
+function getAuthToken(cookies: any) {
   return cookies[TOKEN_NAME];
 }
-//@ts-ignore
 const cookieFunctions = { setTokenCookie, getAuthToken, removeCookies };
 export default cookieFunctions;

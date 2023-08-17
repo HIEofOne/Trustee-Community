@@ -1,10 +1,9 @@
 // hooks/useAuth.js
 import useSWR from 'swr';
 
-//@ts-ignore
-function fetcher(route) {
+async function fetcher(route: any) {
   /* our token cookie gets sent with this request */
-  return fetch(route)
+  return await fetch(route)
     .then((r) => r.ok && r.json())
     .then((user) => user || null);
 }

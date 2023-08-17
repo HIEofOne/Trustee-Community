@@ -8,7 +8,6 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 
-
 //@ts-ignore
 export default function SignMessage(props) {
   const recoveredAddress = React.useRef<string>();
