@@ -234,7 +234,7 @@ export default function Interact({ challenge }: { challenge: string }) {
               <Canvas
                 text={qrCode}
                 options={{
-                  level: 'M',
+                  errorCorrectionLevel: 'M',
                   margin: 3,
                   scale: 4,
                   width: 200

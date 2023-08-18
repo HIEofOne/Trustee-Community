@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.7'
 services:
   couchdb:
     image: "couchdb:latest"
@@ -30,19 +30,19 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
   trusteecommunity:
     image: "shihjay2/trusteecommunity"
-    container_name: "trusteecommunity" 
+    container_name: "trusteecommunity"
+    init: true 
     links:
       - couchdb
     networks:
       - default
       - traefik_default
     restart: "always"
-    env_file:
-      - "./.env.local"
     volumes:
-      - "/root/Trustee-Community/docker/traefik/pipe:/usr/src/app/hostpipe"
       - "./trustees:/usr/src/app/trustees"
       - "/root/Trustee-Community/docker/traefik/routes:/usr/src/app/routes"
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "./.env.local:/usr/src/app/.env.production.local"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_default"
