@@ -1,7 +1,3 @@
-import crypto from 'crypto';
-const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
-const url = new URL(domain);
-
 function parseSig(req: any) {
   var response = {
     created: '',

@@ -1,5 +1,3 @@
-// pages/api/user.js
-
 import Iron from '@hapi/iron';
 import CookieService from '../../../lib/cookie';
 

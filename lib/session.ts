@@ -1,4 +1,4 @@
-import type { IronSessionOptions } from "iron-session";
+import type { IronSessionOptions } from 'iron-session';
 
 export const sessionOptions: IronSessionOptions = {
   password: `yGB%@)'8FPudp5";E{s5;fq>c7:evVeU`,

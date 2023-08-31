@@ -1,7 +1,7 @@
-import { withIronSessionApiRoute } from "iron-session/next";
-import { sessionOptions } from "../../../lib/session";
-import { NextApiRequest, NextApiResponse } from "next";
-import { login } from "../../../lib/auth";
+import { withIronSessionApiRoute } from 'iron-session/next';
+import { sessionOptions } from '../../../lib/session';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { login } from '../../../lib/auth';
 
 async function handler(request: NextApiRequest, response: NextApiResponse) {
   try {

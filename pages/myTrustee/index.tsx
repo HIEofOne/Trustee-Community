@@ -1,8 +1,8 @@
 import Head from 'next/head';
 import Login from '../../components/magicLink/login';
-import { withIronSessionSsr } from "iron-session/next";
-import { generateChallenge, isLoggedIn } from "../../lib/auth";
-import { sessionOptions } from "../../lib/session";
+import { withIronSessionSsr } from 'iron-session/next';
+import { generateChallenge, isLoggedIn } from '../../lib/auth';
+import { sessionOptions } from '../../lib/session';
 
 export default function Home({ challenge }: { challenge: string }) {
   return (
@@ -20,7 +20,7 @@ export default function Home({ challenge }: { challenge: string }) {
       </Head>
       <div>
         <h2>My Trustee</h2>
-        <Login challenge={challenge} authonly={false}/>
+        <Login challenge={challenge} clinical={false} authonly={false}/>
       </div>
     </>
   );

@@ -1,29 +1,34 @@
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useState } from "react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
-import { ConnectWallet } from "../../components/connectWallet";
-import SignMessage from "../../components/signMessage";
-import { withIronSessionSsr } from "iron-session/next";
-import { isLoggedIn } from "../../lib/auth";
-import { sessionOptions } from "../../lib/session";
+import { useCallback, useEffect, useState } from 'react';
+import { withIronSessionSsr } from 'iron-session/next';
+import { isLoggedIn } from '../../lib/auth';
+import { sessionOptions } from '../../lib/session';
 import objectPath from 'object-path';
+import Image from 'next/image';
+import siwePic from '../../public/siwe.webp';
+import { SiweMessage } from '@spruceid/ssx';
 
 import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import BlockIcon from '@mui/icons-material/Block';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Chip from '@mui/material/Chip';
+import Dialog from '@mui/material/Dialog';
 import DoneIcon from '@mui/icons-material/Done';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Link from '@mui/material/Link';
-import Modal from '@mui/material/Modal';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import PersonIcon from '@mui/icons-material/Person';
 import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export default function Review() {
@@ -33,6 +38,7 @@ export default function Review() {
   const [openModal, setOpenModal] = useState(false);
   const [notification, setNotification] = useState("");
   const [vcInstance, setVcInstance] = useState<{[key: string]: any}>([]);
+  const [verified, setVerified] = useState(false);
   const { query, isReady } = useRouter();
 
   const approve = async(id: string, type: string, index: number) => {
@@ -76,7 +82,6 @@ export default function Review() {
     if (isInstance.success) {
       if (objectPath.has(isInstance, 'success.pending_resources')) {
         setPageStatus(true);
-        console.log(isInstance.success)
         setDocInstance(isInstance.success);
         const vc_arr = []
         if (objectPath.has(isInstance, 'success.vc')) {
@@ -87,6 +92,17 @@ export default function Review() {
           vc_arr.push({'Credentials': 'None presented'})
         }
         setVcInstance(vc_arr);
+        if (objectPath.has(isInstance, 'success.siwe')) {
+          try {
+            const siweMessage = new SiweMessage(objectPath.get(isInstance, 'success.siwe.message'))
+            const status = await siweMessage.verify({signature: objectPath.get(isInstance, 'success.siwe.sig')})
+            if (status) {
+              setVerified(true);
+            }
+          } catch (e) {
+            console.log(e)
+          }
+        }
       }
     }
     if (isInstance.error) {
@@ -128,22 +144,18 @@ export default function Review() {
     );
   }
 
-  const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4
-  };
-  
   return (
     <div>
       <h2>Trustee Authorization Server</h2>
       <h3>Review the following privilege requests from <Link href="#" onClick={() => setOpenModal(true)}>{docInstance.email}</Link>:</h3>
+      { verified ? (
+        <Container sx={{height:50}}>
+          <Image src={siwePic} alt="me" height="50"></Image>
+          <VerifiedIcon color="success" fontSize="large" sx={{ ml:3 }}></VerifiedIcon>
+        </Container>
+      ) : (
+        <></>
+      ) }
       <Box sx={{ display: 'flex', flexWrap: 'wrap', pt: 2 }}>
         {
           docInstance.pending_resources.map((value: any, index: number) => {
@@ -198,22 +210,20 @@ export default function Review() {
         onClose={closeNotification}
         message={notification}
       />
-      <Modal
+      <Dialog
         open={openModal}
         onClose={closeModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box>
           { vcInstance.map((value3: object, index3: number) => {
-            return <ul key={index3}>
+            return <List key={index3}>
               {Object.entries(value3).map(([key, value], index4: number) => (  
-                <li key={index4}>{key}: {value}</li>
+                <ListItem key={index4}><ListItemText primary={key} secondary={value} /></ListItem>
               ))}
-            </ul>
+            </List>
           })}
         </Box>
-      </Modal>
+      </Dialog>
     </div>
   );
 }
@@ -239,46 +249,3 @@ export const getServerSideProps = withIronSessionSsr(async function ({
 },
 sessionOptions);
 
-//@ts-ignore
-function Ethereum(props) {
-  const { isConnected } = useAccount();
-  const { connect, connectors, error, isLoading, pendingConnector } =
-    useConnect();
-  const { disconnect } = useDisconnect();
-
-  const { children, req, callback } = props;
-
-  if (isConnected) {
-    return (
-      <div>
-        <ConnectWallet />
-        <p>1. Select a Verifiable Credential</p>
-        {children}
-        <p>2. Add Message</p>
-        <SignMessage req={req} callback={callback}></SignMessage>
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        <Stack spacing={2}>
-        {connectors.map((connector) => (
-          <Button
-            variant="contained"
-            disabled={!connector.ready}
-            key={connector.id}
-            onClick={() => connect({ connector })}
-          >
-            {connector.name}
-            {!connector.ready && ' (unsupported)'}
-            {isLoading &&
-              connector.id === pendingConnector?.id &&
-              ' (connecting)'}
-          </Button>
-        ))}
-        </Stack>
-        {error && <div>{error.message}</div>}
-      </div>
-    )
-  }
-}

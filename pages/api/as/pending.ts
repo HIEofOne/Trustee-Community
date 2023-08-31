@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
+import { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -13,25 +13,22 @@ if (process.env.NODE_ENV === 'development') {
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
-    methods: ["DELETE"],
+    methods: ["POST"],
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
-  const {id} = req.query
-  if (!id) {
-    res.status(500).send("Bad Request: missing id param");
-  }
-  const rs_requests = await nano.use("rs_requests");
-  try {
-    const doc = await rs_requests.get(id);
-    const rev = doc._rev
-    const response = await rs_requests.destroy(id, rev)
-    if (response.error) {
-      res.status(500).send({ error: response.error, reason: response.reason});
+  const gnap = await nano.db.use("gnap");
+  const q = {
+    selector: {
+      "pending_resources.0.ro": {"$eq": req.body.email},
+      "state": {"$eq": 'pending'}
     }
-    res.status(200).json({ success: true });
-  } catch (error) {
-    res.status(500).send(error);
+  };
+  try {
+    const response = await gnap.find(q);
+    res.status(200).json({success: true, response: response});
+  } catch (e) {
+    res.status(401).send('No resource exists');
   }
 }
 

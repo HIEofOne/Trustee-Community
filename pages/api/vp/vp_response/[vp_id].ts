@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
+import { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
 import * as jose from 'jose';
 import objectPath from 'object-path';
 

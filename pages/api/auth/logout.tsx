@@ -1,7 +1,7 @@
-import { withIronSessionApiRoute } from "iron-session/next";
-import { sessionOptions } from "../../../lib/session";
-import { NextApiRequest, NextApiResponse } from "next";
-import CookieService from "../../../lib/cookie";
+import { withIronSessionApiRoute } from 'iron-session/next';
+import { sessionOptions } from '../../../lib/session';
+import { NextApiRequest, NextApiResponse } from 'next';
+import CookieService from '../../../lib/cookie';
 
 function handler(request: NextApiRequest, response: NextApiResponse) {
   CookieService.removeCookies(response);

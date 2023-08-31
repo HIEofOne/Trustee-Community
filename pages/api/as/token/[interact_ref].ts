@@ -1,8 +1,8 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
-import createJWT from "../../../../lib/createJWT";
-import verifySig from "../../../../lib/verifySig";
-import parseSig from "../../../../lib/parseSig";
+import { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
+import createJWT from '../../../../lib/createJWT';
+import verifySig from '../../../../lib/verifySig';
+import parseSig from '../../../../lib/parseSig';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;

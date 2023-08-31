@@ -1,6 +1,5 @@
-import * as jose from "jose";
-import { randomBytes } from "crypto";
-import objectPath from "object-path";
+import * as jose from 'jose';
+import objectPath from 'object-path';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;

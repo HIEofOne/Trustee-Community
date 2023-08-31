@@ -1,12 +1,13 @@
-import * as React from "react";
-import PolicySummary from "./PolicySummary";
-import { isLoggedIn } from "../../lib/auth";
-import router from "next/router";
-import { useState } from "react";
-import Policies from "../../components/policies";
-import { withIronSessionSsr } from "iron-session/next";
-import { sessionOptions } from "../../lib/session";
-import { InferGetServerSidePropsType } from "next";
+import * as React from 'react';
+import PolicySummary from './PolicySummary';
+import { isLoggedIn } from '../../lib/auth';
+import router from 'next/router';
+import { useState } from 'react';
+import Policies from '../../components/policies';
+import Pending from '../../components/pending';
+import { withIronSessionSsr } from 'iron-session/next';
+import { sessionOptions } from '../../lib/session';
+import { InferGetServerSidePropsType } from 'next';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -49,6 +50,9 @@ export default function Dashboard({
             <Button variant="contained" onClick={() => changePage("policies")}>
               Review and Edit My Resources and Policies
             </Button>
+            <Button variant="contained" onClick={() => changePage("pending")}>
+              Review Pending Requests
+            </Button>
           </Stack>
         </div>
       </div>
@@ -63,6 +67,15 @@ export default function Dashboard({
         />
       </div>
     );
+  } else if (page == "pending") {
+    return (
+      <div>
+        <Pending
+          email={userId}
+          changePage={changePage}
+        />
+      </div>
+    )
   } else {
     return <div></div>;
   }

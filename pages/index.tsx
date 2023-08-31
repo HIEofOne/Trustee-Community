@@ -1,16 +1,14 @@
-import * as React from "react";
-import Login from "../components/magicLink/login";
-import { withIronSessionSsr } from "iron-session/next";
-import { generateChallenge } from "../lib/auth";
-import { sessionOptions } from "../lib/session";
+import * as React from 'react';
+import Login from '../components/magicLink/login';
+import { withIronSessionSsr } from 'iron-session/next';
+import { generateChallenge } from '../lib/auth';
+import { sessionOptions } from '../lib/session';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
-import Button from '@mui/material/Button';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 //Landing Page
@@ -44,7 +42,7 @@ const Home = ({ challenge }: { challenge: string }) => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Login challenge={challenge} authonly={false}/>
+          <Login challenge={challenge} clinical={false} authonly={false}/>
         </AccordionDetails>
       </Accordion>
       <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
@@ -58,14 +56,7 @@ const Home = ({ challenge }: { challenge: string }) => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Stack spacing={2}>
-            <Button variant="contained" component="a" href="/getCredentials">
-              Get standard access credentials for patients in this community
-            </Button>
-            <Button variant="contained" component="a" href="/requestAccess">
-              Request access to patient records
-            </Button>
-          </Stack>
+          <Login challenge={challenge} clinical={true} authonly={false}/>
         </AccordionDetails>
       </Accordion>
       <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>

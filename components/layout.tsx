@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import router from "next/router";
+import router from 'next/router';
 
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';

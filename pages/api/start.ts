@@ -1,6 +1,6 @@
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextCors from "nextjs-cors";
+import NextCors from 'nextjs-cors';
 import objectPath from 'object-path';
 import * as jose from 'jose';
 import { v4 as uuidv4 } from 'uuid';

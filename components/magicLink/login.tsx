@@ -1,8 +1,7 @@
-// pages/login.js
-import { useRouter } from "next/router";
-import { Magic } from "magic-sdk";
-import { supported, create, get } from "@github/webauthn-json";
-import { useEffect, useState } from "react";
+import { useRouter } from 'next/router';
+import { Magic } from 'magic-sdk';
+import { supported, create, get } from '@github/webauthn-json';
+import { useEffect, useState } from 'react';
 import objectPath from 'object-path';
 
 import AddIcon from '@mui/icons-material/Add';
@@ -15,13 +14,14 @@ import PersonIcon from '@mui/icons-material/Person';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 
-export default function Login({ challenge, authonly=false, setEmail }: { challenge: string, authonly: boolean, setEmail?: any }) {
+export default function Login({ challenge, clinical=false, authonly=false, setEmail }: { challenge: string, clinical: boolean, authonly: boolean, setEmail?: any }) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [isError, setIsError] = useState(false);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [register, setRegister] = useState(false);
   const [progress, setProgress] = useState("");
+  const [email, setEmailValue] = useState("");
 
   useEffect(() => {
     const checkAvailability = async () => {
@@ -34,11 +34,10 @@ export default function Login({ challenge, authonly=false, setEmail }: { challen
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    const { elements } = event.target;
-    if (elements.email.value !== '') {
-      if (validate(elements.email.value)) {
+    if (email !== '') {
+      if (validate(email)) {
         // Check if user has an account
-        const isRegistered = await fetch("/api/couchdb/patients/" + elements.email.value,
+        const isRegistered = await fetch("/api/couchdb/patients/" + email,
           { method: "GET", headers: {"Content-Type": "application/json"} })
           .then((res) => res.json()).then((json) => json._id);
         //login with magic  
@@ -46,14 +45,14 @@ export default function Login({ challenge, authonly=false, setEmail }: { challen
         const magicKey = await fetch("/api/magicLink/key", 
           { method: "POST" });
         var magicKeyData = await magicKey.json();
-        const did = await new Magic(magicKeyData.key).auth.loginWithEmailOTP({ email: elements.email.value });
+        const did = await new Magic(magicKeyData.key).auth.loginWithEmailOTP({ email: email });
         // Once we have the did from magic, login with our own API
         const authRequest = await fetch("/api/magicLink/login", 
           { method: "POST", headers: { Authorization: `Bearer ${did}` }});
         if (authRequest.ok) {
           // Magic Link login successful!
           if (isRegistered === undefined) {
-            const body = { email: elements.email.value, did: did };
+            const body = { email: email, did: did };
             const res = await fetch(`/api/couchdb/patients/new`, 
               { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) });
             const data = await res.json();
@@ -72,8 +71,8 @@ export default function Login({ challenge, authonly=false, setEmail }: { challen
               },
               user: {
                 id: window.crypto.randomUUID(),
-                name: elements.email.value,
-                displayName: elements.email.value.substring(0, elements.email.value.indexOf("@"))
+                name: email,
+                displayName: email.substring(0, email.indexOf("@"))
               },
               pubKeyCredParams: [{ alg: -7, type: "public-key" }],
               timeout: 60000,
@@ -85,7 +84,7 @@ export default function Login({ challenge, authonly=false, setEmail }: { challen
             }
           });
           const result = await fetch("/api/auth/register", 
-            { method: "POST", body: JSON.stringify({ email: elements.email.value, credential }), headers: {"Content-Type": "application/json"} });
+            { method: "POST", body: JSON.stringify({ email: email, credential }), headers: {"Content-Type": "application/json"} });
           if (result.ok) {
             setProgress('Authentication using PassKey...')
             const credential = await get({
@@ -97,20 +96,21 @@ export default function Login({ challenge, authonly=false, setEmail }: { challen
               }
             });
             const result1 = await fetch("/api/auth/login", 
-              { method: "POST", body: JSON.stringify({ email: elements.email.value, credential }), headers: {"Content-Type": "application/json"} });
+              { method: "POST", body: JSON.stringify({ email: email, credential }), headers: {"Content-Type": "application/json"} });
             if (result1.ok) {
               if (authonly) {
-                setEmail(elements.email.value);
-                //redirect to next step in gathering claims
-                console.log('redirect to next step in gathering claims')
+                setEmail(email);
               } else {
-                const patient = await fetch("/api/couchdb/patients/" + elements.email.value,
+                const patient = await fetch("/api/couchdb/patients/" + email,
                   { method: "GET", headers: {"Content-Type": "application/json"} })
-                  .then((res) => res.json())
-                console.log(patient);
+                  .then((res) => res.json());
                 const is_phr = objectPath.has(patient, 'phr');
                 if (!is_phr) {
-                  router.push("/newPatient/" + elements.email.value);
+                  if (!clinical) {
+                    router.push("/newPatient/" + email);
+                  } else {
+                    router.push("/requestAccess");
+                  }
                 } else {
                   if (router.query.from) {
                     router.push(objectPath.get(router, 'query.from'));
@@ -144,7 +144,6 @@ export default function Login({ challenge, authonly=false, setEmail }: { challen
   };
 
   const passKey = async() => {
-    const email = (document.getElementById("email")! as HTMLInputElement).value;
     if (email !== '') {
       if (validate(email)) {
         const credential = await get({
@@ -159,13 +158,16 @@ export default function Login({ challenge, authonly=false, setEmail }: { challen
           { method: "POST", body: JSON.stringify({ email, credential }), headers: {"Content-Type": "application/json"} });
         if (result.ok) {
           if (authonly) {
-            //redirect to next step in gathering claims
-            setEmail(email)
+            setEmail(email);
           } else {
-            if (router.query.from) {
-              router.push(objectPath.get(router, 'query.from'));
+            if (!clinical) {
+              if (router.query.from) {
+                router.push(objectPath.get(router, 'query.from'));
+              } else {
+                router.push("/myTrustee/dashboard");
+              }
             } else {
-              router.push("/myTrustee/dashboard");
+              router.push("/requestAccess");
             }
           }
         } else {
@@ -214,13 +216,14 @@ export default function Login({ challenge, authonly=false, setEmail }: { challen
               <Stack spacing={2}>
               <TextField
                 error={isError}
-                id="email" 
                 name="email" 
                 type="email" 
                 placeholder="Email Address"
                 helperText={error}
                 variant="standard"
                 inputRef={input => input && input.focus()}
+                value={email}
+                onChange={(e) => {setEmailValue(e.target.value);}}
                 fullWidth
                 required
               />

@@ -1,6 +1,6 @@
-import * as jose from "jose";
-import { Component, createVerifier, httpis } from "http-message-signatures";
-import objectPath from "object-path";
+import * as jose from 'jose';
+import { Component, createVerifier, httpis } from 'http-message-signatures';
+import objectPath from 'object-path';
 
 async function verifySig(req: any) {
   if (objectPath.has(req, 'body.client.key.jwk')) {
