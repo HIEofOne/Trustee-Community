@@ -19,31 +19,39 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
+  const {id, email} = req.body;
+  const users = nano.db.use("patients");
+  const user_doc = await users.get(email);
   const gnap = nano.db.use("gnap");
-  const {id} = req.body;
   const q = {
     selector: {
       'interact_nonce.value': {"$eq": id}
     }
   };
-  try {
-    const response = await gnap.find(q);
-    if (response.docs[0]) {
-      if (objectPath.has(response, 'docs.0.vp_status')) {
-        if (response.docs[0].vp_status === 'complete') {
-          res.status(200).json({success: true, vc: response.docs[0].vc});
+  if (objectPath.has(user_doc, 'vc')) {
+    try {
+      const response = await gnap.find(q);
+      if (response.docs[0]) {
+        const gnap_doc = response.docs[0];
+        if (objectPath.has(gnap_doc, 'vc')) {
+          res.status(200).json({success: true, vc: objectPath.get(gnap_doc, 'vc'), doc: gnap_doc});
         } else {
-          res.status(200).json({success: false});
+          const user_vc = objectPath.get(user_doc, 'vc');
+          objectPath.set(gnap_doc, 'vc', user_vc);
+          const insert = await gnap.insert(gnap_doc);
+          objectPath.set(gnap_doc, '_rev', insert.rev);
+          res.status(200).json({success: true, vc: objectPath.get(gnap_doc, 'vc'), doc: gnap_doc});
         }
       } else {
         res.status(200).json({success: false});
       }
-    } else {
+    } catch (error) {
       res.status(200).json({success: false});
     }
-  } catch (error) {
-    res.status(200).json({success: false});
+  } else {
+    res.status(200).json({success: true, message: 'No Verifiable Credentials'})
   }
+  
 }
 
 export default withIronSessionApiRoute(handler, {

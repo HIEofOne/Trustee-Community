@@ -1,5 +1,5 @@
-import sendgrid from "@sendgrid/mail";
-import NextCors from "nextjs-cors";
+import sendgrid from '@sendgrid/mail';
+import NextCors from 'nextjs-cors';
 
 //@ts-ignore
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY);

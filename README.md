@@ -8,7 +8,7 @@ To create a new patient community, a manger will need these four things:
 - An account at DigtialOcean to pay for hosting the community members Trustees (patient-controlled health records),
 - An account at Stripe to collect credit card payments for Trustee subscriptions hosted by the community,
 - A domain name for the community,
-- A privacy policy describing the initial configuration of Trustee access policies and how subscribers can change the policies if they choose.# Getting Started
+- A privacy policy describing the initial configuration of Trustee access policies and how subscribers can change the policies if they choose.
 
 ## Installation
 #### 1. Gather all API keys for Magic, USPSTF, UMLS, DigitalOcean, and SendGrid

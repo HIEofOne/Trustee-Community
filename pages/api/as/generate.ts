@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextCors from 'nextjs-cors';
-import verifySig from '../../../lib/verifySig';
-import objectPath from 'object-path'
+import { v4 as uuidv4 } from 'uuid';
+import { randomBytes } from 'crypto';
+import objectPath from 'object-path';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -19,20 +20,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
-  if (await verifySig(req)) {
-    const gnap = await nano.db.use("gnap")
-    try {
-      const gnap_doc = await gnap.get(req.body.doc_id);
-      const pending_resources = objectPath.get(gnap_doc, 'pending_resources');
-      pending_resources.splice(req.body.pending_resource_index, 1);
-      objectPath.set(gnap_doc, 'pending_resources', pending_resources);
-      await gnap.insert(gnap_doc);
-      res.status(200).json({success: true});
-    } catch (e) {
-      res.status(401).send('No resource exists');
+  const gnap = await nano.db.use("gnap");
+  const interact_nonce = Buffer.from(randomBytes(16)).toString('base64url');
+  const doc = {
+    "state": "pending",
+    "pending_resources": [],
+    "email": req.body.email,
+    "interact_nonce": {
+      "value": interact_nonce
     }
-  } else {
-    res.status(401).send('Unauthorized');
+  }
+  const nonce = uuidv4();
+  try {
+    const response = await gnap.insert(doc, nonce);
+    objectPath.set(doc, '_id', response.id);
+    objectPath.set(doc, '_rev', response.rev);
+    res.status(200).json({success: true, doc: doc});
+  } catch (e) {
+    res.status(500).send(e);
   }
 }
 

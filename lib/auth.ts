@@ -1,10 +1,10 @@
-import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from "next";
-import type { VerifiedAuthenticationResponse, VerifiedRegistrationResponse } from "@simplewebauthn/server";
-import { verifyAuthenticationResponse, verifyRegistrationResponse } from "@simplewebauthn/server";
-import type { PublicKeyCredentialWithAssertionJSON, PublicKeyCredentialWithAttestationJSON } from "@github/webauthn-json";
-import crypto from "crypto";
-import * as jose from "jose";
-import objectPath from "object-path";
+import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
+import type { VerifiedAuthenticationResponse, VerifiedRegistrationResponse } from '@simplewebauthn/server';
+import { verifyAuthenticationResponse, verifyRegistrationResponse } from '@simplewebauthn/server';
+import type { PublicKeyCredentialWithAssertionJSON, PublicKeyCredentialWithAttestationJSON } from '@github/webauthn-json';
+import crypto from 'crypto';
+import * as jose from 'jose';
+import objectPath from 'object-path';
 
 type SessionRequest = NextApiRequest | GetServerSidePropsContext["req"];
 

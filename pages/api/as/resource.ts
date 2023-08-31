@@ -1,7 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
-import verifySig from "../../../lib/verifySig";
-import verifyJWT from "../../../lib/verifyJWT";
+import { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
+import verifySig from '../../../lib/verifySig';
+import verifyJWT from '../../../lib/verifyJWT';
 import objectPath from 'object-path';
 import { v4 as uuidv4 } from 'uuid';
 

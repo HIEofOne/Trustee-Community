@@ -1,4 +1,3 @@
-// hooks/useAuth.js
 import useSWR from 'swr';
 
 async function fetcher(route: any) {

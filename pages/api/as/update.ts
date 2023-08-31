@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
+import { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -22,6 +22,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log(doc);
   try {
     const response = await gnap.insert(doc);
+    console.log(response)
     if (response.error) {
       res.status(500).send({error: response.error, reason:response.reason});
     }

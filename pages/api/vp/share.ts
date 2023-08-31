@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
+import { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
 import objectPath from 'object-path';
 import { v4 as uuidv4 } from 'uuid';
 import * as jose from 'jose';
@@ -24,9 +24,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   });
   const gnap = await nano.db.use("gnap");
   const vp_id = uuidv4();
-  const doc = req.body;
-  console.log(doc);
+  const doc = await gnap.get(req.body._id);
   objectPath.set(doc, 'vp_id', vp_id);
+  objectPath.set(doc, 'vc_type', req.body.vc_type);
   const url_req = url.protocol + "//" + url.hostname + "/api/vp/vp_request/" + vp_id;
   const url_res = url.protocol + "//" + url.hostname + "/api/vp/vp_response/" + vp_id;
   const link = "openid-vc://?request_uri=" + encodeURIComponent(url_req);
@@ -54,7 +54,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         try {
           await docker.run('ghcr.io/spruceid/didkit-cli:latest', ['key', 'generate', 'secp256k1'], secp_key);
           const secp_key_final = secp_key.toString();
-          console.log(secp_key_final);
           await docker.run('ghcr.io/spruceid/didkit-cli:latest', ['key-to-did', 'key', '-j', secp_key_final], kid_did);
           const kid_did_final = kid_did.toString().replace( /[\r\n]+/gm, "" );
           try {
@@ -142,14 +141,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             objectPath.set(doc, 'vp_jwt', jwt);
             objectPath.set(doc, 'vp_state', state);
             objectPath.set(doc, 'vp_status', 'pending');
-            console.log(link);
-            console.log(doc);
             try {
               const response = await gnap.insert(doc);
               if (response.error) {
                 res.status(500).send({error: response.error, reason:response.reason});
               }
-              res.status(200).json({success: true, link: link});
+              res.status(200).json({success: true, link: link, rev: response.rev});
             } catch (error){
               res.status(500).send(error);
             }

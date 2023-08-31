@@ -1,4 +1,4 @@
-import CookieService from "../../../lib/cookie";
+import CookieService from '../../../lib/cookie';
 
 const Logout = async (req: any, res: any) => {
   if (req.method !== "POST") return res.status(405).end();

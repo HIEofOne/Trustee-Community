@@ -1,6 +1,6 @@
-import { importJWK } from "jose";
-import { createHash, randomBytes, sign } from "crypto";
-import { createSigner, httpis } from "http-message-signatures";
+import { importJWK } from 'jose';
+import { createHash, randomBytes, sign } from 'crypto';
+import { createSigner, httpis } from 'http-message-signatures';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;

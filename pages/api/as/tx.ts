@@ -1,9 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
+import { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
 import { randomBytes } from 'crypto';
-import verifySig from "../../../lib/verifySig";
-import parseSig from "../../../lib/parseSig";
-import objectPath from "object-path";
+import verifySig from '../../../lib/verifySig';
+import parseSig from '../../../lib/parseSig';
+import objectPath from 'object-path';
 import { v4 as uuidv4 } from 'uuid';
 
 var user = process.env.COUCHDB_USER;

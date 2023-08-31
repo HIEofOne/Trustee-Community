@@ -1,6 +1,5 @@
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { sessionOptions } from "../../lib/session";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req

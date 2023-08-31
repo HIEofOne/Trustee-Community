@@ -1,8 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import NextCors from "nextjs-cors";
+import { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
 import { createHash } from 'crypto';
-import objectPath from "object-path";
-import { request } from "http";
+import objectPath from 'object-path';
+import { request } from 'http';
+import moment from 'moment';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -130,6 +131,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
               }});
             } else {
               objectPath.set(request_doc, 'pending_resources', pending_resources);
+              objectPath.set(request_doc, 'request_date', moment().format());
               await gnap.insert(request_doc);
               // send request to resource owner for approval
               const sendgrid = await fetch(domain + "/api/sendgrid", 
