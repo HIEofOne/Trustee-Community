@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import NextCors from 'nextjs-cors';
 import { createHash } from 'crypto';
 import objectPath from 'object-path';
-import { request } from 'http';
 import moment from 'moment';
 
 var user = process.env.COUCHDB_USER;

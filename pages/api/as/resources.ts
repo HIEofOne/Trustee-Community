@@ -22,7 +22,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     selector: {
       "ro": {"$eq": req.body.email},
       "type": {$regex: '(?i)' + req.body.filter}
-    }
+    },
+    limit:100 
   };
   try {
     const response = await gnap_resources.find(q);

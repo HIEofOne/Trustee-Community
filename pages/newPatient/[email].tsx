@@ -105,10 +105,28 @@ const NewPatient = () => {
       birthGender: birthGender,
       pin: pin
     };
-    const data = await fetch(`/api/couchdb/patients/new`, 
-      { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) })
-      .then((res) => res.json());
-    if (data.success) {
+    var proceed = false;
+    const isRegistered = await fetch("/api/couchdb/patients/" + email,
+      { method: "GET", headers: {"Content-Type": "application/json"} })
+      .then((res) => res.json()).then((json) => json._id);
+    if (!isRegistered) {
+      const data = await fetch(`/api/couchdb/patients/new`, 
+        { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) })
+        .then((res) => res.json());
+      if (data.success) {
+        proceed = true;
+      }
+      if (data.error) {
+        if (data.reason == "Document update conflict.") {
+          setError("An account attached to this email already exists.");
+        } else {
+          setError(data.reason);
+        }
+      }
+    } else {
+      proceed = true;
+    }
+    if (proceed) {
       setAccountCreated(true);
       setShowProgressBar(true);
       const timer = setInterval(() => {
@@ -128,13 +146,6 @@ const NewPatient = () => {
       setURL(data1.url);
       setLinkTitle(data1.url);
       setError(data1.error);
-    }
-    if (data.error) {
-      if (data.reason == "Document update conflict.") {
-        setError("An account attached to this email already exists.");
-      } else {
-        setError(data.reason);
-      }
     }
   };
 
