@@ -38,31 +38,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // ]}
     if (req.method === 'POST') {
       if (objectPath.has(req, 'body.resources') && req.body.resources.length > 0) {
-        if (req.headers['authorization'] !== undefined) {
-          const jwt = req.headers['authorization'].split(' ')[1];
-          if (await verifyJWT(jwt, objectPath.get(req, 'body.resources.0.ro'))) {
-            proceed = true;
+        for (var a of req.body.resources) {
+          const doc = {
+            type: a.type,
+            actions: a.actions,
+            locations: a.locations,
+            datatypes: a.datatypes,
+            resource_server: req.body.resource_server,
+            identifier: a.identifier,
+            privileges: a.privileges,
+            ro: a.ro
           }
+          const nonce = uuidv4();
+          await gnap_resources.insert(doc, nonce);
         }
-        if (proceed) {
-          for (var a of req.body.resources) {
-            const doc = {
-              type: a.type,
-              actions: a.actions,
-              locations: a.locations,
-              datatypes: a.datatypes,
-              resource_server: req.body.resource_server,
-              identifier: a.identifier,
-              privileges: a.privileges,
-              ro: a.ro
-            }
-            const nonce = uuidv4();
-            await gnap_resources.insert(doc, nonce);
-          }
-          res.status(200).json({success: true});
-        } else {
-          res.status(401).send('Unauthorized');
-        }
+        res.status(200).json({success: true});
       } else {
         res.status(500).send("Invalid format")
       }
@@ -94,7 +84,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             res.status(401).send('Unauthorized');
           }
         } else {
-          res.status(401).send('Unauthorized');
+          res.status(401).send('Unauthorized - verify JWT failed');
         }
       } else {
         res.status(500).send('Invalid format');
@@ -113,14 +103,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           await gnap_resources.destroy(doc);
           res.status(200).json({success: true});
         } else {
-          res.status(401).send('Unauthorized');
+          res.status(401).send('Unauthorized - verify JWT failed');
         }
       } else {
         res.status(500).send('Invalid format');
       }
     }
   } else {
-    res.status(401).send('Unauthorized');
+    console.log('Unauthorized - verify signature failed')
+    res.status(401).send('Unauthorized - verify signature failed');
   }
 }
 

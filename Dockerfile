@@ -15,4 +15,5 @@ COPY --from=builder /usr/src/app/.next/static ./.next/static
 RUN mkdir -p /usr/src/app/trustees
 RUN mkdir -p /usr/src/app/routes
 EXPOSE 3000
+ENV HOSTNAME "0.0.0.0"
 CMD ["node", "server.js"]
