@@ -37,7 +37,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   doc_patient.phr = url_full;
   doc_patient.resource_server = new_pt.data.patient_id;
   await patients.insert(doc_patient);
-  const sendgrid = await fetch(domain + "/api/sendgrid", 
+  const sendmail = await fetch(domain + "/api/sendmail", 
   {
     method: "POST",
     headers: {
@@ -49,7 +49,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       html: `<div><h1>Your HIE of One Trustee Account has been created!</h1><h2><a href="${domain}/myTrustee">Your HIE of One Trustee Account Dashboard</a></h2><h2><a href="${url_full}">Your Personal Health Record</a></h2></div>`,
     })
   });
-  const { error } = await sendgrid.json();
+  const { error } = await sendmail.json();
   if (error) {
     res.status(500).send(error.message);
   } else {

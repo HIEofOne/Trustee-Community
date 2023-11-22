@@ -76,7 +76,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
               }
               objectPath.set(response, 'docs.0.pending_resources', pending_resources);
               await gnap.insert(response.docs[0]);
-              const sendgrid = await fetch(domain + "/api/sendgrid", 
+              const sendmail = await fetch(domain + "/api/sendmail", 
               {
                 method: "POST",
                 headers: {
@@ -88,7 +88,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                   html: `<div><h1>HIE of One Trustee Resource Privilege Request</h1><h2><a href="${domain}/review/${response.docs[0].interact_nonce.value}">New Privileges Requested for your Resources</a></h2></div>`,
                 })
               });
-              const { error } = await sendgrid.json();
+              const { error } = await sendmail.json();
               if (error) {
                 res.status(500).send(error.message);
               } else {

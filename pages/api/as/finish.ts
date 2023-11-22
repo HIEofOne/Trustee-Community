@@ -133,7 +133,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
               objectPath.set(request_doc, 'request_date', moment().format());
               await gnap.insert(request_doc);
               // send request to resource owner for approval
-              const sendgrid = await fetch(domain + "/api/sendgrid", 
+              const sendmail = await fetch(domain + "/api/sendmail", 
                 {
                   method: "POST",
                   headers: {
@@ -145,7 +145,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                     html: `<div><h1>HIE of One Trustee Resource Privilege Request</h1><h2><a href="${domain}/review/${request_doc.interact_nonce.value}">New Privileges Requested for your Resources</a></h2></div>`,
                   })
                 });
-              const { error } = await sendgrid.json();
+              const { error } = await sendmail.json();
               if (error) {
                 res.status(500).send(error.message);
               } else {

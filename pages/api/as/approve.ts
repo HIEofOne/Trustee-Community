@@ -41,7 +41,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       pending_resources.splice(req.body.pending_resource_index, 1);
       objectPath.set(gnap_doc, 'pending_resources', pending_resources);
       await gnap.insert(gnap_doc);
-      const sendgrid = await fetch(domain + "/api/sendgrid", 
+      const sendmail = await fetch(domain + "/api/sendmail", 
         {
           method: "POST",
           headers: {
@@ -53,7 +53,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             html: `<div><h1>HIE of One Trustee Resource Privilege Request Approved</h1>${message}</div>`,
           })
         });
-      const { error } = await sendgrid.json();
+      const { error } = await sendmail.json();
       if (error) { 
         console.log(error); 
       }

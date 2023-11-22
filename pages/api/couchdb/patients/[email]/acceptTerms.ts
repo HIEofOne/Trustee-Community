@@ -31,7 +31,7 @@ async function patientAcceptTerms(req: NextApiRequest, res: NextApiResponse) {
     }
     //Account succesfully created, send confirmation email
     //** Insecure -- email needs to be encripted to prevent middle man attacks
-    const sendgrid = await fetch(domain + "/api/sendgrid", 
+    const sendmail = await fetch(domain + "/api/sendmail", 
     {
       method: "POST",
       headers: {
@@ -43,7 +43,7 @@ async function patientAcceptTerms(req: NextApiRequest, res: NextApiResponse) {
         html: `<div><h1>Your HIE of One Trustee Account has been created!</h1><h1><a href=${domain}/myTrustee>Your Account</a></h1></div>`,
       })
     });
-    const { error } = await sendgrid.json();
+    const { error } = await sendmail.json();
     if (error) {
       console.log(error);
       res.status(500).send(error.message)

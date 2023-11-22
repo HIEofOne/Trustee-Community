@@ -62,12 +62,8 @@ Get all patients
 GET /api/couchdb/patients/all
 ```
 
-Get all rs requests
-```
-GET /api/couchdb/requests/all
-```
 ## Grant Negotiation and Authorization Protocol (GNAP)
-Trustee also functions as an Authorization Server as specified by the [Grant Negotiation and Authorization Protocol](https://www.ietf.org/archive/id/draft-ietf-gnap-core-protocol-12.html#name-introduction). Below is the protocol sequence and exposed endpoints.
+Trustee also functions as an Authorization Server as specified by the [Grant Negotiation and Authorization Protocol](https://www.ietf.org/archive/id/draft-ietf-gnap-core-protocol-12.html#name-introduction).
 
 #### 1. Requesting Access
 Client sends HTTP POST to the grant endpoint of Trustee with the following headers and body.  The Content-Digest, Signature, and Signature-Input fields and how they are constructed are [described here](https://www.ietf.org/archive/id/draft-ietf-gnap-core-protocol-12.html#name-http-message-signatures).  It is imperative that the processes outlined in the aformentioned link are followed explicitly as Trustee verifies these header fields with the public key presented in the request body (client.key field)

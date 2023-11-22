@@ -12,7 +12,33 @@ if [ -d "${HOME}/.nvm/.git" ]; then
   read -e -p "Enter your E-Mail address for Let's Encrypt (your@email.com): " -i "" EMAIL
   read -e -p "Enter your DigitalOcean API Token: " -i "" DIGITALOCEAN_API_TOKEN
   read -e -p "Enter your CouchDB/Traefik Password for admin user: " -i "" COUCHDB_PASSWORD
-  read -e -p "Enter your Sendgrid API Key: " -i "" SENDGRID_API_KEY
+  read -e -p "Enter your From Email: " -i "" FROM_EMAIL
+  cp ./env ./docker/trusteecommunity/.env.local
+  PS3="Enter email type: "
+  mailtypes=("sendgrid" "smtp" "aws")
+  select MAIL_TYPE in "${mailtypes[@]}"; do
+    case $MAIL_TYPE in
+      "sendgrid")
+        read -e -p "Enter your Sendgrid API Key: " -i "" SENDGRID_API_KEY
+        sed -i '/^SENDGRID_API_KEY=/s/=.*/='"$SENDGRID_API_KEY"'/' ./docker/trusteecommunity/.env.local
+        break
+        ;;
+      "smtp")
+        read -e -p "Enter your SMTP Host URL: " -i "" SMTP_HOST
+        read -e -p "Enter your SMTP Port: " -i "" SMTP_PORT
+        read -e -p "Enter your SMTP Username: " -i "" SMTP_USER
+        read -e -p "Enter your SMTP Password: " -i "" SMTP_PASSWORD
+        sed -i '/^SMTP_HOST=/s/=.*/='"$SMTP_HOST"'/' ./docker/trusteecommunity/.env.local
+        sed -i '/^SMTP_PORT=/s/=.*/='"$SMTP_PORT"'/' ./docker/trusteecommunity/.env.local
+        sed -i '/^SMTP_USER=/s/=.*/='"$SMTP_USER"'/' ./docker/trusteecommunity/.env.local
+        sed -i '/^SMTP_PASSWORD=/s/=.*/='"$SMTP_PASSWORD"'/' ./docker/trusteecommunity/.env.local
+        break
+        ;;
+      *)
+        echo "Invalid option $REPLY"
+        ;;
+    esac
+  done
   read -e -p "Enter your Magic Secret: " -i "" MAGIC_SECRET_KEY
   read -e -p "Enter your Magic API Key for Trustee: " -i "" MAGIC_PUB_KEY
   read -e -p "Enter your Magic API Key for NOSH: " -i "" MAGIC_API_KEY 
@@ -25,12 +51,11 @@ if [ -d "${HOME}/.nvm/.git" ]; then
   sed -i "s/example@example.com/$EMAIL/" ./docker/traefik/traefik.yml
   sed -i "s/example.com/$ROOT_DOMAIN/" ./docker/traefik/docker-compose.yml
   sed -i "s/example.com/$ROOT_DOMAIN/" ./docker/trusteecommunity/docker-compose.yml
-  cp ./env ./docker/trusteecommunity/.env.local
   sed -i "s/example.com/$ROOT_DOMAIN/" ./docker/trusteecommunity/.env.local
+  sed -i '/^FROM_EMAIL=/s/=.*/='"$FROM_EMAIL"'/' ./docker/trusteecommunity/.env.local
   KEY=$(curl https://generate-secret.vercel.app/32)
   sed -i "s/example.key/$KEY/" ./docker/trusteecommunity/.env.local
   sed -i '/^DIGITALOCEAN_API_TOKEN=/s/=.*/='"$DIGITALOCEAN_API_TOKEN"'/' ./docker/trusteecommunity/.env.local
-  sed -i '/^SENDGRID_API_KEY=/s/=.*/='"$SENDGRID_API_KEY"'/' ./docker/trusteecommunity/.env.local
   sed -i '/^MAGIC_SECRET_KEY=/s/=.*/='"$MAGIC_SECRET_KEY"'/' ./docker/trusteecommunity/.env.local
   sed -i '/^MAGIC_PUB_KEY=/s/=.*/='"$MAGIC_PUB_KEY"'/' ./docker/trusteecommunity/.env.local
   sed -i '/^MAGIC_API_KEY=/s/=.*/='"$MAGIC_API_KEY"'/' ./docker/trusteecommunity/.env.local

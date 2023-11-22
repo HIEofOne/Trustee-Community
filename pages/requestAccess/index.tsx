@@ -133,7 +133,7 @@ const RequestAccess = ({
         { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(doc)})
         .then((res) => res.json());
       if (update.success) {
-        const sendgrid = await fetch("/api/sendgrid", 
+        const sendmail = await fetch("/api/sendmail", 
         {
           method: "POST",
           headers: {
@@ -145,7 +145,7 @@ const RequestAccess = ({
             html: `<div><h1>HIE of One Trustee Resource Privilege Request</h1><h2><a href="${resource_url}">New Privileges Requested for your Resources</a></h2></div>`,
           })
         });
-        const { error } = await sendgrid.json();
+        const { error } = await sendmail.json();
         if (error) {
           console.log(error);
         }
