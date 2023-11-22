@@ -34,6 +34,13 @@ if [ -d "${HOME}/.nvm/.git" ]; then
         sed -i '/^SMTP_PASSWORD=/s/=.*/='"$SMTP_PASSWORD"'/' ./docker/trusteecommunity/.env.local
         break
         ;;
+      "aws")
+        read -e -p "Enter your AWS Access Key: " -i "" AWS_ACCESS_KEY
+        read -e -p "Enter your AWS Secret: " -i "" AWS_SECRET_ACCESS_KEY
+        sed -i '/^AWS_ACCESS_KEY=/s/=.*/='"$AWS_ACCESS_KEY"'/' ./docker/trusteecommunity/.env.local
+        sed -i '/^AWS_SECRET_ACCESS_KEY=/s/=.*/='"$AWS_SECRET_ACCESS_KEY"'/' ./docker/trusteecommunity/.env.local
+        break
+        ;;
       *)
         echo "Invalid option $REPLY"
         ;;
