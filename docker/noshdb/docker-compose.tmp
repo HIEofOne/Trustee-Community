@@ -3,8 +3,6 @@ services:
   couchdb:
     image: "couchdb:latest"
     container_name: "nosh_couchdb"
-    ports:
-      - "5985:5984"
     networks:
       - default
       - traefik_default
