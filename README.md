@@ -79,10 +79,10 @@ Content-Digest: sha-256=...
     "access": [
       {
         "type": "app",
-        "actions": {
+        "actions": [
           "read",
           "write"
-        },
+        ],
         "locations": [
           "https://nosh-app-mj3xd.ondigitalocean.app/app/chart/nosh_49798bcb-c617-4165-beb6-05442152c99a"
         ],
@@ -92,10 +92,10 @@ Content-Digest: sha-256=...
       },
       {
         "type": "conditions",
-        "actions": {
+        "actions": [
           "read",
           "write"
-        },
+        ],
         "locations": [
           "https://nosh-app-mj3xd.ondigitalocean.app/fhir/api/Condition"
         ],
