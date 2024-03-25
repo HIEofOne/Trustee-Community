@@ -41,7 +41,7 @@
         "next-absolute-url": "^1.2.2",
         "next-qrcode": "^2.4.1",
         "nextjs-cors": "^2.1.2",
-        "nodemailer": "^6.9.7",
+        "nodemailer": "^6.9.9",
         "object-path": "^0.11.8",
         "openid-client": "^5.4.2",
         "react": "^18.2.0",
