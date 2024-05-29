@@ -56,6 +56,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                   }
                 }
                 pending_resources.push(resource_doc);
+                // check resource owner
+                if (resource_doc.ro === request_doc.email) {
+                  check_privileges.push({location: a, privilege: request_doc.email})
+                }
                 // check email
                 if (resource_doc.privileges.includes(request_doc.email)) {
                   const patient_doc = await patients.get(request_doc.email);
