@@ -33,8 +33,8 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
     checkAvailability();
   }, []);
 
-  const handleSubmit = async () => {
-    // event.preventDefault();
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
     if (email !== '') {
       if (validate(email)) {
         // Check if user has an account
@@ -212,14 +212,14 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
             {authonly ? (
               <p>Authenticate Yourself</p>
             ) : (
-              <p>Subscribe to your own Trustee or Login with an existing account</p>
+              <p>Subscribe to your own Trustee or Sign In with an existing account</p>
             )}
               <Stack spacing={2}>
               <TextField
                 error={isError}
                 name="email" 
                 type="email" 
-                placeholder="Email Address"
+                placeholder="Email Address (required)"
                 helperText={error}
                 variant="standard"
                 inputRef={input => input && input.focus()}
