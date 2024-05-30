@@ -155,6 +155,7 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
             rpId: window.location.hostname
           }
         });
+        setRegister(true)
         const result = await fetch("/api/auth/login", 
           { method: "POST", body: JSON.stringify({ email, credential }), headers: {"Content-Type": "application/json"} });
         if (result.ok) {
