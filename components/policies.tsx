@@ -15,6 +15,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Fab from '@mui/material/Fab';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
+import Link from '@mui/material/Link';
 import PersonIcon from '@mui/icons-material/Person';
 import SearchIcon from '@mui/icons-material/Search';
 import Snackbar from '@mui/material/Snackbar';
@@ -235,7 +236,7 @@ export default function Policies(props:any) {
                 <Typography variant="h6" component="div">Locations</Typography>
                 {
                   value.locations.map((value1: string, index1:number) => {
-                    return <Typography variant="subtitle2" color="text.primary" key={index1} component="div">{value1}</Typography>
+                    return <Link variant="subtitle2" color="text.primary" key={index1} href={value1} target="_blank" rel="noopener">{value1}</Link>
                   })
                 }
               </Box>

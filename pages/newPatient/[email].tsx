@@ -146,6 +146,7 @@ const NewPatient = () => {
       setURL(data1.url);
       setLinkTitle(data1.url);
       setError(data1.error);
+      await fetch(`/api/auth/logout`, { method: "POST" });
     }
   };
 

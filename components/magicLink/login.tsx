@@ -4,12 +4,13 @@ import { supported, create, get } from '@github/webauthn-json';
 import { useEffect, useState } from 'react';
 import objectPath from 'object-path';
 
-import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import KeyIcon from '@mui/icons-material/Key';
+import Link from '@mui/material/Link';
 import PersonIcon from '@mui/icons-material/Person';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -32,8 +33,8 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
     checkAvailability();
   }, []);
 
-  const handleSubmit = async (event: any) => {
-    event.preventDefault();
+  const handleSubmit = async () => {
+    // event.preventDefault();
     if (email !== '') {
       if (validate(email)) {
         // Check if user has an account
@@ -229,8 +230,12 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
               />
               {isAvailable ? (
                 <Stack spacing={2}>
-                  <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/></div>}>Login with PassKey</Button>
-                  <Button variant="contained" type="submit" startIcon={<div><PersonIcon/><KeyIcon/><AddIcon/></div>}>Register (new User or new PassKey)</Button>
+                  <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
+                  {authonly ? (
+                    <Container>New to Trustee?  <Link component="button" onClick={handleSubmit}>Create your Passkey</Link></Container>
+                  ) : (
+                    <Container>New to Trustee?  <Link component="button" onClick={handleSubmit}>Create your Trustee and Passkey</Link></Container>
+                  )}
                 </Stack>
               ) : (
                 <p>Sorry, webauthn is not available.</p>
