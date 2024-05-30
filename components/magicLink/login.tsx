@@ -8,6 +8,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
+import Grid from "@mui/material/Grid";
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import KeyIcon from '@mui/icons-material/Key';
 import Link from '@mui/material/Link';
@@ -96,6 +97,7 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
                 rpId: window.location.hostname
               }
             });
+            setRegister(true)
             const result1 = await fetch("/api/auth/login", 
               { method: "POST", body: JSON.stringify({ email: email, credential }), headers: {"Content-Type": "application/json"} });
             if (result1.ok) {
@@ -121,6 +123,7 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
                 }
               }
             } else {
+              setRegister(false)
               const { message } = await result.json();
               setIsError(true);
               setError(message);
@@ -147,6 +150,7 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
   const passKey = async() => {
     if (email !== '') {
       if (validate(email)) {
+        setProgress('Authentication using PassKey...')
         const credential = await get({
           publicKey: {
             challenge,
@@ -173,6 +177,7 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
             }
           }
         } else {
+          setRegister(false)
           const { message } = await result.json();
           setIsError(true)
           setError(message);
@@ -198,7 +203,10 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
         {register ? (
           <div>
             {isAvailable ? (
-              <p><Box><HowToRegIcon fontSize="large"/></Box>{progress}<Box><CircularProgress color="inherit" /></Box></p>
+              <Box>
+                <Grid style={{ textAlign: "center" }}><HowToRegIcon fontSize="large" color="primary"/>{progress}</Grid>
+                <Grid style={{ textAlign: "center" }}><CircularProgress color="primary" /></Grid>
+              </Box>
             ) : (
               <p>Sorry, PassKey Registration is not available from this browser.</p>
             )}
@@ -233,9 +241,9 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
                 <Stack spacing={2}>
                   <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
                   {authonly ? (
-                    <Container>New to Trustee?  <Link component="button" onClick={handleSubmit}>Create your Passkey</Link></Container>
+                    <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={handleSubmit}>Create your Passkey</Link></Grid>
                   ) : (
-                    <Container>New to Trustee?  <Link component="button" onClick={handleSubmit}>Create your Trustee and Passkey</Link></Container>
+                    <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={handleSubmit}>Create your Trustee and Passkey</Link></Grid>
                   )}
                 </Stack>
               ) : (
