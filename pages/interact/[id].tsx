@@ -33,6 +33,9 @@ export default function Interact({ challenge }: { challenge: string }) {
       setDocInstance(isInstance.success);
       if (objectPath.has(isInstance, 'success.client.display.name')) {
         setClient(isInstance.success.client.display.name);
+        console.log(isInstance.success.client.display.name)
+      } else {
+        console.log(isInstance.success)
       }
     }
     if (isInstance.error) {

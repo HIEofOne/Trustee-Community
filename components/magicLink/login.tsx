@@ -32,6 +32,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
       setIsAvailable(available && supported());
     };
     checkAvailability();
+    console.log(client)
     if (client !== '') {
       setClientExist(true)
     }
