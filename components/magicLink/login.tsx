@@ -36,7 +36,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     if (client !== '') {
       setClientExist(true)
     }
-  }, []);
+  }, [client]);
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
