@@ -15,7 +15,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 
-export default function Login({ challenge, clinical=false, authonly=false, setEmail }: { challenge: string, clinical: boolean, authonly: boolean, setEmail?: any }) {
+export default function Login({ challenge, clinical=false, authonly=false, client='', setEmail }: { challenge: string, clinical: boolean, authonly: boolean, client?: string, setEmail?: any }) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [isError, setIsError] = useState(false);
@@ -23,6 +23,7 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
   const [register, setRegister] = useState(false);
   const [progress, setProgress] = useState("");
   const [email, setEmailValue] = useState("");
+  const [clientExist, setClientExist] = useState(false); 
 
   useEffect(() => {
     const checkAvailability = async () => {
@@ -31,6 +32,9 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
       setIsAvailable(available && supported());
     };
     checkAvailability();
+    if (client !== '') {
+      setClientExist(true)
+    }
   }, []);
 
   const handleSubmit = async (event: any) => {
@@ -218,7 +222,13 @@ export default function Login({ challenge, clinical=false, authonly=false, setEm
             onSubmit={handleSubmit}
           >
             {authonly ? (
-              <p>Authenticate Yourself</p>
+              <div>
+                {clientExist ? (
+                  <p>Sign Into {client}</p>
+                ) : (
+                  <p>Sign In</p>
+                )}
+              </div>
             ) : (
               <p>Subscribe to your own Trustee or Sign In with an existing account</p>
             )}
