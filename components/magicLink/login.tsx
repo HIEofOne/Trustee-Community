@@ -255,7 +255,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               {isAvailable ? (
                 <Stack spacing={2}>
                   <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
-                  {authonly ? (
+                  {authonly || clinical ? (
                     <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={handleSubmit}>Create your Passkey</Link></Grid>
                   ) : (
                     <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={handleSubmit}>Create your Trustee and Passkey</Link></Grid>
