@@ -230,7 +230,13 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                 )}
               </div>
             ) : (
-              <p>Subscribe to your own Trustee or Sign In with an existing account</p>
+              <div>
+                {clinical ? (
+                  <p>Sign In to request access to a patient record</p>
+                ) : (
+                  <p>Subscribe to your own Trustee or Sign In with an existing account</p>
+                )}
+              </div>
             )}
               <Stack spacing={2}>
               <TextField
