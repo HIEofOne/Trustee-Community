@@ -26,9 +26,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         email: doc.doc._id
       }
       const result = await axios.post(process.env.APP_URL + '/auth/addResources', body);
-      console.log(result.data);
       result_arr.push(result.data);
-      console.log(result_arr);
     }
   }
   res.status(200).json(result_arr)

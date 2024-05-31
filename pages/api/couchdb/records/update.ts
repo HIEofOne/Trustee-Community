@@ -36,7 +36,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
     res.status(200).json({ success: true });
   } catch (error) {
-    console.log(req.body);
     console.log(error);
     res.status(500).send(error);
   }

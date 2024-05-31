@@ -31,7 +31,6 @@ export default function Pending(props:any) {
   const [vcInstance, setVcInstance] = useState<{[key: string]: any}>([]);
   
   const approve = async(id: string, type: string, index: number, email: string, gnap_id: string) => {
-    console.log(email)
     const doc = {
       id: id,
       privilege: email,

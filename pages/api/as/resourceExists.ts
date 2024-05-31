@@ -46,7 +46,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         error = { error: response.error, reason: response.reason};
       }
     } catch (e) {
-      console.log(req.body)
       console.log(error)
       error = { error: 'pouchDB failure', reason: e};
     }

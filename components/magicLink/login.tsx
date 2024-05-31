@@ -32,7 +32,6 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
       setIsAvailable(available && supported());
     };
     checkAvailability();
-    console.log(client)
     if (client !== '') {
       setClientExist(true)
     }
@@ -212,7 +211,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                 <Grid style={{ textAlign: "center" }}><CircularProgress color="primary" /></Grid>
               </Box>
             ) : (
-              <p>Sorry, PassKey Registration is not available from this browser.</p>
+              <p>Sorry, PassKey authentication is not available from this browser.</p>
             )}
           </div>
         ) : (
@@ -257,7 +256,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                   )}
                 </Stack>
               ) : (
-                <p>Sorry, webauthn is not available.</p>
+                <p>Sorry, PassKey authentication and registration is not available from this browser.</p>
               )}
             </Stack>
           </Box>

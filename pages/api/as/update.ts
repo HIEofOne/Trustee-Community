@@ -19,10 +19,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   });
   const gnap = await nano.db.use("gnap");
   const doc = req.body;
-  console.log(doc);
   try {
     const response = await gnap.insert(doc);
-    console.log(response)
     if (response.error) {
       res.status(500).send({error: response.error, reason:response.reason});
     }
