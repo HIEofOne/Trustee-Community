@@ -138,7 +138,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
           const credential_cco = await create(cco);
           saveRegistration(credential_cco)  
           const result = await fetch("/api/auth/register", 
-            { method: "POST", body: JSON.stringify({ email: email, credential_cco }), headers: {"Content-Type": "application/json"} });
+            { method: "POST", body: JSON.stringify({ email: email, credential: credential_cco }), headers: {"Content-Type": "application/json"} });
           if (result.ok) {
             setProgress('Authentication using PassKey...')
             const cro = parseRequestOptionsFromJSON({
@@ -152,7 +152,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             const credential_cro = await get(cro);
             setRegister(true)
             const result1 = await fetch("/api/auth/login", 
-              { method: "POST", body: JSON.stringify({ email: email, credential_cro }), headers: {"Content-Type": "application/json"} });
+              { method: "POST", body: JSON.stringify({ email: email, credential: credential_cro }), headers: {"Content-Type": "application/json"} });
             if (result1.ok) {
               if (authonly) {
                 setEmail(email);
@@ -216,7 +216,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
         const credential_cro = await get(cro);
         setRegister(true)
         const result = await fetch("/api/auth/login", 
-          { method: "POST", body: JSON.stringify({ email, credential_cro }), headers: {"Content-Type": "application/json"} });
+          { method: "POST", body: JSON.stringify({ email, credential: credential_cro }), headers: {"Content-Type": "application/json"} });
         if (result.ok) {
           if (authonly) {
             setEmail(email);
@@ -249,6 +249,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
 
   const replay = () => {
     setRegistrations([]);
+    location.reload()
   }
 
   const validate = (inputText: string) => {
