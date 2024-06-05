@@ -12,6 +12,7 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 import KeyIcon from '@mui/icons-material/Key';
 import Link from '@mui/material/Link';
 import PersonIcon from '@mui/icons-material/Person';
+import ReplayIcon from '@mui/icons-material/Replay';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 
@@ -37,8 +38,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     }
   }, [client]);
 
-  const handleSubmit = async (event: any) => {
-    event.preventDefault();
+  const createPassKey = async () => {
     if (email !== '') {
       if (validate(email)) {
         // Check if user has an account
@@ -153,7 +153,8 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     }
   };
 
-  const passKey = async() => {
+  const passKey = async(event: any) => {
+    event.preventDefault();
     if (email !== '') {
       if (validate(email)) {
         setProgress('Authentication using PassKey...')
@@ -198,6 +199,10 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     }
   }
 
+  const replay = () => {
+    window.location.reload()
+  }
+
   const validate = (inputText: string) => {
     const emailRegex = new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, "gm");
     return emailRegex.test(inputText);
@@ -222,7 +227,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             component="form"
             noValidate
             autoComplete="off"
-            onSubmit={handleSubmit}
+            onSubmit={passKey}
           >
             {authonly ? (
               <div>
@@ -255,17 +260,25 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                 fullWidth
                 required
               />
-              {isAvailable ? (
-                <Stack spacing={2}>
-                  <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
-                  {authonly || clinical ? (
-                    <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={handleSubmit}>Create your Passkey</Link></Grid>
-                  ) : (
-                    <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={handleSubmit}>Create your Trustee and Passkey</Link></Grid>
-                  )}
-                </Stack>
+              {isError ? (
+                <div>
+                  <Button variant="contained" onClick={replay} startIcon={<div><ReplayIcon/><KeyIcon/></div>}>Start Over</Button>
+                </div>
               ) : (
-                <p>Sorry, PassKey authentication and registration is not available from this browser.</p>
+                <div>
+                  {isAvailable ? (
+                    <Stack spacing={2}>
+                      <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
+                      {authonly || clinical ? (
+                        <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Passkey</Link></Grid>
+                      ) : (
+                        <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Trustee and Passkey</Link></Grid>
+                      )}
+                    </Stack>
+                  ) : (
+                    <p>Sorry, PassKey authentication and registration is not available from this browser.</p>
+                  )}
+                </div>
               )}
             </Stack>
           </Box>
