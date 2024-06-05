@@ -66,7 +66,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             }
           }
           setProgress('Registering PassKey...');
-          const credential = await create({
+          const credential_reg = await create({
             publicKey: {
               challenge: challenge,
               rp: {
@@ -89,10 +89,10 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             }
           });
           const result = await fetch("/api/auth/register", 
-            { method: "POST", body: JSON.stringify({ email: email, credential }), headers: {"Content-Type": "application/json"} });
+            { method: "POST", body: JSON.stringify({ email: email, credential: credential_reg }), headers: {"Content-Type": "application/json"} });
           if (result.ok) {
             setProgress('Authentication using PassKey...')
-            const credential = await get({
+            const credential_auth = await get({
               publicKey: {
                 challenge,
                 timeout: 60000,
@@ -102,7 +102,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             });
             setRegister(true)
             const result1 = await fetch("/api/auth/login", 
-              { method: "POST", body: JSON.stringify({ email: email, credential }), headers: {"Content-Type": "application/json"} });
+              { method: "POST", body: JSON.stringify({ email: email, credential: credential_auth }), headers: {"Content-Type": "application/json"} });
             if (result1.ok) {
               if (authonly) {
                 await fetch(`/api/auth/logout`, { method: "POST" });
@@ -258,27 +258,20 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                 fullWidth
                 required
               />
-              {isError ? (
-                <div>
-                  <Stack spacing={2}>
-                    <Button variant="contained" onClick={replay} startIcon={<div><ReplayIcon/></div>}>Start Over</Button>
-                  </Stack>
-                </div>
-              ) : (
-                <div>
-                  {isAvailable ? (
-                    <Stack spacing={2}>
-                      <Button variant="contained" type="submit" startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
-                      {authonly || clinical ? (
-                        <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Passkey</Link></Grid>
-                      ) : (
-                        <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Trustee and Passkey</Link></Grid>
-                      )}
-                    </Stack>
+              {isAvailable ? (
+                <Stack spacing={2}>
+                  <Button variant="contained" type="submit" startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
+                  {authonly || clinical ? (
+                    <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Passkey</Link></Grid>
                   ) : (
-                    <p>Sorry, PassKey authentication and registration is not available from this browser.</p>
+                    <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Trustee and Passkey</Link></Grid>
                   )}
-                </div>
+                  {isError ? (
+                    <Button variant="contained" onClick={replay} startIcon={<div><ReplayIcon/></div>}>Start Over</Button>
+                  ) : (<div></div>)}
+                </Stack>
+              ) : (
+                <p>Sorry, PassKey authentication and registration is not available from this browser.</p>
               )}
             </Stack>
           </Box>
