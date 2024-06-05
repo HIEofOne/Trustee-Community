@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { Magic } from 'magic-sdk';
+import clearCache from 'clear-cache'
 import { supported, create, get } from '@github/webauthn-json';
 import { useEffect, useState } from 'react';
 import objectPath from 'object-path';
@@ -200,7 +201,8 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
   }
 
   const replay = () => {
-    window.location.reload()
+    clearCache()
+    location.reload()
   }
 
   const validate = (inputText: string) => {
@@ -262,7 +264,9 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               />
               {isError ? (
                 <div>
-                  <Button variant="contained" onClick={replay} startIcon={<div><ReplayIcon/><KeyIcon/></div>}>Start Over</Button>
+                  <Stack spacing={2}>
+                    <Button variant="contained" onClick={replay} startIcon={<div><ReplayIcon/></div>}>Start Over</Button>
+                  </Stack>
                 </div>
               ) : (
                 <div>
