@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { Magic } from 'magic-sdk';
-import { supported, create, get } from '@github/webauthn-json';
+import { supported, create, get, parseCreationOptionsFromJSON, parseRequestOptionsFromJSON } from '@github/webauthn-json/browser-ponyfill';
 import { useEffect, useState } from 'react';
 import objectPath from 'object-path';
 
@@ -20,6 +20,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
   const router = useRouter();
   const [error, setError] = useState("");
   const [isError, setIsError] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [register, setRegister] = useState(false);
   const [progress, setProgress] = useState("");
@@ -42,6 +43,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     if (email !== '') {
       if (validate(email)) {
         // Check if user has an account
+        setIsChecking(true)
         const isRegistered = await fetch("/api/couchdb/patients/" + email,
           { method: "GET", headers: {"Content-Type": "application/json"} })
           .then((res) => res.json()).then((json) => json._id);
@@ -66,7 +68,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             }
           }
           setProgress('Registering PassKey...');
-          const credential_reg = await create({
+          const cco = parseCreationOptionsFromJSON({
             publicKey: {
               challenge: challenge,
               rp: {
@@ -79,7 +81,11 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                 name: email,
                 displayName: email.substring(0, email.indexOf("@"))
               },
-              pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+              pubKeyCredParams: [
+                { alg: -7, type: "public-key" },
+                { alg: -8, type: "public-key" },
+                { alg: -257, type: "public-key" }
+              ],
               timeout: 60000,
               attestation: "direct",
               authenticatorSelection: {
@@ -88,11 +94,34 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               }
             }
           });
+          const credential_reg = await create(cco);
+          // const credential_reg = await create({
+          //   publicKey: {
+          //     challenge: challenge,
+          //     rp: {
+          //       name: "next-webauthn",
+          //       // TODO: Change
+          //       id: window.location.hostname
+          //     },
+          //     user: {
+          //       id: window.crypto.randomUUID(),
+          //       name: email,
+          //       displayName: email.substring(0, email.indexOf("@"))
+          //     },
+          //     pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+          //     timeout: 60000,
+          //     attestation: "direct",
+          //     authenticatorSelection: {
+          //       residentKey: "required",
+          //       userVerification: "required"
+          //     }
+          //   }
+          // });
           const result = await fetch("/api/auth/register", 
             { method: "POST", body: JSON.stringify({ email: email, credential: credential_reg }), headers: {"Content-Type": "application/json"} });
           if (result.ok) {
             setProgress('Authentication using PassKey...')
-            const credential_auth = await get({
+            const cro = parseRequestOptionsFromJSON({
               publicKey: {
                 challenge,
                 timeout: 60000,
@@ -100,6 +129,15 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                 rpId: window.location.hostname
               }
             });
+            const credential_auth = await get(cro);
+            // const credential_auth = await get({
+            //   publicKey: {
+            //     challenge,
+            //     timeout: 60000,
+            //     userVerification: "required",
+            //     rpId: window.location.hostname
+            //   }
+            // });
             setRegister(true)
             const result1 = await fetch("/api/auth/login", 
               { method: "POST", body: JSON.stringify({ email: email, credential: credential_auth }), headers: {"Content-Type": "application/json"} });
@@ -156,7 +194,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     if (email !== '') {
       if (validate(email)) {
         setProgress('Authentication using PassKey...')
-        const credential = await get({
+        const cro = parseRequestOptionsFromJSON({
           publicKey: {
             challenge,
             timeout: 60000,
@@ -164,9 +202,18 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             rpId: window.location.hostname
           }
         });
+        const credential_auth = await get(cro);
+        // const credential = await get({
+        //   publicKey: {
+        //     challenge,
+        //     timeout: 60000,
+        //     userVerification: "required",
+        //     rpId: window.location.hostname
+        //   }
+        // });
         setRegister(true)
         const result = await fetch("/api/auth/login", 
-          { method: "POST", body: JSON.stringify({ email, credential }), headers: {"Content-Type": "application/json"} });
+          { method: "POST", body: JSON.stringify({ email, credential: credential_auth }), headers: {"Content-Type": "application/json"} });
         if (result.ok) {
           if (authonly) {
             setEmail(email);
@@ -212,21 +259,16 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
         {register ? (
           <div>
             {isAvailable ? (
-              <Box>
-                <Grid style={{ textAlign: "center" }}><HowToRegIcon fontSize="large" color="primary"/>{progress}</Grid>
-                <Grid style={{ textAlign: "center" }}><CircularProgress color="primary" /></Grid>
-              </Box>
+              <Grid container spacing={2}>
+                <Grid item style={{ textAlign: "center" }}><HowToRegIcon fontSize="large" color="primary"/>{progress}</Grid>
+                <Grid item style={{ textAlign: "center" }}><CircularProgress color="primary" /></Grid>
+              </Grid>
             ) : (
               <p>Sorry, PassKey authentication is not available from this browser.</p>
             )}
           </div>
         ) : (
-          <Box
-            component="div"
-            // noValidate
-            // autoComplete="off"
-            // onSubmit={passKey}
-          >
+          <Box component="div">
             {authonly ? (
               <div>
                 {clientExist ? (
@@ -244,7 +286,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                 )}
               </div>
             )}
-              <Stack spacing={2}>
+            <Stack spacing={2}>
               <TextField
                 error={isError}
                 name="email" 
@@ -261,6 +303,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               {isAvailable ? (
                 <Stack spacing={2}>
                   <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
+                  {isChecking ? (<CircularProgress color="primary" />) : (<div></div>)}
                   {authonly || clinical ? (
                     <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Passkey</Link></Grid>
                   ) : (
