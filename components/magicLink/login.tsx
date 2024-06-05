@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router';
 import { Magic } from 'magic-sdk';
-import clearCache from 'clear-cache'
-import { supported, create, get } from '@github/webauthn-json';
+import { create, get, parseCreationOptionsFromJSON, parseRequestOptionsFromJSON, RegistrationPublicKeyCredential, supported } from '@github/webauthn-json/browser-ponyfill';
+import { type PublicKeyCredentialDescriptorJSON } from '@github/webauthn-json'
+import type { RegistrationResponseExtendedJSON } from '@github/webauthn-json/browser-ponyfill/extended';
 import { useEffect, useState } from 'react';
 import objectPath from 'object-path';
 
@@ -16,6 +17,47 @@ import PersonIcon from '@mui/icons-material/Person';
 import ReplayIcon from '@mui/icons-material/Replay';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+
+function displayRegistrations() {
+  registrationElem().value = JSON.stringify(getRegistrations(), null, "  ");
+}
+
+function getRegistrations(): RegistrationResponseExtendedJSON[] {
+  const registrations = JSON.parse(
+    localStorage.webauthnExampleRegistrations || "[]",
+  );
+  return registrations;
+}
+
+function registeredCredentials(): PublicKeyCredentialDescriptorJSON[] {
+  return getRegistrations().map((reg) => ({
+    id: reg.rawId,
+    type: reg.type,
+  }));
+}
+
+function registrationElem(): HTMLTextAreaElement {
+  return document.querySelector("#registrations")! as HTMLTextAreaElement;
+}
+
+function saveRegistration(
+  registration: RegistrationPublicKeyCredential,
+): void {
+  const registrations = getRegistrations();
+  registrations.push(registration.toJSON());
+  setRegistrations(registrations);
+}
+
+function setRegistrations(
+  registrations: RegistrationResponseExtendedJSON[],
+): void {
+  localStorage.webauthnExampleRegistrations = JSON.stringify(
+    registrations,
+    null,
+    "  ",
+  );
+  displayRegistrations();
+}
 
 export default function Login({ challenge, clinical=false, authonly=false, client='', setEmail }: { challenge: string, clinical: boolean, authonly: boolean, client?: string, setEmail?: any }) {
   const router = useRouter();
@@ -70,7 +112,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             await fetch(`/api/auth/logout`, { method: "POST" });
           }
           setProgress('Registering PassKey...');
-          const credential = await create({
+          const cco = parseCreationOptionsFromJSON({
             publicKey: {
               challenge: challenge,
               rp: {
@@ -84,6 +126,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                 displayName: email.substring(0, email.indexOf("@"))
               },
               pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+              excludeCredentials: registeredCredentials(),
               timeout: 60000,
               attestation: "direct",
               authenticatorSelection: {
@@ -91,22 +134,25 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                 userVerification: "required"
               }
             }
-          });
+          })
+          const credential_cco = await create(cco);
+          saveRegistration(credential_cco)  
           const result = await fetch("/api/auth/register", 
-            { method: "POST", body: JSON.stringify({ email: email, credential }), headers: {"Content-Type": "application/json"} });
+            { method: "POST", body: JSON.stringify({ email: email, credential_cco }), headers: {"Content-Type": "application/json"} });
           if (result.ok) {
             setProgress('Authentication using PassKey...')
-            const credential = await get({
+            const cro = parseRequestOptionsFromJSON({
               publicKey: {
                 challenge,
                 timeout: 60000,
                 userVerification: "required",
                 rpId: window.location.hostname
               }
-            });
+            })
+            const credential_cro = await get(cro);
             setRegister(true)
             const result1 = await fetch("/api/auth/login", 
-              { method: "POST", body: JSON.stringify({ email: email, credential }), headers: {"Content-Type": "application/json"} });
+              { method: "POST", body: JSON.stringify({ email: email, credential_cro }), headers: {"Content-Type": "application/json"} });
             if (result1.ok) {
               if (authonly) {
                 setEmail(email);
@@ -159,17 +205,18 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     if (email !== '') {
       if (validate(email)) {
         setProgress('Authentication using PassKey...')
-        const credential = await get({
+        const cro = parseRequestOptionsFromJSON({
           publicKey: {
             challenge,
             timeout: 60000,
             userVerification: "required",
             rpId: window.location.hostname
           }
-        });
+        })
+        const credential_cro = await get(cro);
         setRegister(true)
         const result = await fetch("/api/auth/login", 
-          { method: "POST", body: JSON.stringify({ email, credential }), headers: {"Content-Type": "application/json"} });
+          { method: "POST", body: JSON.stringify({ email, credential_cro }), headers: {"Content-Type": "application/json"} });
         if (result.ok) {
           if (authonly) {
             setEmail(email);
@@ -201,8 +248,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
   }
 
   const replay = () => {
-    clearCache()
-    location.reload()
+    setRegistrations([]);
   }
 
   const validate = (inputText: string) => {
