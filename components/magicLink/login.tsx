@@ -227,7 +227,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             component="form"
             noValidate
             autoComplete="off"
-            onSubmit={passKey}
+            // onSubmit={passKey}
           >
             {authonly ? (
               <div>
