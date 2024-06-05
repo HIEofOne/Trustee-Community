@@ -65,9 +65,6 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               console.log('user added');
             }
           }
-          // if (authonly) {
-          //   await fetch(`/api/auth/logout`, { method: "POST" });
-          // }
           setProgress('Registering PassKey...');
           const credential = await create({
             publicKey: {
@@ -108,6 +105,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               { method: "POST", body: JSON.stringify({ email: email, credential }), headers: {"Content-Type": "application/json"} });
             if (result1.ok) {
               if (authonly) {
+                await fetch(`/api/auth/logout`, { method: "POST" });
                 setEmail(email);
               } else {
                 const patient = await fetch("/api/couchdb/patients/" + email,
@@ -227,7 +225,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             component="form"
             noValidate
             autoComplete="off"
-            // onSubmit={passKey}
+            onSubmit={passKey}
           >
             {authonly ? (
               <div>
@@ -270,7 +268,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                 <div>
                   {isAvailable ? (
                     <Stack spacing={2}>
-                      <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
+                      <Button variant="contained" type="submit" startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
                       {authonly || clinical ? (
                         <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Passkey</Link></Grid>
                       ) : (
