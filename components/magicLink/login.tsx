@@ -65,9 +65,9 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               console.log('user added');
             }
           }
-          if (authonly) {
-            await fetch(`/api/auth/logout`, { method: "POST" });
-          }
+          // if (authonly) {
+          //   await fetch(`/api/auth/logout`, { method: "POST" });
+          // }
           setProgress('Registering PassKey...');
           const credential = await create({
             publicKey: {
