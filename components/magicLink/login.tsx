@@ -222,10 +222,10 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
           </div>
         ) : (
           <Box
-            component="form"
-            noValidate
-            autoComplete="off"
-            onSubmit={passKey}
+            component="div"
+            // noValidate
+            // autoComplete="off"
+            // onSubmit={passKey}
           >
             {authonly ? (
               <div>
@@ -260,7 +260,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               />
               {isAvailable ? (
                 <Stack spacing={2}>
-                  <Button variant="contained" type="submit" startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
+                  <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
                   {authonly || clinical ? (
                     <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Passkey</Link></Grid>
                   ) : (
