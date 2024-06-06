@@ -95,28 +95,6 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             }
           });
           const credential_reg = await create(cco);
-          // const credential_reg = await create({
-          //   publicKey: {
-          //     challenge: challenge,
-          //     rp: {
-          //       name: "next-webauthn",
-          //       // TODO: Change
-          //       id: window.location.hostname
-          //     },
-          //     user: {
-          //       id: window.crypto.randomUUID(),
-          //       name: email,
-          //       displayName: email.substring(0, email.indexOf("@"))
-          //     },
-          //     pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-          //     timeout: 60000,
-          //     attestation: "direct",
-          //     authenticatorSelection: {
-          //       residentKey: "required",
-          //       userVerification: "required"
-          //     }
-          //   }
-          // });
           const result = await fetch("/api/auth/register", 
             { method: "POST", body: JSON.stringify({ email: email, credential: credential_reg }), headers: {"Content-Type": "application/json"} });
           if (result.ok) {
@@ -130,14 +108,6 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               }
             });
             const credential_auth = await get(cro);
-            // const credential_auth = await get({
-            //   publicKey: {
-            //     challenge,
-            //     timeout: 60000,
-            //     userVerification: "required",
-            //     rpId: window.location.hostname
-            //   }
-            // });
             setRegister(true)
             const result1 = await fetch("/api/auth/login", 
               { method: "POST", body: JSON.stringify({ email: email, credential: credential_auth }), headers: {"Content-Type": "application/json"} });
@@ -203,14 +173,6 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
           }
         });
         const credential_auth = await get(cro);
-        // const credential = await get({
-        //   publicKey: {
-        //     challenge,
-        //     timeout: 60000,
-        //     userVerification: "required",
-        //     rpId: window.location.hostname
-        //   }
-        // });
         setRegister(true)
         const result = await fetch("/api/auth/login", 
           { method: "POST", body: JSON.stringify({ email, credential: credential_auth }), headers: {"Content-Type": "application/json"} });
@@ -303,7 +265,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               {isAvailable ? (
                 <Stack spacing={2}>
                   <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
-                  {isChecking ? (<CircularProgress color="primary" />) : (<div></div>)}
+                  {isChecking ? (<Grid style={{ textAlign: "center" }}><CircularProgress color="primary" />Confirming E-mail Address...</Grid>) : (<div></div>)}
                   {authonly || clinical ? (
                     <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Passkey</Link></Grid>
                   ) : (
