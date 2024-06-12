@@ -93,7 +93,7 @@ export async function login(req: NextApiRequest) {
   });
   const userCredential = results.docs[0]
   if (results.docs.length === 0) {
-    throw new Error("Unknown User");
+    throw new Error("Unknown User or Invalid Passkey");
   }
   let verification: VerifiedAuthenticationResponse;
   try {
