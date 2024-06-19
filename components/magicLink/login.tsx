@@ -219,16 +219,16 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     <div>
       <div>
         {register ? (
-          <Stack spacing={2}>
+          <div>
             {isAvailable ? (
-              <Grid container spacing={2}>
-                <Grid item style={{ textAlign: "center" }}><HowToRegIcon fontSize="large" color="primary"/>{progress}</Grid>
-                <Grid item style={{ textAlign: "center" }}><CircularProgress color="primary" /></Grid>
-              </Grid>
+              <Stack spacing={2}>
+                <Grid style={{ textAlign: "center" }}><HowToRegIcon fontSize="large" color="primary"/>{progress}</Grid>
+                <Grid style={{ textAlign: "center" }}><CircularProgress color="primary" /></Grid>
+              </Stack>
             ) : (
               <p>Sorry, PassKey authentication is not available from this browser.</p>
             )}
-          </Stack>
+          </div>
         ) : (
           <Box component="div">
             {authonly ? (
