@@ -219,7 +219,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     <div>
       <div>
         {register ? (
-          <div>
+          <Stack spacing={2}>
             {isAvailable ? (
               <Grid container spacing={2}>
                 <Grid item style={{ textAlign: "center" }}><HowToRegIcon fontSize="large" color="primary"/>{progress}</Grid>
@@ -228,7 +228,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             ) : (
               <p>Sorry, PassKey authentication is not available from this browser.</p>
             )}
-          </div>
+          </Stack>
         ) : (
           <Box component="div">
             {authonly ? (
