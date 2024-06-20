@@ -4,33 +4,35 @@
 
 Trustee Community is the code repository a community manager can fork to create a new patient community.
 
-To create a new patient community, a manger will need these four things:
+To create a new patient community, a manger will need these prequisites:
 - An account at DigtialOcean to pay for hosting the community members Trustees (patient-controlled health records),
-- An account at Stripe to collect credit card payments for Trustee subscriptions hosted by the community,
+- An account at Stripe to collect credit card payments for Trustee subscriptions hosted by the community (optional)
 - A domain name for the community,
 - A privacy policy describing the initial configuration of Trustee access policies and how subscribers can change the policies if they choose.
 
 ## Installation
 #### 1. Gather all API keys for Magic, USPSTF, UMLS, DigitalOcean, and SendGrid
-- have these ready for the installer in step 4
+- have these ready for the installer in step 5
 - details on getting API keys are in the section [More on Additional API Services](#more-on-additional-api-services)
 - assume you have a domain name (mydomain.xyz) and email address needed for LetsEncrypt SSL (my@email.xyz)
+- you have a GitHub account to fork NOSH3 to.  You will need the organization name and [obtain a personal access token.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 #### 2. Create a DigitalOcean Droplet with the minimum parameters:
 - size: 's-1vcpu-1gb',
 - image: 'ubuntu-22-10-x64'
-#### 3. Login to the console (should be root user) and enter this command:
+#### 3. Ensure your domain name is associated with the IP of your DigitalOcean Droplet
+#### 4. Login to the console (should be root user) and enter this command:
 ```
 git clone -b deploy --single-branch https://github.com/HIEofOne/Trustee-Community.git
 cd Trustee-Community
 ./do-install.sh
 ```
-#### 4. The first pass will install all dependencies.  Logout and login to the droplet.
+#### 5. The first pass will install all dependencies.  Logout and login to the droplet.
 ```
 exit
 cd Trustee-Community
 ./do-install.sh
 ```
-#### 5. Open your browser to https://mydomain.xyz
+#### 6. Open your browser to https://mydomain.xyz
 - Other notable endpoints with your Trustee include:
 - https://db.mydomain.xyz which points to the [CouchDB](https://couchdb.apache.org/) database used to store user account information (just email) and droplet info.
 - https://router.mydomain.xyz which points to the [Traefik](https://doc.traefik.io/traefik/providers/docker/) reverse proxy router

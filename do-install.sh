@@ -7,6 +7,18 @@ if [[ $EUID -ne 0 ]]; then
 fi
 if [ -d "${HOME}/.nvm/.git" ]; then
   echo "NVM installed.  Personalizing Trustee-Community..."
+  read -e -p "Enter your GitHub Organization: " -i "" GITHUB_ORG
+  read -e -p "Enter your GitHub Access Token: " -i "" GITHUB_TOKEN
+  curl -L \
+  -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  https://api.github.com/repos/shihjay2/nosh3/forks \
+  -d '{"organization":"$GITHUB_ORG","name":"nosh3","default_branch_only":true}'
+  curl https://gist.githubusercontent.com/mathieucarbou/96ab30024f0d3fb44cac970219d23efc/raw/b15e98de1a41bd02b38b14f0ae9a0cbc422dfe70/github-fork-sync.sh
+  chmod a+x github-fork-sync.sh
+  ./github-fork-sync.sh $GITHUB_ORG/nosh3 shihjay2/nosh3 main
   # set domain entries
   read -e -p "Enter your Root Domain Name (domain.com): " -i "" ROOT_DOMAIN
   read -e -p "Enter your E-Mail address for Let's Encrypt (your@email.com): " -i "" EMAIL
@@ -111,7 +123,7 @@ ssh_post_data1()
         "github": {
           "branch": "main",
           "deploy_on_push": true,
-          "repo": "shihjay2/nosh3"
+          "repo": "$GITHUB_ORG/nosh3"
         },
         "dockerfile_path": "Dockerfile",
         "envs": [
