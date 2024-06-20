@@ -16,6 +16,7 @@ To create a new patient community, a manger will need these prequisites:
 - details on getting API keys are in the section [More on Additional API Services](#more-on-additional-api-services)
 - assume you have a domain name (mydomain.xyz) and email address needed for LetsEncrypt SSL (my@email.xyz)
 - you have a GitHub account to fork NOSH3 to.  You will need the organization name and [obtain a personal access token.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+- [link your GitHub account to DigitalOcean](https://cloud.digitalocean.com/apps/github/install)
 #### 2. Create a DigitalOcean Droplet with the minimum parameters:
 - size: 's-1vcpu-1gb',
 - image: 'ubuntu-22-10-x64'
