@@ -36,7 +36,11 @@ cd Trustee-Community
 #### 6. Open your browser to https://mydomain.xyz
 - Other notable endpoints with your Trustee include:
 - https://db.mydomain.xyz which points to the [CouchDB](https://couchdb.apache.org/) database used to store user account information (just email) and droplet info.
+- https://noshdb.mydomain.xyz whihc points to the NOSH [CouchDB](https://couchdb.apache.org) database instance used to store encrypted health information for the [NOSH3](https://github.com/shihjay2/nosh3) in DigitalOcean App Platform.
 - https://router.mydomain.xyz which points to the [Traefik](https://doc.traefik.io/traefik/providers/docker/) reverse proxy router
+#### 7. Set up [GitHub Action - Sync Upstream Repo Fork](https://github.com/marketplace/actions/sync-and-merge-upstream-repository-with-your-current-repository)
+
+to auto sync the [NOSH3](https://github.com/shihjay2/nosh3) codebase which is used to update the DigitalOcean App Platform image.  Copy the contents of [sync_nosh.yml](https://github.com/HIEofOne/Trustee-Community/blob/master/sync_nosh.yml) as a new GitHub Workflow.
 
 ## More on Additional API Services
 ### [Magic](https://magic.link/) instructions:

@@ -26,9 +26,6 @@ EOF
   -H "X-GitHub-Api-Version: 2022-11-28" \
   https://api.github.com/repos/shihjay2/nosh3/forks \
   -d "$(fork_post_data)"
-  curl -O https://gist.githubusercontent.com/mathieucarbou/96ab30024f0d3fb44cac970219d23efc/raw/b15e98de1a41bd02b38b14f0ae9a0cbc422dfe70/github-fork-sync.sh
-  chmod a+x github-fork-sync.sh
-  ./github-fork-sync.sh $GITHUB_ORG/nosh3 shihjay2/nosh3 main
   # set domain entries
   read -e -p "Enter your Root Domain Name (domain.com): " -i "" ROOT_DOMAIN
   read -e -p "Enter your E-Mail address for Let's Encrypt (your@email.com): " -i "" EMAIL
