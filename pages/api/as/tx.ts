@@ -19,7 +19,8 @@ if (process.env.NODE_ENV === 'development') {
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
     methods: ["POST", "OPTIONS"],
-    origin: process.env.DOMAIN,
+    origin:'*',
+    // origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
   if (req.method === 'OPTIONS') {

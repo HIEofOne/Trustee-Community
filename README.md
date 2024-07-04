@@ -40,7 +40,12 @@ cd Trustee-Community
 - https://router.mydomain.xyz which points to the [Traefik](https://doc.traefik.io/traefik/providers/docker/) reverse proxy router
 #### 7. Set up [GitHub Action - Sync Upstream Repo Fork](https://github.com/marketplace/actions/sync-and-merge-upstream-repository-with-your-current-repository)
 
-to auto sync the [NOSH3](https://github.com/shihjay2/nosh3) codebase which is used to update the DigitalOcean App Platform image.  Copy the contents of [sync_nosh.yml](https://github.com/HIEofOne/Trustee-Community/blob/master/sync_nosh.yml) as a new GitHub Workflow.
+to auto sync the [NOSH3](https://github.com/shihjay2/nosh3) codebase which is used to update the DigitalOcean App Platform image.  
+- in GitHub, go to the recently forked repository for nosh3 in your organization account.
+- click on Actions
+- Enable all workflows to start (you may receive an error with the Docker Image CI workflow run, just ignore)
+- on the left, there are 2 workflows (Docker Image CI and Sync NOSH3 Upstream).
+- in Docker Image CI, click on the 3 dots on the right-hand side (Show wokflow options), and click Disable Workflow
 
 ## More on Additional API Services
 ### [Magic](https://magic.link/) instructions:
