@@ -16,6 +16,7 @@ async function verifySig(req: any) {
       'content-type'
     ];
     const data = httpis.buildSignedData(req, components, signature_input);
+    console.log(req.url)
     console.log(data)
     console.log(signature)
     const verify = await verifier(Buffer.from(data), Buffer.from(signature, 'base64'));
