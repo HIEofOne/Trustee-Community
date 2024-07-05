@@ -2,8 +2,13 @@ import * as jose from 'jose';
 import { Component, createVerifier, httpis } from 'http-message-signatures';
 import objectPath from 'object-path';
 
+const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
+const url = new URL(domain);
+
 async function verifySig(req: any) {
   if (objectPath.has(req, 'body.client.key.jwk')) {
+    const tail = req.url
+    objectPath.set(req, 'url', url.protocol + "//" + url.hostname + tail)
     const signature = httpis.extractHeader(req, 'signature').replace('sig1=:', '').slice(0,-1);
     const signature_input = httpis.extractHeader(req, 'signature-input').replace('sig1=', '');
     const key = await jose.importJWK(req.body.client.key.jwk, req.body.client.key.alg);
