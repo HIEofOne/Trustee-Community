@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'development') {
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
     methods: ["POST"],
-    origin: process.env.DOMAIN,
+    origin: '*',
     optionsSuccessStatus: 200
   });
   if (await verifySig(req)) {

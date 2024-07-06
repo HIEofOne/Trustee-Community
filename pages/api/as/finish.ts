@@ -110,7 +110,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         if (check_privileges.length > 0 && action_flag.length === 0) {
           // approved
           objectPath.set(request_doc, 'state', 'approved');
-          const hash = createHash('sha3-512');
+          const hash = createHash('sha256');
           hash.update(request_doc.interact.finish.nonce + '\n');
           hash.update(request_doc.response.interact.finish + '\n');
           hash.update(request_doc.interact_nonce.value + '\n');
