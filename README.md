@@ -6,7 +6,7 @@ Trustee Community is the code repository a community manager can fork to create 
 
 To create a new patient community, a manger will need these prequisites:
 - An account at DigtialOcean to pay for hosting the community members Trustees (patient-controlled health records),
-- An account at Stripe to collect credit card payments for Trustee subscriptions hosted by the community (optional)
+- An account at Stripe to collect credit card payments for Trustee subscriptions hosted by the community (future state)
 - A domain name for the community,
 - A privacy policy describing the initial configuration of Trustee access policies and how subscribers can change the policies if they choose.
 
@@ -39,8 +39,7 @@ cd Trustee-Community
 - https://noshdb.mydomain.xyz whihc points to the NOSH [CouchDB](https://couchdb.apache.org) database instance used to store encrypted health information for the [NOSH3](https://github.com/shihjay2/nosh3) in DigitalOcean App Platform.
 - https://router.mydomain.xyz which points to the [Traefik](https://doc.traefik.io/traefik/providers/docker/) reverse proxy router
 #### 7. Set up [GitHub Action - Sync Upstream Repo Fork](https://github.com/marketplace/actions/sync-and-merge-upstream-repository-with-your-current-repository)
-
-to auto sync the [NOSH3](https://github.com/shihjay2/nosh3) codebase which is used to update the DigitalOcean App Platform image.  
+##### Auto sync the [NOSH3](https://github.com/shihjay2/nosh3) codebase which is used to update the creation of your DigitalOcean App Platform image.  
 - in GitHub, go to the recently forked repository for nosh3 in your organization account.
 - click on Actions
 - Enable all workflows to start (you may receive an error with the Docker Image CI workflow run, just ignore)
@@ -49,14 +48,21 @@ to auto sync the [NOSH3](https://github.com/shihjay2/nosh3) codebase which is us
 
 ## More on Additional API Services
 ### [Magic](https://magic.link/) instructions:
-#### 1. Set up an account for free by visiting [Magic](https://magic.link).  Click on Start now.
-#### 2. Once you are in the [dashboard](https://dashboard.magic.link/app/all_apps), go to Magic Auth and click on New App.  Enter the App Name (My App Powered by Trustee) and hit Create App.
-#### 3. Once you are in the home page for the app, scroll down to API Keys and copy the PUBISHABLE API KEY value.  This API Key will be usee to interact with Magic's APIs
-### [National Library of Medicine UMLS Terminology Services](https://uts.nlm.nih.gov/uts/) - this is to allow search queries for SNOMED CT LOINC, and RXNorm definitions.
-#### 1. Set up an account [here](https://uts.nlm.nih.gov/uts/signup-login)
-#### 2. [Edit your profile](https://uts.nlm.nih.gov/uts/edit-profile) and click on Generate new API Key.  Copy this API key.
-### [US Preventive Services Task Force](https://www.uspreventiveservicestaskforce.org/apps/api.jsp) - this provides Care Opportunties guidance based on USPSTF guidelines
-#### 1. [Visit this site for instructions](https://www.uspreventiveservicestaskforce.org/apps/api.jsp)
+
+1. Set up an account for free by visiting [Magic](https://magic.link).  Click on Start now.
+2. Once you are in the [dashboard](https://dashboard.magic.link/app/all_apps), go to Magic Auth and click on New App.  Enter the App Name (My App Powered by Trustee) and hit Create App.
+3. Once you are in the home page for the app, scroll down to API Keys and copy the PUBISHABLE API KEY value.  This API Key will be usee to interact with Magic's APIs
+   
+### [National Library of Medicine UMLS Terminology Services](https://uts.nlm.nih.gov/uts/) 
+##### Allow search queries for SNOMED CT LOINC, and RXNorm definitions.
+
+1. Set up an account [here](https://uts.nlm.nih.gov/uts/signup-login)
+2. [Edit your profile](https://uts.nlm.nih.gov/uts/edit-profile) and click on Generate new API Key.  Copy this API key.
+   
+### [US Preventive Services Task Force](https://www.uspreventiveservicestaskforce.org/apps/api.jsp)
+##### Provides Care Opportunties guidance based on USPSTF guidelines
+
+1. [Visit this site for instructions](https://www.uspreventiveservicestaskforce.org/apps/api.jsp)
 
 ## Architecture
 Trustee is based around Docker containers.  This repository source code is for the Trustee core which is Next.JS based application and served by Node.JS.  Deployment of individual Docker containers which includes the patient health record powered by [NOSH](https://github.com/shihjay2/nosh3) specific to only one patient/user is demonstrated by this project.
