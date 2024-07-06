@@ -115,10 +115,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           hash.update(request_doc.response.interact.finish + '\n');
           hash.update(request_doc.interact_nonce.value + '\n');
           hash.update(request_doc.initial_req_tx);
-          console.log(request_doc.interact.finish.nonce)
-          console.log(request_doc.response.interact.finish)
-          console.log(request_doc.interact_nonce.value)
-          console.log(request_doc.initial_req_tx)
           const hash_result = hash.digest('base64url');
           objectPath.set(request_doc, 'interact_finish_hash', hash_result);
           objectPath.set(request_doc, 'approved_resources', pending_resources);

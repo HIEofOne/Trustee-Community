@@ -54,7 +54,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const parsed = parseSig(req);
       objectPath.set(req, 'body.created', parsed.created);
       objectPath.set(req, 'body.keyid', parsed.keyid);
-      objectPath.set(req, 'body.initial_req_tx', domain + req.url);
+      objectPath.set(req, 'body.initial_req_tx', req.url);
       objectPath.set(req, 'body.state', 'pending');
       try {
         await gnap_public_keys.get(parsed.keyid);
