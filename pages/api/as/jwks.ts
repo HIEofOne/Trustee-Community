@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'development') {
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
     methods: ["GET"],
-    origin: process.env.DOMAIN,
+    origin: '*',
     optionsSuccessStatus: 200
   });
   const keys = await nano.db.use("keys");
