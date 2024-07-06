@@ -7,8 +7,10 @@ const url = new URL(domain);
 
 async function verifySig(req: any) {
   if (objectPath.has(req, 'body.client.key.jwk')) {
-    const tail = req.url
+    const tail = req.url;
+    console.log(req.url)
     objectPath.set(req, 'url', url.protocol + "//" + url.hostname + tail);
+    console.log(req.url)
     const signature = httpis.extractHeader(req, 'signature').replace('sig1=:', '').slice(0,-1);
     const signature_input = httpis.extractHeader(req, 'signature-input').replace('sig1=', '');
     const key = await jose.importJWK(req.body.client.key.jwk, req.body.client.key.alg);
