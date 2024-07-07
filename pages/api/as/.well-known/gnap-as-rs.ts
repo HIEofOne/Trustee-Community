@@ -7,7 +7,7 @@ const url = new URL(domain);
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
     methods: ["GET"],
-    origin: process.env.DOMAIN,
+    origin: '*',
     optionsSuccessStatus: 200
   });
   res.status(200).json({
