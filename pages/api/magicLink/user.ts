@@ -6,8 +6,7 @@ const User = async (req: any, res: any) => {
   try {
     user = await Iron.unseal(
       CookieService.getAuthToken(req.cookies),
-      //@ts-ignore
-      process.env.ENCRYPTION_SECRET,
+      process.env.ENCRYPTION_SECRET as any,
       Iron.defaults,
     );
   } catch (error) {

@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
 import type { VerifiedAuthenticationResponse, VerifiedRegistrationResponse } from '@simplewebauthn/server';
 import { verifyAuthenticationResponse, verifyRegistrationResponse } from '@simplewebauthn/server';
-import type { PublicKeyCredentialWithAssertionJSON, PublicKeyCredentialWithAttestationJSON } from '@github/webauthn-json';
+// import type { PublicKeyCredentialWithAssertionJSON, PublicKeyCredentialWithAttestationJSON } from '@github/webauthn-json';
 import crypto from 'crypto';
 import * as jose from 'jose';
 import objectPath from 'object-path';
@@ -40,7 +40,7 @@ export function isLoggedIn(req: SessionRequest) {
 }
 export async function register(req: NextApiRequest) {
   const challenge = req.session.challenge ?? "";
-  const credential = req.body.credential as PublicKeyCredentialWithAttestationJSON;
+  const credential = req.body.credential as any;
   const { email } = req.body;
   let verification: VerifiedRegistrationResponse;
   if (credential == null) {
@@ -48,7 +48,6 @@ export async function register(req: NextApiRequest) {
   }
   try {
     verification = await verifyRegistrationResponse({
-      //@ts-ignore
       response: credential,
       expectedChallenge: challenge,
       requireUserVerification: true,
@@ -82,7 +81,7 @@ export async function register(req: NextApiRequest) {
 }
 export async function login(req: NextApiRequest) {
   const challenge = req.session.challenge ?? "";
-  const credential = req.body.credential as PublicKeyCredentialWithAssertionJSON;
+  const credential = req.body.credential;
   const email = req.body.email;
   if (credential?.id == null) {
     throw new Error("Invalid Credentials");
@@ -98,8 +97,7 @@ export async function login(req: NextApiRequest) {
   let verification: VerifiedAuthenticationResponse;
   try {
     verification = await verifyAuthenticationResponse({
-      //@ts-ignore
-      response: credential,
+      response: credential as any,
       expectedChallenge: challenge,
       authenticator: {
         credentialID: userCredential.credentials.create.externalId,

@@ -15,8 +15,7 @@ const Login = async (req: any, res: any) => {
   // Author a couple of cookies to persist a user's session
   const token = await Iron.seal(
     user,
-    //@ts-ignore
-    process.env.ENCRYPTION_SECRET,
+    process.env.ENCRYPTION_SECRET as any,
     Iron.defaults,
   );
   CookieService.setTokenCookie(res, token);

@@ -15,8 +15,7 @@ async function sendEmail(req: any, res: any) {
     optionsSuccessStatus: 200
   });
   if (process.env.MAIL_TYPE === 'sendgrid') {
-    //@ts-ignore
-    sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+    sendgrid.setApiKey(process.env.SENDGRID_API_KEY as any);
     try {
       const result = await sendgrid.send({
         to: `${req.body.email}`,

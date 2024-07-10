@@ -10,8 +10,7 @@ import '@fontsource/nunito/400.css';
 import '@fontsource/nunito/500.css';
 import '@fontsource/nunito/700.css';
 
-//@ts-ignore
-const MyApp = ({ Component, pageProps }) => {
+const MyApp = ({ Component, pageProps }: { Component:any, pageProps:any}) => {
   return (
     <ThemeProvider theme={appTheme}>
       <CssBaseline />
