@@ -1,6 +1,6 @@
 import { importJWK } from 'jose';
 import { createHash, randomBytes, sign } from 'crypto';
-import { createSigner, httpis } from 'http-message-signatures';
+import { createSigner, httpbis } from 'http-message-signatures';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -32,31 +32,41 @@ const Sign = async(req: any, res: any) => {
       }
     }
   }
+  const opt = {
+    method: req.body.method,
+    url: req.body.urlinput,
+    headers: {
+      "content-digest": "sha-256=:" + createHash('sha256').update(JSON.stringify(body)).digest('hex') + "=:",
+      "content-type": "application/json",
+      "authorization": "GNAP " + req.body.jwt
+    },
+    body: JSON.stringify(body)
+  }
   try {
-    const signedRequest: any = await httpis.sign({
-      method: req.body.method,
-      url: req.body.urlinput,
-      headers: {
-        "content-digest": "sha-256=:" + createHash('sha256').update(JSON.stringify(body)).digest('hex') + "=:",
-        "content-type": "application/json",
-        "authorization": "GNAP " + req.body.jwt
-      },
-      body: JSON.stringify(body)
-    }, {
-      components: [
+    const key = createSigner(rsaPrivateKey, 'rsa-v1_5-sha256')
+    const signedRequest = await httpbis.signMessage({
+      key,
+      name: 'sig1',
+      fields: [
         '@method',
         '@target-uri',
         'content-digest',
         'content-type'
       ],
-      parameters: {
+      params: [
+        'created',
+        'nonce',
+        'tag',
+        'keyid',
+        'alg'
+      ],
+      paramValues: {
         nonce: randomBytes(16).toString('base64url'),
-        tag: "gnap"
-      },
-      keyId: key.publicKey.kid,
-      signer: createSigner('rsa-v1_5-sha256', rsaPrivateKey),
-      format: "httpbis"
-    })
+        tag: "gnap",
+        //@ts-ignore
+        keyid: key.publicKey.kid
+      }
+    }, opt)
     try {
       const update = await fetch(final_url, signedRequest)
         .then((res) => {
