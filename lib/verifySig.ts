@@ -10,12 +10,12 @@ async function verifySig(req: any) {
     const tail = req.url;
     objectPath.set(req, 'url', url.protocol + "//" + url.hostname + tail);
     console.log(req)
-    const key_jose = await jose.importJWK(req.body.client.key.jwk, req.body.client.key.alg);
+    const key_jose = await jose.importJWK(req.body.client.key.jwk, req.body.client.key.jwk.alg);
     const keys = new Map();
     const algs = []
     console.log(req.body.client)
     console.log(req.body.client.key)
-    if (req.body.client.key.alg === 'RS256') {
+    if (req.body.client.key.jwk.alg === 'RS256') {
       algs.push('rsa-v1_5-sha256')
     }
     keys.set(req.body.client.key.kid, {
