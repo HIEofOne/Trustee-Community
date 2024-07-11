@@ -23,6 +23,7 @@ async function verifySig(req: any) {
     });
     const verified = await httpbis.verifyMessage({
       async keyLookup() {
+        console.log(keys.get(req.body.client.key.kid))
         return keys.get(req.body.client.key.kid);
       },
     }, req);
