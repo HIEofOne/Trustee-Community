@@ -11,9 +11,13 @@ async function verifySig(req: any) {
     objectPath.set(req, 'url', url.protocol + "//" + url.hostname + tail);
     const key_jose = await jose.importJWK(req.body.client.key.jwk, req.body.client.key.alg);
     const keys = new Map();
+    const algs = []
+    if (req.body.client.key.alg === 'RS256') {
+      algs.push('rsa-v1_5-sha256')
+    }
     keys.set(req.body.client.key.kid, {
         id: req.body.client.key.kid,
-        algs: [req.body.client.key.alg],
+        algs,
         verify: createVerifier(key_jose as Uint8Array, 'rsa-v1_5-sha256'),
     });
     const verified = await httpbis.verifyMessage({
