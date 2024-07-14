@@ -15,10 +15,22 @@ async function verifySig(req: any) {
     if (req.body.client.key.jwk.alg === 'RS256') {
       algs.push('rsa-v1_5-sha256')
     }
+    if (req.body.client.key.jwk.alg === 'HS256') {
+      algs.push('hmac-sha256')
+    }
+    if (req.body.client.key.jwk.alg === 'PS512') {
+      algs.push('rsa-pss-sha512')
+    }
+    if (req.body.client.key.jwk.alg === 'ES256') {
+      algs.push('ecdsa-p256-sha256-sha256')
+    }
+    if (req.body.client.key.jwk.alg === 'ES384') {
+      algs.push('ecdsa-p384-sha384')
+    }
     keys.set(req.body.client.key.kid, {
         id: req.body.client.key.kid,
         algs,
-        verify: createVerifier(key_jose as Uint8Array, 'rsa-v1_5-sha256'),
+        verify: createVerifier(key_jose as Uint8Array, algs[0]),
     });
     const verified = await httpbis.verifyMessage({
       async keyLookup() {
