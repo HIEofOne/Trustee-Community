@@ -12,7 +12,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   });
   res.status(200).json({
     "grant_request_endpoint": url.protocol + "//" + url.hostname + '/api/as/tx',
-    "introspection_endpoint": url.protocol + "//" + url.hostname + '/api/as/introspect',
+    // "introspection_endpoint": url.protocol + "//" + url.hostname + '/api/as/introspect',
     "resource_registration_endpoint": url.protocol + "//" + url.hostname + '/api/as/resource',
     "token_formats_supported": ["jwt"]
   });
