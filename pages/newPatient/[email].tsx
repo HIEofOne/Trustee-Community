@@ -139,6 +139,7 @@ const NewPatient = () => {
       const data1 = await fetch('/api/deploy', 
         { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body1) })
         .then((res) => res.json());
+      console.log(data1)
       if (data1.url) {
         setProgress(100);
         setShowProgressBar(false);
