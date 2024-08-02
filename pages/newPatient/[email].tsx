@@ -109,7 +109,7 @@ const NewPatient = () => {
     const isRegistered = await fetch("/api/couchdb/patients/" + email,
       { method: "GET", headers: {"Content-Type": "application/json"} })
       .then((res) => res.json()).then((json) => json._id);
-    if (!isRegistered) {
+    if (isRegistered === undefined) {
       const data = await fetch(`/api/couchdb/patients/new`, 
         { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) })
         .then((res) => res.json());
