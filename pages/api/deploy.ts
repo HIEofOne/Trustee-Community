@@ -31,7 +31,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     pin: req.body.pin
   }
   // const opts = {headers: {Authorization: 'Bearer ' + do_token, Accept: 'application/json'}};
-  const new_pt = await axios.post(process.env.APP_URL + '/auth/addPatient', new_pt_body, {timeout: 50000});
+  const new_pt = await axios.post(process.env.APP_URL + '/auth/addPatient', new_pt_body, {timeout: 120000});
   const url_full = new_pt.data.url;
   const doc_patient = await patients.get(req.body.email);
   doc_patient.phr = url_full;
