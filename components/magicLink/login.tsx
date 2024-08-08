@@ -178,6 +178,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
           { method: "POST", body: JSON.stringify({ email, credential: credential_auth }), headers: {"Content-Type": "application/json"} });
         if (result.ok) {
           if (authonly) {
+            await fetch(`/api/auth/logout`, { method: "POST" });
             setEmail(email);
           } else {
             if (!clinical) {
