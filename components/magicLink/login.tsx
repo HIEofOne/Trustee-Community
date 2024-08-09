@@ -27,6 +27,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
   const [email, setEmailValue] = useState("");
   const [clientExist, setClientExist] = useState(false); 
 
+  console.log(locations)
   useEffect(() => {
     const checkAvailability = async () => {
       const available =

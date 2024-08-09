@@ -37,6 +37,7 @@ export default function Interact({ challenge }: { challenge: string }) {
       }
       if (objectPath.has(isInstance, 'access_token.locations')) {
         setLocations(isInstance.access_token.locations)
+        console.log(locations)
       }
     }
     if (isInstance.error) {
