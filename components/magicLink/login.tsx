@@ -241,8 +241,10 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                     <p>To access the following resource URLs:</p>
                     <ul>
                       {
-                        locations.map((value: string, index:number) => {
-                          return <li key={index}>{value}</li>
+                        locations.map((value: any, index:number) => {
+                          return <li key={index}>
+                            {value.locations.join(', ')} [{value.actions.join(', ')}], Purpose: {value.purpose}
+                          </li>
                         })
                       }
                     </ul>
