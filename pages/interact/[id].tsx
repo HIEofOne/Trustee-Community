@@ -18,7 +18,8 @@ export default function Interact({ challenge }: { challenge: string }) {
   const { query, isReady } = useRouter();
   const [openNotification, setOpenNotification] = useState(false);
   const [notification, setNotification] = useState("");
-  const [client, setClient] = useState("")
+  const [client, setClient] = useState("");
+  const [locations, setLocations] = useState([]);
   
   const closeNotification = () => {
     setOpenNotification(false);
@@ -33,6 +34,9 @@ export default function Interact({ challenge }: { challenge: string }) {
       setDocInstance(isInstance.success);
       if (objectPath.has(isInstance, 'success.client.display.name')) {
         setClient(isInstance.success.client.display.name);
+      }
+      if (objectPath.has(isInstance, 'access_token.locations')) {
+        setLocations(isInstance.access_token.locations)
       }
     }
     if (isInstance.error) {
@@ -101,7 +105,7 @@ export default function Interact({ challenge }: { challenge: string }) {
         </Head>
         <div>
           <h2>Trustee Authorization Server</h2>
-          <Login challenge={challenge} clinical={false} authonly={true} client={client} setEmail={setEmail}/>
+          <Login challenge={challenge} clinical={false} authonly={true} client={client} setEmail={setEmail} locations={locations}/>
         </div>
       </>
     );

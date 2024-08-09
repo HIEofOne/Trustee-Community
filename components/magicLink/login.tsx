@@ -16,7 +16,7 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 
-export default function Login({ challenge, clinical=false, authonly=false, client='', setEmail }: { challenge: string, clinical: boolean, authonly: boolean, client?: string, setEmail?: any }) {
+export default function Login({ challenge, clinical=false, authonly=false, client='', setEmail, locations=[] }: { challenge: string, clinical: boolean, authonly: boolean, client?: string, setEmail?: any, locations?: any }) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [isError, setIsError] = useState(false);
@@ -235,7 +235,17 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             {authonly ? (
               <div>
                 {clientExist ? (
-                  <p>Sign Into {client}</p>
+                  <div>
+                    <p>Sign Into {client}</p>
+                    <p>To access the following resource URLs:</p>
+                    <ul>
+                      {
+                        locations.map((value: string, index:number) => {
+                          return <li key={index}>{value}</li>
+                        })
+                      }
+                    </ul>
+                  </div>
                 ) : (
                   <p>Sign In</p>
                 )}
