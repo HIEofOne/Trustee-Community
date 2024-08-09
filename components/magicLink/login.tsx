@@ -4,17 +4,26 @@ import { supported, create, get, parseCreationOptionsFromJSON, parseRequestOptio
 import { useEffect, useState } from 'react';
 import objectPath from 'object-path';
 
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import Grid from "@mui/material/Grid";
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import KeyIcon from '@mui/icons-material/Key';
 import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
 import PersonIcon from '@mui/icons-material/Person';
 import ReplayIcon from '@mui/icons-material/Replay';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export default function Login({ challenge, clinical=false, authonly=false, client='', setEmail, locations=[] }: { challenge: string, clinical: boolean, authonly: boolean, client?: string, setEmail?: any, locations?: any }) {
   const router = useRouter();
@@ -237,20 +246,44 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               <div>
                 {clientExist ? (
                   <div>
-                    <p>Sign Into {client}</p>
-                    <p>To access the following resource URLs:</p>
-                    <ul>
+                    <Typography variant="h6" component="div">Sign In To {client}</Typography>
+                    <Typography variant="body1" component="div">For access to the following resources:</Typography>
+                    <List>
                       {
                         locations.map((value: any, index:number) => {
-                          return <li key={index}>
-                            {value.locations.join(', ')} [{value.actions.join(', ')}], Purpose: {value.purpose}
-                          </li>
+                          return <ListItem key={index}>
+                            {
+                              value.actions.map((value0: string, index0: number) => {
+                                {
+                                  if (value0 === 'read') {
+                                    return <ListItemAvatar><Avatar><VisibilityIcon/></Avatar></ListItemAvatar>
+                                  }
+                                  if (value0 === 'write') {
+                                    return <ListItemAvatar><Avatar><EditIcon/></Avatar></ListItemAvatar>
+                                  }
+                                  if (value0 === 'delete') {
+                                    return <ListItemAvatar><Avatar><DeleteIcon/></Avatar></ListItemAvatar>
+                                  }
+                                }
+                              })
+                            }
+                            <ListItemText>
+                              <Typography variant="body2" component="div">Purpose: {value.purpose}</Typography>
+                              {
+                                value.locations.map((value1: string, index1: number) => {
+                                  {
+                                    return <Typography variant="caption" component="div">{value1}</Typography>
+                                  }
+                                })
+                              }
+                            </ListItemText>
+                          </ListItem>
                         })
                       }
-                    </ul>
+                    </List>
                   </div>
                 ) : (
-                  <p>Sign In</p>
+                  <Typography variant="h6" component="div">Sign In</Typography>
                 )}
               </div>
             ) : (
