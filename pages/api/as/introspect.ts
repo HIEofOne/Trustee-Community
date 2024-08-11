@@ -31,7 +31,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       if (result.docs[0]) {
         res.status(200).json({
           "active": true,
-          "access": result.docs[0].access
+          "access": result.docs[0].access_token.access
         });
       } else {
         res.status(200).json({"active": false});
