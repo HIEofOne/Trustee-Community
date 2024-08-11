@@ -24,7 +24,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (await verifySig(req)) {
     const gnap_resources = await nano.db.use("gnap_resources");
     var proceed = false;
-    // body: {"resources": [
+    // body: {"access": [
     //  {
     //    "type": "resource name",
     //    "actions": ["read", "write", "delete"],
@@ -37,8 +37,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     //  { ... }
     // ]}
     if (req.method === 'POST') {
-      if (objectPath.has(req, 'body.resources') && req.body.resources.length > 0) {
-        for (var a of req.body.resources) {
+      if (objectPath.has(req, 'body.access') && req.body.access.length > 0) {
+        for (var a of req.body.access) {
           const doc = {
             type: a.type,
             actions: a.actions,
@@ -67,18 +67,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     //    "ro": "email@of.resource.owner"
     //  }}
     if (req.method === 'PUT') {
-      if (objectPath.has(req, 'body.resource')) {
+      if (objectPath.has(req, 'body.access')) {
         if (req.headers['authorization'] !== undefined) {
           const jwt = req.headers['authorization'].split(' ')[1];
-          if (await verifyJWT(jwt, objectPath.get(req, 'body.resource.ro'))) {
+          if (await verifyJWT(jwt, objectPath.get(req, 'body.access.ro'))) {
             proceed = true;
           }
         }
         if (proceed) {
           try {
-            const doc = await gnap_resources.get(req.body.resource._id);
-            objectPath.set(req, 'body.resource._rev', doc._rev);
-            await gnap_resources.insert(req.body.resource);
+            const doc = await gnap_resources.get(req.body.access._id);
+            objectPath.set(req, 'body.access._rev', doc._rev);
+            await gnap_resources.insert(req.body.access);
             res.status(200).json({success: true});
           } catch (e) {
             res.status(401).send('Unauthorized');
@@ -91,15 +91,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
     }
     if (req.method === 'DELETE') {
-      if (objectPath.has(req, 'body.resource')) {
+      if (objectPath.has(req, 'body.access')) {
         if (req.headers['authorization'] !== undefined) {
           const jwt = req.headers['authorization'].split(' ')[1];
-          if (await verifyJWT(jwt, objectPath.get(req, 'body.resource.ro'))) {
+          if (await verifyJWT(jwt, objectPath.get(req, 'body.access.ro'))) {
             proceed = true;
           }
         }
         if (proceed) {
-          const doc = await gnap_resources.get(req.body.resource._id);
+          const doc = await gnap_resources.get(req.body.access._id);
           await gnap_resources.destroy(doc);
           res.status(200).json({success: true});
         } else {
