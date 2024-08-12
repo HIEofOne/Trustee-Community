@@ -271,9 +271,8 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                               })
                             }
                             <ListItemText>
-                              <Typography variant="body2">{value.type}</Typography>
                               <Accordion>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>Details</AccordionSummary>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>{value.type}</AccordionSummary>
                                 <AccordionDetails>
                                   <Typography variant="body2" component="div">Purpose: {value.purpose}</Typography>
                                   {
