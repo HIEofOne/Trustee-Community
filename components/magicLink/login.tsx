@@ -4,12 +4,16 @@ import { supported, create, get, parseCreationOptionsFromJSON, parseRequestOptio
 import { useEffect, useState } from 'react';
 import objectPath from 'object-path';
 
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Grid from "@mui/material/Grid";
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import KeyIcon from '@mui/icons-material/Key';
@@ -267,14 +271,20 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                               })
                             }
                             <ListItemText>
-                              <Typography variant="body2" component="div">Purpose: {value.purpose}</Typography>
-                              {
-                                value.locations.map((value1: string, index1: number) => {
+                              <Typography variant="body2">{value.type}</Typography>
+                              <Accordion>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>Details</AccordionSummary>
+                                <AccordionDetails>
+                                  <Typography variant="body2" component="div">Purpose: {value.purpose}</Typography>
                                   {
-                                    return <Typography variant="caption" component="div">{value1}</Typography>
+                                    value.locations.map((value1: string, index1: number) => {
+                                      {
+                                        return <Typography variant="caption" component="div">{value1}</Typography>
+                                      }
+                                    })
                                   }
-                                })
-                              }
+                                </AccordionDetails>
+                              </Accordion>
                             </ListItemText>
                           </ListItem>
                         })
