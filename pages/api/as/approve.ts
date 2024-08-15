@@ -31,9 +31,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const gnap_doc = await gnap.get(req.body.doc_id);
       const pending_resources = objectPath.get(gnap_doc, 'pending_resources');
       const pending_resource = objectPath.get(pending_resources, req.body.pending_resource_index);
-      var message = '<h3>Type: ' + pending_resource.type +'</h3><ul>';
+      let message = '<h3>Type: ' + pending_resource.type +'</h3><ul>';
       console.log(message)
-      for (var a of pending_resource.locations) {
+      for (const a of pending_resource.locations) {
         console.log(a)
         message += '<li>' + a + '</li>';
       }

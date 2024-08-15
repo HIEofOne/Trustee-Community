@@ -85,7 +85,7 @@ export default function Review() {
         setDocInstance(isInstance.success);
         const vc_arr = []
         if (objectPath.has(isInstance, 'success.vc')) {
-          for (var vc of objectPath.get(isInstance, 'success.vc')) {
+          for (const vc of objectPath.get(isInstance, 'success.vc')) {
             vc_arr.push(objectPath.get(vc, 'vc.credentialSubject'))
           }
         } else {

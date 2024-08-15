@@ -44,7 +44,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       try {
         const resource_docs = await gnap_resources.find(r);
         const approved_resources = []
-        for (var resource_doc of resource_docs.docs) {
+        for (const resource_doc of resource_docs.docs) {
           if (await verifyJWT(token, objectPath.get(resource_doc, 'ro'))) {
             approved_resources.push(resource_doc);
           }

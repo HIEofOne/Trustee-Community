@@ -23,15 +23,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.status(200).json({error: "Bad Request: missing items in body"});
   }
   const gnap_resources = await nano.use("gnap_resources");
-  var locations = [];
-  var data = null;
-  var error = {};
+  let locations = [];
+  let data = null;
+  let error = {};
   if (objectPath.has(doc, 'locations')) {
     locations = objectPath.get(doc, 'locations');
   } else {
     res.status(200).json({error: "Bad Request: missing locations in access object"});
   }
-  for (var location of locations) {
+  for (const location of locations) {
     const q = {
       selector: {
         location: {"$eq": location}

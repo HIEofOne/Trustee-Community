@@ -92,7 +92,7 @@ export default function Pending(props:any) {
   const getUser = async(index: number) => {
     const vc_arr = []
     if (objectPath.has(requests, index + '.vc')) {
-      for (var vc of objectPath.get(requests, index + '.vc')) {
+      for (const vc of objectPath.get(requests, index + '.vc')) {
         vc_arr.push(objectPath.get(vc, 'vc.credentialSubject'))
       }
     } else {

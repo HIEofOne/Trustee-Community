@@ -63,9 +63,9 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
         //login with magic  
         if (typeof window === "undefined") return;
         const magicKey = await fetch("/api/magicLink/key", 
-          { method: "POST" });
-        var magicKeyData = await magicKey.json();
-        const did = await new Magic(magicKeyData.key).auth.loginWithEmailOTP({ email: email });
+          { method: "POST" })
+          .then((res) => res.json());
+        const did = await new Magic(magicKey.key).auth.loginWithEmailOTP({ email: email });
         // Once we have the did from magic, login with our own API
         const authRequest = await fetch("/api/magicLink/login", 
           { method: "POST", headers: { Authorization: `Bearer ${did}` }});
@@ -73,9 +73,9 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
           // Magic Link login successful!
           if (isRegistered === undefined) {
             const body = { email: email, did: did };
-            const res = await fetch(`/api/couchdb/patients/new`, 
-              { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) });
-            const data = await res.json();
+            const data = await fetch(`/api/couchdb/patients/new`, 
+              { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) })
+              .then((res) => res.json());
             if (data.successs) {
               console.log('user added');
             }

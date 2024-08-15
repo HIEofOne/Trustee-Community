@@ -39,8 +39,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         const pending_resources = [];
         const action_flag = [];
         // logic to determine access here
-        for (var access of request_doc.access_token.access) {
-          for (var a of access.locations) {
+        for (const access of request_doc.access_token.access) {
+          for (const a of access.locations) {
             const gnap_resources = await nano.db.use("gnap_resources");
             const r = {
               selector: {
@@ -49,8 +49,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             };
             try {
               const resource_docs = await gnap_resources.find(r);
-              for (var resource_doc of resource_docs.docs) {
-                for (var action of access.actions) {
+              for (const resource_doc of resource_docs.docs) {
+                for (const action of access.actions) {
                   if (!resource_doc.actions.includes(action)) {
                     action_flag.push(action)
                   }
@@ -72,7 +72,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                 if (check_privileges.length === 0) {
                   if (resource_doc.privileges.includes('npi')) {
                     if (objectPath.has(request_doc, 'vc')) {
-                      for (var vc of request_doc.vc) {
+                      for (const vc of request_doc.vc) {
                         if (objectPath.has(vc, 'vc.credentialSubject.npi')) {
                           check_privileges.push({location: a, privilege: 'npi'});
                           const privilege_arr = objectPath.get(resource_doc, 'privileges')
@@ -88,7 +88,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                 if (check_privileges.length === 0) {
                   if (resource_doc.privileges.includes('offline')) {
                     if (objectPath.has(request_doc, 'vc')) {
-                      for (var vc1 of request_doc.vc) {
+                      for (const vc1 of request_doc.vc) {
                         if (objectPath.has(vc1, 'vc.credentialSubject.firstName')) {
                           check_privileges.push({location: a, privilege: 'offline'});
                           const privilege_arr1 = objectPath.get(resource_doc, 'privileges')

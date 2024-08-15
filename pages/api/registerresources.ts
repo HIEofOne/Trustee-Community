@@ -18,7 +18,7 @@ const patients = nano.db.use("patients");
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const doclist = await patients.list({include_docs: true});
   const result_arr = [];
-  for (var doc of doclist.rows) {
+  for (const doc of doclist.rows) {
     if (objectPath.has(doc, 'doc.phr')) {
       const id = doc.doc.phr.split('/').slice(-1).join('');
       const body = {

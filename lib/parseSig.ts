@@ -1,9 +1,9 @@
 function parseSig(req: any) {
-  var response = {
+  const response = {
     created: '',
     keyid: ''
   }
-  var signature_input = <string>req.headers['signature-input'];
+  const signature_input = <string>req.headers['signature-input'];
   const signature_input_arr = signature_input.split(';');
   const created = signature_input_arr.find((input) => {
     if (input.startsWith('created')) {

@@ -108,8 +108,8 @@ const RequestAccess = ({
       const resource_url = origin + '/review/' + objectPath.get(doc, 'interact_nonce.value')
       const resource_arr = [];
       resource_arr.push(resource_url);
-      for (var a of pending) {
-        for (var b of objectPath.get(a, 'locations')) {
+      for (const a of pending) {
+        for (const b of objectPath.get(a, 'locations')) {
           resource_arr.push(b);
         }
       }
@@ -193,11 +193,11 @@ const RequestAccess = ({
     if (all_find) {
       if (!allResources) {
         if (resourceType.length === 0) {
-          var all: Array<string> = [];
-          var all_scopes: Array<string> = [];
-          for (var resource of resources) {
+          const all: Array<string> = [];
+          const all_scopes: Array<string> = [];
+          for (const resource of resources) {
             all.push(objectPath.get(resource, 'type'))
-            for (var scope of objectPath.get(resource, 'actions')) {
+            for (const scope of objectPath.get(resource, 'actions')) {
               if (!all_scopes.includes(scope)) {
                 all_scopes.push(scope)
               }

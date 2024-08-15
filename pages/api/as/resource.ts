@@ -23,7 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   });
   if (await verifySig(req)) {
     const gnap_resources = await nano.db.use("gnap_resources");
-    var proceed = false;
+    let proceed = false;
     // body: {"access": [
     //  {
     //    "type": "resource name",
@@ -38,7 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // ]}
     if (req.method === 'POST') {
       if (objectPath.has(req, 'body.access') && req.body.access.length > 0) {
-        for (var a of req.body.access) {
+        for (const a of req.body.access) {
           const doc = {
             type: a.type,
             actions: a.actions,

@@ -85,8 +85,8 @@ const NewPatient = () => {
     if (!privacy) {
       return;
     }
-    var body = { email: email };
-    var birthGender = 'UNK';
+    const body = { email: email };
+    let birthGender = 'UNK';
     if (gender == 'male') {
       birthGender = 'M';
     }
@@ -96,7 +96,7 @@ const NewPatient = () => {
     if (gender == 'other') {
       birthGender = 'OTH';
     }
-    var body1 = {
+    const body1 = {
       email: email,
       first_name: firstName,
       last_name: lastName,
@@ -105,7 +105,7 @@ const NewPatient = () => {
       birthGender: birthGender,
       pin: pin
     };
-    var proceed = false;
+    let proceed = false;
     const isRegistered = await fetch("/api/couchdb/patients/" + email,
       { method: "GET", headers: {"Content-Type": "application/json"} })
       .then((res) => res.json()).then((json) => json._id);

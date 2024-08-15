@@ -57,7 +57,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
               }});
             } else {
               const pending_resources = [];
-              for (var a of response.docs[0].access_token.access.locations) {
+              for (const a of response.docs[0].access_token.access.locations) {
                 const gnap_resources = await nano.db.use("gnap_resources");
                 const r = {
                   selector: {
@@ -67,7 +67,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                 };
                 try {
                   const resource_docs = await gnap_resources.find(r);
-                  for (var resource_doc of resource_docs.docs) {
+                  for (const resource_doc of resource_docs.docs) {
                     pending_resources.push(resource_doc);
                   }
                 } catch (e) {

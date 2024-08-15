@@ -23,21 +23,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   });
   const dbs = ["patients", "gnap", "gnap_resources", "gnap_policies", "gnap_public_keys", "keys"];
   const dbs_final = [];
-  for (var db of dbs) {
+  for (const db of dbs) {
     const checkdb = nano.db.use(db);
     try {
-      const test = await checkdb.info();
+      await checkdb.info();
       dbs_final.push({db: db, status: 'exists'});
     } catch (e) {
       const create = await nano.db.create(db);
       if (db === "keys") {
         const alg = 'RS256';
         const { publicKey, privateKey } = await jose.generateKeyPair(alg);
-        var public_key = await jose.exportJWK(publicKey);
+        const public_key = await jose.exportJWK(publicKey);
         const kid = uuidv4();
         objectPath.set(public_key, 'kid', kid);
         objectPath.set(public_key, 'alg', alg);
-        var private_key = await jose.exportJWK(privateKey);
+        const private_key = await jose.exportJWK(privateKey);
         objectPath.set(private_key, 'kid', kid);
         objectPath.set(private_key, 'alg', alg);
         console.log(public_key)

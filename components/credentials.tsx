@@ -55,7 +55,7 @@ export default function Credentials(props:any) {
       setLoading(false);
       setQrCode(result.link);
       setQrStatus(true);
-      var check = false
+      let check = false;
       while (!check) {
         await sleep(5);
         const a = await fetch("/api/vp/status",
@@ -85,7 +85,7 @@ export default function Credentials(props:any) {
         window.location.replace(finish_result.success.interact.finish.uri + "?hash=" + finish_result.success.interact_finish_hash + "&interact_ref=" + finish_result.success.interact_nonce.value);
       } else {
         setPendingStatus(true);
-        var test = false;
+        let test = false;
         setVcStatus(false);
         while (!test) {
           await sleep(5);
@@ -126,7 +126,7 @@ export default function Credentials(props:any) {
     props.update_doc(objectPath.get(vcs, 'doc'));
     const vc_arr = []
     if (objectPath.has(vcs, 'vc')) {
-      for (var vc of objectPath.get(vcs, 'vc')) {
+      for (const vc of objectPath.get(vcs, 'vc')) {
         vc_arr.push(objectPath.get(vc, 'vc.credentialSubject'))
       }
     } else {

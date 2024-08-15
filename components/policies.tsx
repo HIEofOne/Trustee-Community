@@ -117,7 +117,7 @@ export default function Policies(props:any) {
     }
     const doc: { [key: number]: any; } = resources[deleteIndex];
     const privileges: string[] = [];
-    for (var b of objectPath.get(doc, 'privileges')) {
+    for (const b of objectPath.get(doc, 'privileges')) {
       if (b !== deleteValue) {
         privileges.push(b);
       }
