@@ -33,6 +33,7 @@ EOF
   read -e -p "Enter your DigitalOcean API Token: " -i "" DIGITALOCEAN_API_TOKEN
   read -e -p "Enter your CouchDB/Traefik Password for admin user: " -i "" COUCHDB_PASSWORD
   read -e -p "Enter your From Email: " -i "" FROM_EMAIL
+  read -e -p "Enter the admin email address (notifications for new users): " -i "" ADMIN_EMAIL
   cp ./env ./docker/trusteecommunity/.env.local
   PS3="Enter email type: "
   mailtypes=("sendgrid" "smtp" "aws")
@@ -79,6 +80,8 @@ EOF
   sed -i "s/example.com/$ROOT_DOMAIN/" ./docker/traefik/docker-compose.yml
   sed -i "s/example.com/$ROOT_DOMAIN/" ./docker/trusteecommunity/docker-compose.yml
   sed -i "s/example.com/$ROOT_DOMAIN/" ./docker/trusteecommunity/.env.local
+  sed -i '/^MAIL_TYPE=/s/=.*/='"$MAIL_TYPE"'/' ./docker/trusteecommunity/.env.local
+  sed -i '/^ADMIN_EMAIL=/s/=.*/='"$ADMIN_EMAIL"'/' ./docker/trusteecommunity/.env.local
   sed -i '/^FROM_EMAIL=/s/=.*/='"$FROM_EMAIL"'/' ./docker/trusteecommunity/.env.local
   KEY=$(curl https://generate-secret.vercel.app/32)
   sed -i "s/example.key/$KEY/" ./docker/trusteecommunity/.env.local

@@ -83,6 +83,7 @@ const NewPatient = () => {
     e.preventDefault();
     //user must accept privacy
     if (!privacy) {
+      setError("You must accept privacy policy to continue");
       return;
     }
     const body = { email: email };

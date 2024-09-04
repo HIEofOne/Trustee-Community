@@ -13,6 +13,7 @@ if (process.env.NODE_ENV === 'development') {
   var nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
 }
 const patients = nano.db.use("patients");
+var admin_email = process.env.ADMIN_EMAIL;
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const new_pt_body = {
@@ -50,9 +51,25 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     })
   });
   const { error } = await sendmail.json();
+  const sendmail1 = await fetch(domain + "/api/sendmail", 
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: admin_email,
+        subject: "HIE of One - New Account Confirmation",
+        html: `<div><h1>An HIE of One Trustee Account has been created for ${req.body.email}</h1><h2><a href="${url_full}">Link to their Personal Health Record</a></h2></div>`,
+      })
+    });
+  const { error1 } = await sendmail1.json();
   if (error) {
     console.log(error.message)
     res.status(500).send(error.message);
+  } else if (error1) {
+    console.log(error.message)
+    res.status(500).send(error1.message);
   } else {
     res.send({url: url_full, error: ''});
   }
