@@ -11,6 +11,7 @@
         "export": "npm run build && next export -o _static"
     },
     "dependencies": {
+        "@aws-sdk/client-ses": "^3.637.0",
         "@emotion/react": "^11.11.1",
         "@emotion/styled": "^11.11.0",
         "@fontsource/nunito": "^5.0.3",
@@ -25,7 +26,6 @@
         "@spruceid/ssx": "^2.1.0",
         "@spruceid/ssx-react": "^2.1.0",
         "@types/pouchdb": "^6.4.0",
-        "aws-sdk": "^2.1501.0",
         "cors": "^2.8.5",
         "dockerode": "^3.3.5",
         "dotenv": "^16.3.1",

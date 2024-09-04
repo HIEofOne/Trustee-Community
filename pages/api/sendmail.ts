@@ -1,7 +1,7 @@
 import sendgrid from '@sendgrid/mail';
 import NextCors from 'nextjs-cors';
 import nodemailer from 'nodemailer';
-import * as AWS from "aws-sdk";
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 type EmailPayload = {
   to: string
   subject: string
@@ -58,35 +58,39 @@ async function sendEmail(req: any, res: any) {
       return res.status(error.statusCode || 500).json({ error: error.message });
     }
   } else if (process.env.MAIL_TYPE === 'aws') {
-    AWS.config.update({
-      accessKeyId: process.env.AWS_ACCESS_KEY,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      region: "ap-south-1",
+    console.log(process.env.AWS_ACCESS_KEY)
+    console.log(process.env.AWS_SECRET_ACCESS_KEY)
+    const aws_client = new SESClient({
+      "credentials": {
+        "accessKeyId": process.env.AWS_ACCESS_KEY || '',
+        "secretAccessKey": process.env.AWS_SECRET_ACCESS_KEY || '',
+      },
+      "region": "ap-south-1"
     });
-    AWS.config.getCredentials(function (error) {
-      if (error) {
-        console.log(error);
+    const aws_input = {
+      "Source": process.env.FROM_EMAIL || 'support@hieofone.com',
+      "Destination": {
+        "ToAddresses": [`${req.body.email}`]
+      },
+      "Message": {
+        "Subject": {
+          "Data": req.body.subject,
+          "Charset": "UTF-8"
+        },
+        "Body": {
+          "Html": {
+            "Data": req.body.html,
+            "Charset": "UTF-8",
+          }
+        }
       }
-    });
-    const ses = new AWS.SES({ apiVersion: "2010-12-01" });
-    const ses_sendEmail = async (data: EmailPayload) => {
-      const ses_transporter = nodemailer.createTransport({
-        SES: ses,
-      });
-      return await ses_transporter.sendMail({
-        from: process.env.FROM_EMAIL || 'support@hieofone.com',
-        ...data,
-      });
-    };
+    }
+    const aws_command = new SendEmailCommand(aws_input);
     try {
-      const ses_result = await ses_sendEmail({
-        to: `${req.body.email}`,
-        subject: req.body.subject,
-        html: req.body.html
-      });
-      return res.status(200).json({success: true, message: ses_result});
-    } catch (error: any) {
-      return res.status(error.statusCode || 500).json({ error: error.message });
+      const aws_response = await aws_client.send(aws_command);
+      return res.status(200).json({success: true, message: aws_response});
+    } catch (e: any) {
+      return res.status(e.statusCode || 500).json({ error: e });
     }
   } else {
     return res.status(500).json({ error: 'no mail setup' });
