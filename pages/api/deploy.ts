@@ -65,11 +65,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   const { error1 } = await sendmail1.json();
   if (error) {
-    console.log(error.message)
-    res.status(500).send(error.message);
+    console.log(error)
+    res.status(500).send(error);
   } else if (error1) {
-    console.log(error.message)
-    res.status(500).send(error1.message);
+    console.log(error)
+    res.status(500).send(error1);
   } else {
     res.send({url: url_full, error: ''});
   }

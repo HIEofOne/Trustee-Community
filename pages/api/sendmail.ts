@@ -14,6 +14,7 @@ async function sendEmail(req: any, res: any) {
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
+  console.log(process.env.MAIL_TYPE)
   if (process.env.MAIL_TYPE === 'sendgrid') {
     sendgrid.setApiKey(process.env.SENDGRID_API_KEY as any);
     try {
@@ -64,7 +65,7 @@ async function sendEmail(req: any, res: any) {
     });
     AWS.config.getCredentials(function (error) {
       if (error) {
-        console.log(error.stack);
+        console.log(error);
       }
     });
     const ses = new AWS.SES({ apiVersion: "2010-12-01" });
