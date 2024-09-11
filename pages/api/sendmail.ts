@@ -58,14 +58,12 @@ async function sendEmail(req: any, res: any) {
       return res.status(error.statusCode || 500).json({ error: error.message });
     }
   } else if (process.env.MAIL_TYPE === 'aws') {
-    console.log(process.env.AWS_ACCESS_KEY)
-    console.log(process.env.AWS_SECRET_ACCESS_KEY)
     const aws_client = new SESClient({
       "credentials": {
         "accessKeyId": process.env.AWS_ACCESS_KEY || '',
         "secretAccessKey": process.env.AWS_SECRET_ACCESS_KEY || '',
       },
-      "region": "ap-south-1"
+      "region": process.env.AWS_REGION || "us-east-1"
     });
     const aws_input = {
       "Source": process.env.FROM_EMAIL || 'support@hieofone.com',
