@@ -139,6 +139,7 @@ ssh_post_data1()
           "repo": "$GITHUB_ORG/nosh3"
         },
         "dockerfile_path": "Dockerfile",
+        "instance_size_slug": "apps-s-1vcpu-1gb-fixed",
         "envs": [
           {"key": "MAGIC_API_KEY", "value": "$MAGIC_API_KEY"},
           {"key": "COUCHDB_URL", "value": "https://noshdb.$ROOT_DOMAIN"},
