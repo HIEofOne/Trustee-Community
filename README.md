@@ -5,34 +5,36 @@
 Trustee Community is the code repository a community manager can fork to create a new patient community.
 
 To create a new patient community, a manger will need these prequisites:
-- An account at DigtialOcean to pay for hosting the community members Trustees (patient-controlled health records),
-- An account at Stripe to collect credit card payments for Trustee subscriptions hosted by the community (future state)
+- An account at [DigitalOcean](https://digitalocean.com) to pay for hosting the community members Trustees (patient-controlled health records),
 - A domain name for the community,
 - A privacy policy describing the initial configuration of Trustee access policies and how subscribers can change the policies if they choose.
+- (optional) An account at Stripe to collect credit card payments for Trustee subscriptions hosted by the community (future state)
 
 ## Installation
-#### 1. Gather all API keys for Magic, USPSTF, UMLS, DigitalOcean, and SendGrid
-- have these ready for the installer in step 5
-- details on getting API keys are in the section [More on Additional API Services](#more-on-additional-api-services)
-- assume you have a domain name (mydomain.xyz) and email address needed for LetsEncrypt SSL (my@email.xyz)
-- you have a GitHub account to fork NOSH3 to.  You will need the organization name and [obtain a personal access token.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+#### 1. Gather all API keys and Link Accounts
+- In order to complete this installation, you will need to set up some API keys and services for the application to interact with. Details [can be found here.](#more-on-additional-api-services)
 - [link your GitHub account to DigitalOcean](https://cloud.digitalocean.com/apps/github/install)
 #### 2. Create a DigitalOcean Droplet with the minimum parameters:
 - size: 's-1vcpu-1gb',
 - image: 'ubuntu-22-10-x64'
-#### 3. Ensure your domain name is associated with the IP of your DigitalOcean Droplet
-#### 4. Login to the console (should be root user) and enter this command:
+#### 3. Ensure your domain name is associated with the IP of your DigitalOcean Droplet. 
+[More information here.](https://docs.digitalocean.com/products/networking/dns/how-to/add-domains/)
+#### 4. Login to the console as the root user and enter this command:
+
 ```
-git clone -b deploy --single-branch https://github.com/HIEofOne/Trustee-Community.git
+git clone -b master --single-branch https://github.com/HIEofOne/Trustee-Community.git
 cd Trustee-Community
 ./do-install.sh
 ```
 #### 5. The first pass will install all dependencies.  Logout and login to the droplet.
+
 ```
 exit
 cd Trustee-Community
 ./do-install.sh
 ```
+The second pass will install and configure the application for use. 
+
 #### 6. Open your browser to https://mydomain.xyz
 - Other notable endpoints with your Trustee include:
 - https://db.mydomain.xyz which points to the [CouchDB](https://couchdb.apache.org/) database used to store user account information (just email) and droplet info.
@@ -46,7 +48,128 @@ cd Trustee-Community
 - on the left, there are 2 workflows (Docker Image CI and Sync NOSH3 Upstream).
 - in Docker Image CI, click on the 3 dots on the right-hand side (Show wokflow options), and click Disable Workflow
 
+
+### Troubleshooting:
+- If you receive the error "the NOSH app id is null" this means there is an error in the github setup.
+
+- In order to roll back a failed installation, you must:
+  1. Rebuild the digital ocean droplet (In the "Destroy" section of the DO droplet dashboard). NOTE: This will reset the admin password, so remember to check your email after the rebuild to reset admin password as you did when you originally set up the droplet.
+  2. Delete the nosh fork in github
+  3. Delete the nosh app in digital ocean
+  4. Remove any created passkeys from your browser. 
+
+- Once you have the app resolving at the correct domain, there is console output during setup which should help to isolate any email or other configuration errors.
+ - During install, you may run into two prompts which look like this:
+  ![Prompt 1](/public/readmepics/install_ss_1.jpg)
+  and this:
+  ![Prompt 2](/public/readmepics/install_ss_2.jpg)
+
+  You can safely accept the default choices on both of these screens.
+
+<a name="#more-on-additional-api-services"></a>
 ## More on Additional API Services
+
+This is a list of the accounts / keys you will need to assemble before installing:
+Here???s the information with "IMPORTANT:" wrapped in a span and colored red:
+
+- **GitHub Organization Name**  
+  This is the full name of your GitHub organization, for example: HIEofOne.  
+  <span style="color: red;">IMPORTANT:</span> This value is case sensitive.
+
+- **GitHub Personal Access Token**  
+  A personal access token for authenticating GitHub API requests. This is used to create a fork of the NOSH repository inside your account or organization. Instructions can be found here.
+
+- **Host Server URL**  
+  The URL where the host server will reside.  
+  <span style="color: red;">IMPORTANT:</span> You may need to make changes to the DNS entries of this domain name to get the installer to work properly with AWS Simple Email Service. The application will also send emails from an address at this domain.
+
+- **Email for SSL Certificate from Let's Encrypt**  
+  The email address used to request an SSL certificate from Let's Encrypt. This should be your email address, either business or personal.
+
+- **MAIA Application URL**  
+  The URL at which the MAIA application can be found.
+
+- **DigitalOcean API Key**  
+  API key for accessing DigitalOcean services. This will be used to create the NOSH application specific to this installation of Trustee.
+
+- **CouchDB or Traefik Password**  
+  Password for CouchDB or Traefik access. This is an invented value, not one obtained from elsewhere.
+
+- **Sender Email Address**  
+  The email address used as the sender for outbound communications. It should probably match the domain of the application server, so if the server is zombo.com, this should be something like info@zombo.com.
+
+- **Amazon SES Access Key**  
+  Access key for Amazon Simple Email Service (SES). See notes below for full setup instructions.
+
+- **Amazon SES Secret Key**  
+  Secret key associated with the Amazon SES access key.
+
+- **AWS Region**  
+  The AWS region where resources are hosted. This is chosen during SES setup, as outlined below.
+
+- **Magic API Secret**  
+  Secret key for the Magic authentication API. See notes below for full setup instructions.
+
+- **Magic API Key for Trustee**  
+  Public API key for Magic authentication specific to the Trustee application.
+
+- **Magic API Key for NOSH**  
+  Public API key for Magic authentication specific to the NOSH application.
+
+- **USPSTS Key**  
+  US Preventive Services Task Force key. See notes below for full setup instructions.
+
+- **UMLS API Key**  
+  API key for accessing the Unified Medical Language System (UMLS). See notes below for full setup instructions.
+
+If you're implementing this in HTML, the red color will display correctly when rendered in a browser.
+### AWS SES Setup
+
+#### **Step 1: Sign Up for AWS Free Tier**
+
+1. **Create an AWS Account**:
+   - Go to the [AWS Free Tier Sign Up page](https://aws.amazon.com/free/).
+   - Click on **"Create a Free Account."**
+   - Fill in your details, including an email address, password, and AWS account name.
+   - Continue through the setup, providing required information, including billing details (a valid credit card is required, but you won???t be charged as long as you stay within the free tier limits).
+
+2. **Verify Your Email and Identity**:
+
+3. **Choose a Support Plan**:
+   - For the free tier, select the **"Basic Support - Free"** option.
+   
+4. **Log In to AWS Management Console**:
+   - Once your account is set up, log in to the [AWS Management Console](https://aws.amazon.com/console/).
+
+#### **Step 2: Set Up Amazon SES**
+
+1. **Access Amazon SES**:
+   - In the AWS Management Console, search for **"SES"** in the search bar and select **"Simple Email Service"**.
+
+2. **Select a Region**:
+   - SES is region-specific, so ensure you select the AWS region where you want to send emails. Check the region selection in the top-right corner of the console. You will need this information for the Trustee installer.
+
+3. **Create an Identity (Domain)**:
+   - Click **"Verified identities"** in the SES dashboard.
+   - Choose to **"Create Identity"** and select **"Domain"** as your identity type. Enter your domain name and follow the instructions to add DNS records (TXT, CNAME, MX, etc.) to your domain's DNS settings for verification.
+
+#### **Step 3: Request to Move Out of Sandbox Mode**
+
+By default, new SES accounts are placed in sandbox mode, which restricts sending capabilities that will prevent Trustee from working correctly. In order to solve this, you must request that your account be moved out of sandbox mode:
+
+1. **Go to the SES Dashboard**:
+
+2. **Request Production Access**:
+
+3. **Fill Out the SES Sending Limit Increase Form**:
+
+#### **Additional Links**
+
+- [AWS Free Tier](https://aws.amazon.com/free/)
+- [AWS Management Console](https://aws.amazon.com/console/)
+- [SES Documentation](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/Welcome.html)
+
+
 ### [Magic](https://magic.link/) instructions:
 
 1. Set up an account for free by visiting [Magic](https://magic.link).  Click on Start now.
