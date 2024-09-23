@@ -3,6 +3,8 @@ import NextCors from 'nextjs-cors';
 import { createHash } from 'crypto';
 import objectPath from 'object-path';
 import moment from 'moment';
+import fs from 'fs';
+import path from 'path';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -137,18 +139,27 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
               objectPath.set(request_doc, 'request_date', moment().format());
               await gnap.insert(request_doc);
               // send request to resource owner for approval
-              const sendmail = await fetch(domain + "/api/sendmail", 
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    email: objectPath.get(request_doc, 'pending_resources.0.ro'),
-                    subject: "HIE of One - Resource Privilege Request",
-                    html: `<div><h1>HIE of One Trustee Resource Privilege Request</h1><h2><a href="${domain}/review/${request_doc.interact_nonce.value}">New Privileges Requested for your Resources</a></h2></div>`,
-                  })
-                });
+              const url_full = domain + "/review/" + response.docs[0].interact_nonce.value;
+              const htmlContent = fs.readFileSync(path.join(process.cwd(), 'public', 'email.html'), 'utf-8');
+              const htmlFinal = htmlContent.replace(/[\r\n]+/gm, '')
+                .replace('@title', 'HIE of One - Resource Privilege Request')
+                .replace('@previewtext', 'HIE of One - Resource Privilege Request')
+                .replace('@paragraphtext', 'HIE of One Trustee Resource Privilege Request')
+                .replace('@2paragraphtext', '')
+                .replaceAll('@link', url_full)
+                .replace('@buttonstyle', 'display:block')
+                .replace('@buttontext', 'New Privileges Requested for your Resources');
+              const sendmail = await fetch(domain + "/api/sendmail", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  email: objectPath.get(request_doc, 'pending_resources.0.ro'),
+                  subject: "HIE of One - Resource Privilege Request",
+                  html: htmlFinal
+                })
+              });
               const { error } = await sendmail.json();
               if (error) {
                 res.status(500).send(error.message);

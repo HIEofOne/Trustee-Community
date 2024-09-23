@@ -21,7 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
-  const dbs = ["patients", "gnap", "gnap_resources", "gnap_policies", "gnap_public_keys", "keys"];
+  const dbs = ["patients", "gnap", "gnap_resources", "gnap_policies", "gnap_public_keys", "keys", "magic"];
   const dbs_final = [];
   for (const db of dbs) {
     const checkdb = nano.db.use(db);

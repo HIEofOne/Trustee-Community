@@ -26,6 +26,7 @@ async function sendEmail(req: any, res: any) {
       });
       return res.status(200).json({success: true, message: result});
     } catch (error: any) {
+      console.log(error)
       return res.status(error.statusCode || 500).json({ error: error.message });
     }
   } else if (process.env.MAIL_TYPE === 'smtp') {

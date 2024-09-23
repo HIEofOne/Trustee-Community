@@ -9,6 +9,8 @@ import { withIronSessionSsr } from 'iron-session/next';
 import { sessionOptions } from '../../lib/session';
 import { InferGetServerSidePropsType } from 'next';
 import { SSX, SiweMessage } from '@spruceid/ssx';
+import fs from 'fs';
+import path from 'path';
 
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
@@ -133,8 +135,16 @@ const RequestAccess = ({
         { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(doc)})
         .then((res) => res.json());
       if (update.success) {
-        const sendmail = await fetch("/api/sendmail", 
-        {
+        const htmlContent = fs.readFileSync(path.join(process.cwd(), 'public', 'email.html'), 'utf-8');
+        const htmlFinal = htmlContent.replace(/[\r\n]+/gm, '')
+          .replace('@title', 'HIE of One - Resource Privilege Request')
+          .replace('@previewtext', 'HIE of One - Resource Privilege Request')
+          .replace('@paragraphtext', 'HIE of One Trustee Resource Privilege Request')
+          .replace('@2paragraphtext', '')
+          .replaceAll('@link', resource_url)
+          .replace('@buttonstyle', 'display:block')
+          .replace('@buttontext', 'New Privileges Requested for your Resources');
+        const sendmail = await fetch("/api/sendmail", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -142,7 +152,7 @@ const RequestAccess = ({
           body: JSON.stringify({
             email: objectPath.get(doc, 'pending_resources.0.ro'),
             subject: "HIE of One - Resource Privilege Request",
-            html: `<div><h1>HIE of One Trustee Resource Privilege Request</h1><h2><a href="${resource_url}">New Privileges Requested for your Resources</a></h2></div>`,
+            html: htmlFinal
           })
         });
         const { error } = await sendmail.json();

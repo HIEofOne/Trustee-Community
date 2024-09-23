@@ -1,6 +1,8 @@
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
+import fs from 'fs';
+import path from 'path';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -38,8 +40,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   doc_patient.phr = url_full;
   doc_patient.resource_server = new_pt.data.patient_id;
   await patients.insert(doc_patient);
-  const sendmail = await fetch(domain + "/api/sendmail", 
-  {
+  const htmlContent = fs.readFileSync(path.join(process.cwd(), 'public', 'email.html'), 'utf-8');
+  const htmlFinal = htmlContent.replace(/[\r\n]+/gm, '')
+    .replace('@title', 'HIE of One - New Account Confirmation')
+    .replace('@previewtext', 'Your HIE of One Trustee Account has been created!')
+    .replace('@paragraphtext', 'An HIE of One Trustee Account has been created for ' + req.body.email)
+    .replace('@2paragraphtext', '')
+    .replaceAll('@link', url_full)
+    .replace('@buttonstyle', 'display:block')
+    .replace('@buttontext', 'Your Personal Health Record');
+  const htmlFinal1 = htmlContent.replace(/[\r\n]+/gm, '')
+    .replace('@title', 'HIE of One - New Account Confirmation')
+    .replace('@previewtext', 'An HIE of One Trustee Account has been created!')
+    .replace('@paragraphtext', 'An HIE of One Trustee Account has been created for ' + req.body.email + `. <a href="${domain}/myTrustee">Your HIE of One Trustee Account Dashboard</a>`)
+    .replace('@2paragraphtext', '')
+    .replaceAll('@link', url_full)
+    .replace('@buttonstyle', 'display:block')
+    .replace('@buttontext', 'Link to their Personal Health Record');
+  const sendmail = await fetch(domain + "/api/sendmail", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -47,22 +65,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     body: JSON.stringify({
       email: req.body.email,
       subject: "HIE of One - New Account Confirmation",
-      html: `<div><h1>Your HIE of One Trustee Account has been created!</h1><h2><a href="${domain}/myTrustee">Your HIE of One Trustee Account Dashboard</a></h2><h2><a href="${url_full}">Your Personal Health Record</a></h2></div>`,
+      html: htmlFinal
+      // html: `<div><h1>Your HIE of One Trustee Account has been created!</h1><h2><a href="${domain}/myTrustee">Your HIE of One Trustee Account Dashboard</a></h2><h2><a href="${url_full}">Your Personal Health Record</a></h2></div>`,
     })
   });
   const { error } = await sendmail.json();
-  const sendmail1 = await fetch(domain + "/api/sendmail", 
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: admin_email,
-        subject: "HIE of One - New Account Confirmation",
-        html: `<div><h1>An HIE of One Trustee Account has been created for ${req.body.email}</h1><h2><a href="${url_full}">Link to their Personal Health Record</a></h2></div>`,
-      })
-    });
+  const sendmail1 = await fetch(domain + "/api/sendmail", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: admin_email,
+      subject: "HIE of One - New Account Confirmation",
+      html: htmlFinal1
+      // html: `<div><h1>An HIE of One Trustee Account has been created for ${req.body.email}</h1><h2><a href="${url_full}">Link to their Personal Health Record</a></h2></div>`,
+    })
+  });
   const { error1 } = await sendmail1.json();
   if (error) {
     console.log(error)

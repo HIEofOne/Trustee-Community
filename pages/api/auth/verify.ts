@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextCors from 'nextjs-cors';
+import moment from 'moment';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -11,25 +12,29 @@ if (process.env.NODE_ENV === 'development') {
   var nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
 }
 
-async function newPatient(req: NextApiRequest, res: NextApiResponse) {  
+async function handler(req: NextApiRequest, res: NextApiResponse) {  
   await NextCors(req, res, {
-    methods: ["PUT"],
-    origin: process.env.DOMAIN,
+    methods: ["POST"],
+    origin: '*',
     optionsSuccessStatus: 200
   });
-  const patients = await nano.db.use("patients");
+  const {nonce} = req.body;
+  const magic = await nano.db.use("magic");
   try {
-    const response = await patients.insert(
-      { email: req.body.email },
-      req.body.email
-    );
+    const response = await magic.get(nonce);
     if (response.error) {
       res.status(500).send({error: response.error, reason:response.reason});
     }
+    if (moment().unix() >= response.expires) {
+      res.status(500).send({error: 'verification expired'})
+    }
+    // redirect if successful
+    response.verified = 'true';
+    await magic.insert(response)
     res.status(200).json({success: true});
-  } catch (error){
+  } catch (error) {
     res.status(500).send(error);
   }
 }
 
-export default newPatient;
+export default handler;

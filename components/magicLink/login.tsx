@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router';
-import { Magic } from 'magic-sdk';
 import { supported, create, get, parseCreationOptionsFromJSON, parseRequestOptionsFromJSON } from '@github/webauthn-json/browser-ponyfill';
 import { useEffect, useState } from 'react';
 import objectPath from 'object-path';
@@ -14,6 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Fingerprint from '@mui/icons-material/Fingerprint';
 import Grid from "@mui/material/Grid";
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import KeyIcon from '@mui/icons-material/Key';
@@ -60,106 +60,105 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
         const isRegistered = await fetch("/api/couchdb/patients/" + email,
           { method: "GET", headers: {"Content-Type": "application/json"} })
           .then((res) => res.json()).then((json) => json._id);
-        //login with magic  
-        if (typeof window === "undefined") return;
-        const magicKey = await fetch("/api/magicLink/key", 
-          { method: "POST" })
+        const nonce = await fetch("/api/auth/create",
+          { method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email: email} )})
+        .then((res) => res.json()).then((json) => json.nonce);
+        let check = false;
+        while (!check) {
+          await sleep(5);
+          const nonce_check = await fetch("/api/auth/check",
+            { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({nonce: nonce}) })
           .then((res) => res.json());
-        const did = await new Magic(magicKey.key).auth.loginWithEmailOTP({ email: email });
-        // Once we have the did from magic, login with our own API
-        const authRequest = await fetch("/api/magicLink/login", 
-          { method: "POST", headers: { Authorization: `Bearer ${did}` }});
-        if (authRequest.ok) {
-          // Magic Link login successful!
-          if (isRegistered === undefined) {
-            const body = { email: email, did: did };
-            const data = await fetch(`/api/couchdb/patients/new`, 
-              { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) })
-              .then((res) => res.json());
-            if (data.successs) {
-              console.log('user added');
+          if (nonce_check.success) {
+            check = true;
+          }
+        }
+        await fetch("/api/magicLink/login", 
+          { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email: email}) });
+        if (isRegistered === undefined) {
+          const body = { email: email };
+          const data = await fetch(`/api/couchdb/patients/new`, 
+            { method: "POST", headers : {"Content-Type": "application/json"}, body: JSON.stringify(body) })
+            .then((res) => res.json());
+          if (data.successs) {
+            console.log('user added');
+          }
+        }
+        setProgress('Registering PassKey...');
+        const cco = parseCreationOptionsFromJSON({
+          publicKey: {
+            challenge: challenge,
+            rp: {
+              name: "next-webauthn",
+              // TODO: Change
+              id: window.location.hostname
+            },
+            user: {
+              id: window.crypto.randomUUID(),
+              name: email,
+              displayName: email.substring(0, email.indexOf("@"))
+            },
+            pubKeyCredParams: [
+              { alg: -7, type: "public-key" },
+              { alg: -8, type: "public-key" },
+              { alg: -257, type: "public-key" }
+            ],
+            timeout: 60000,
+            attestation: "direct",
+            authenticatorSelection: {
+              residentKey: "required",
+              userVerification: "required"
             }
           }
-          setProgress('Registering PassKey...');
-          const cco = parseCreationOptionsFromJSON({
+        });
+        const credential_reg = await create(cco);
+        const result = await fetch("/api/auth/register", 
+          { method: "POST", body: JSON.stringify({ email: email, credential: credential_reg }), headers: {"Content-Type": "application/json"} });
+        if (result.ok) {
+          setProgress('Authentication using PassKey...')
+          const cro = parseRequestOptionsFromJSON({
             publicKey: {
-              challenge: challenge,
-              rp: {
-                name: "next-webauthn",
-                // TODO: Change
-                id: window.location.hostname
-              },
-              user: {
-                id: window.crypto.randomUUID(),
-                name: email,
-                displayName: email.substring(0, email.indexOf("@"))
-              },
-              pubKeyCredParams: [
-                { alg: -7, type: "public-key" },
-                { alg: -8, type: "public-key" },
-                { alg: -257, type: "public-key" }
-              ],
+              challenge,
               timeout: 60000,
-              attestation: "direct",
-              authenticatorSelection: {
-                residentKey: "required",
-                userVerification: "required"
-              }
+              userVerification: "required",
+              rpId: window.location.hostname
             }
           });
-          const credential_reg = await create(cco);
-          const result = await fetch("/api/auth/register", 
-            { method: "POST", body: JSON.stringify({ email: email, credential: credential_reg }), headers: {"Content-Type": "application/json"} });
-          if (result.ok) {
-            setProgress('Authentication using PassKey...')
-            const cro = parseRequestOptionsFromJSON({
-              publicKey: {
-                challenge,
-                timeout: 60000,
-                userVerification: "required",
-                rpId: window.location.hostname
-              }
-            });
-            const credential_auth = await get(cro);
-            setRegister(true)
-            const result1 = await fetch("/api/auth/login", 
-              { method: "POST", body: JSON.stringify({ email: email, credential: credential_auth }), headers: {"Content-Type": "application/json"} });
-            if (result1.ok) {
-              if (authonly) {
-                await fetch(`/api/auth/logout`, { method: "POST" });
-                setEmail(email);
-              } else {
-                const patient = await fetch("/api/couchdb/patients/" + email,
-                  { method: "GET", headers: {"Content-Type": "application/json"} })
-                  .then((res) => res.json());
-                const is_phr = objectPath.has(patient, 'phr');
-                if (!is_phr) {
-                  if (!clinical) {
-                    router.push("/newPatient/" + email);
-                  } else {
-                    router.push("/requestAccess");
-                  }
+          const credential_auth = await get(cro);
+          setRegister(true)
+          const result1 = await fetch("/api/auth/login", 
+            { method: "POST", body: JSON.stringify({ email: email, credential: credential_auth }), headers: {"Content-Type": "application/json"} });
+          if (result1.ok) {
+            if (authonly) {
+              await fetch(`/api/auth/logout`, { method: "POST" });
+              setEmail(email);
+            } else {
+              const patient = await fetch("/api/couchdb/patients/" + email,
+                { method: "GET", headers: {"Content-Type": "application/json"} })
+                .then((res) => res.json());
+              const is_phr = objectPath.has(patient, 'phr');
+              if (!is_phr) {
+                if (!clinical) {
+                  router.push("/newPatient/" + email);
                 } else {
-                  if (router.query.from) {
-                    router.push(objectPath.get(router, 'query.from'));
-                  } else {
-                    router.push("/myTrustee/dashboard");
-                  }
+                  router.push("/requestAccess");
+                }
+              } else {
+                if (router.query.from) {
+                  router.push(objectPath.get(router, 'query.from'));
+                } else {
+                  router.push("/myTrustee/dashboard");
                 }
               }
-            } else {
-              setRegister(false)
-              const { message } = await result.json();
-              setIsError(true);
-              setError(message);
             }
           } else {
+            setRegister(false)
             const { message } = await result.json();
+            setIsError(true);
             setError(message);
           }
         } else {
-          const { message } = await authRequest.json();
-          setIsError(true);
+          const { message } = await result.json();
           setError(message);
         }
       } else {
@@ -222,6 +221,10 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
 
   const replay = () => {
     location.reload()
+  }
+
+  const sleep = async(seconds: number) => {
+    return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   }
 
   const validate = (inputText: string) => {
@@ -319,8 +322,8 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               />
               {isAvailable ? (
                 <Stack spacing={2}>
-                  <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/></div>}>Sign In with PassKey</Button>
-                  {isChecking ? (<Grid style={{ textAlign: "center" }}><CircularProgress color="primary" />Confirming E-mail Address...</Grid>) : (<div></div>)}
+                  <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/><Fingerprint/></div>}>Sign In with PassKey</Button>
+                  {isChecking ? (<Grid style={{ textAlign: "center" }}><CircularProgress color="primary" />Verifying E-mail Address...</Grid>) : (<div></div>)}
                   {authonly || clinical ? (
                     <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Passkey</Link></Grid>
                   ) : (

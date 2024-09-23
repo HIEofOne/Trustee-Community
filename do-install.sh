@@ -7,18 +7,35 @@ if [[ $EUID -ne 0 ]]; then
 fi
 if [ -d "${HOME}/.nvm/.git" ]; then
   echo "NVM installed.  Personalizing Trustee-Community..."
-  read -e -p "Enter your GitHub Organization: " -i "" GITHUB_ORG
+  read -e -p "Enter your GitHub Owner: " -i "" GITHUB_OWNER
   read -e -p "Enter your GitHub Access Token: " -i "" GITHUB_TOKEN
-  fork_post_data()
+  while true; do
+  read -e -p "Is the GitHub owner an organization? (y/n) " -i "" GITHUB_YN
+  case $GITHUB_YN in
+    [yY] ) fork_post_data()
 {
   cat <<EOF
 {
-  "organization": "$GITHUB_ORG",
+  "organization": "$GITHUB_OWNER",
   "name": "nosh3",
   "default_branch_only":true
 }
 EOF
+};
+      break;;
+    [nN] ) fork_post_data()
+{
+  cat <<EOF
+{
+  "name": "nosh3",
+  "default_branch_only":true
 }
+EOF
+};
+      break;;
+    * ) echo invalid response;;
+  esac
+  done
   curl -L \
   -X POST \
   -H "Accept: application/vnd.github+json" \
@@ -26,6 +43,12 @@ EOF
   -H "X-GitHub-Api-Version: 2022-11-28" \
   https://api.github.com/repos/shihjay2/nosh3/forks \
   -d "$(fork_post_data)"
+  curl -L \
+  -X PUT \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  "https://api.github.com/repos/$GITHUB_OWNER/nosh3/actions/workflows/sync_nosh.yml/enable" \
   # set domain entries
   read -e -p "Enter your Root Domain Name (domain.com): " -i "" ROOT_DOMAIN
   read -e -p "Enter your E-Mail address for Let's Encrypt (your@email.com): " -i "" EMAIL
@@ -136,7 +159,7 @@ ssh_post_data1()
         "github": {
           "branch": "main",
           "deploy_on_push": true,
-          "repo": "$GITHUB_ORG/nosh3"
+          "repo": "$GITHUB_OWNER/nosh3"
         },
         "dockerfile_path": "Dockerfile",
         "instance_size_slug": "apps-s-1vcpu-1gb-fixed",

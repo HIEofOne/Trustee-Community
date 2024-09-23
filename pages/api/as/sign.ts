@@ -1,5 +1,5 @@
 import { importJWK } from 'jose';
-import { createHash, randomBytes, sign } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { createSigner, httpbis } from 'http-message-signatures';
 
 var user = process.env.COUCHDB_USER;
@@ -16,8 +16,8 @@ const Sign = async(req: any, res: any) => {
   if (req.method !== 'POST') return res.status(405).end();
   const keys = await nano.db.use("keys");
   const keyList = await keys.list();
-  const key: any = await keys.get(keyList.rows[0].id);
-  const rsaPrivateKey: any = await importJWK(key.privateKey, key.privateKey.alg);
+  const my_key: any = await keys.get(keyList.rows[0].id);
+  const rsaPrivateKey: any = await importJWK(my_key.privateKey, my_key.privateKey.alg);
   const final_url = url + req.body.urlinput;
   const body = {
     ...req.body.doc,
@@ -28,7 +28,7 @@ const Sign = async(req: any, res: any) => {
       },
       "key": {
         "proof": "httpsig",
-        "jwk": key.publicKey
+        "jwk": my_key.publicKey
       }
     }
   }
@@ -63,15 +63,14 @@ const Sign = async(req: any, res: any) => {
       paramValues: {
         nonce: randomBytes(16).toString('base64url'),
         tag: "gnap",
-        //@ts-ignore
-        keyid: key.publicKey.kid
+        keyid: my_key.publicKey.kid
       }
     }, opt)
     try {
       const update = await fetch(final_url, signedRequest)
         .then((res) => {
           if (res.status > 400 && res.status < 600) { 
-            return {error: res};
+            return {error: res.statusText};
           } else {
             return res.json();
           }

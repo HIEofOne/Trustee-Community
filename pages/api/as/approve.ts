@@ -1,7 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextCors from 'nextjs-cors';
 import verifySig from '../../../lib/verifySig';
-import objectPath from 'object-path'
+import objectPath from 'object-path';
+import fs from 'fs';
+import path from 'path';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -41,18 +43,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       pending_resources.splice(req.body.pending_resource_index, 1);
       objectPath.set(gnap_doc, 'pending_resources', pending_resources);
       await gnap.insert(gnap_doc);
-      const sendmail = await fetch(domain + "/api/sendmail", 
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: req.body.privilege,
-            subject: "HIE of One - Resource Privilege Approved",
-            html: `<div><h1>HIE of One Trustee Resource Privilege Request Approved</h1>${message}</div>`,
-          })
-        });
+      const htmlContent = fs.readFileSync(path.join(process.cwd(), 'public', 'email.html'), 'utf-8');
+      const htmlFinal = htmlContent.replace(/[\r\n]+/gm, '')
+        .replace('@title', 'HIE of One - Resource Privilege Approved')
+        .replace('@previewtext', 'HIE of One - Resource Privilege Approved')
+        .replace('@paragraphtext', `<h3>HIE of One Trustee Resource Privilege Request Approved</h3>${message}`)
+        .replace('@2paragraphtext', '')
+        .replace('@buttonstyle', 'display:none');
+      const sendmail = await fetch(domain + "/api/sendmail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: req.body.privilege,
+          subject: "HIE of One - Resource Privilege Approved",
+          html: htmlFinal,
+        })
+      });
       const { error } = await sendmail.json();
       if (error) { 
         console.log(error); 

@@ -11,25 +11,25 @@ if (process.env.NODE_ENV === 'development') {
   var nano = require("nano")(url.protocol + `//${user}:${pass}@db.` + url.hostname);
 }
 
-async function newPatient(req: NextApiRequest, res: NextApiResponse) {  
+async function handler(req: NextApiRequest, res: NextApiResponse) {  
   await NextCors(req, res, {
-    methods: ["PUT"],
-    origin: process.env.DOMAIN,
+    methods: ["POST"],
+    origin: '*',
     optionsSuccessStatus: 200
   });
-  const patients = await nano.db.use("patients");
+  const {nonce} = req.body;
+  const magic = await nano.db.use("magic");
   try {
-    const response = await patients.insert(
-      { email: req.body.email },
-      req.body.email
-    );
-    if (response.error) {
-      res.status(500).send({error: response.error, reason:response.reason});
+    const response = await magic.get(nonce);
+    if (response.verified !== 'true') {
+      res.status(500).send({error: 'not verified'});
+    } else {
+      await magic.destroy(response._id, response._rev);
+      res.status(200).json({success: true});
     }
-    res.status(200).json({success: true});
   } catch (error){
     res.status(500).send(error);
   }
 }
 
-export default newPatient;
+export default handler;
