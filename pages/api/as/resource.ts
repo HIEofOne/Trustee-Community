@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'development') {
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {
     methods: ["POST", "PUT", "DELETE"],
-    origin: process.env.DOMAIN,
+    origin: '*',
     optionsSuccessStatus: 200
   });
   if (await verifySig(req)) {
@@ -57,7 +57,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         res.status(500).send("Invalid format")
       }
     }
-    // body: {"resource": {
+    // body: {"access": {
     //    "type": "resource name",
     //    "actions": ["read", "write", "delete"],
     //    "datatypes": ["image", "metadata", "json"],
@@ -110,7 +110,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
     }
   } else {
-    console.log('Unauthorized - verify signature failed')
     res.status(401).send('Unauthorized - verify signature failed');
   }
 }

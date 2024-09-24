@@ -8,7 +8,11 @@ const url = new URL(domain);
 async function verifySig(req: any) {
   if (objectPath.has(req, 'body.client.key.jwk')) {
     const tail = req.url;
-    objectPath.set(req, 'url', url.protocol + "//" + url.hostname + tail);
+    let port = ''
+    if (url.port !== '') {
+      port = ':' + url.port
+    }
+    objectPath.set(req, 'url', url.protocol + "//" + url.hostname + port + tail);
     const key_jose = await jose.importJWK(req.body.client.key.jwk, req.body.client.key.jwk.alg);
     const keys = new Map();
     const algs = []
@@ -27,14 +31,14 @@ async function verifySig(req: any) {
     if (req.body.client.key.jwk.alg === 'ES384') {
       algs.push('ecdsa-p384-sha384')
     }
-    keys.set(req.body.client.key.kid, {
-        id: req.body.client.key.kid,
+    keys.set(req.body.client.key.jwk.kid, {
+        id: req.body.client.key.jwk.kid,
         algs,
         verify: createVerifier(key_jose as Uint8Array, algs[0]),
     });
     const verified = await httpbis.verifyMessage({
       async keyLookup() {
-        return keys.get(req.body.client.key.kid);
+        return keys.get(req.body.client.key.jwk.kid);
       },
     }, req);
     return verified;

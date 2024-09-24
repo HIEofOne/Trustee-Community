@@ -54,15 +54,25 @@ export default function Policies(props:any) {
   const [addIndex, setAddIndex] = useState(0);
   const [error, setError] = useState("");
   const [isError, setIsError] = useState(false);
-  const [view, setView] = useState<string | null>('resource');
+  const [view, setView] = useState<string | null>('user');
   const [users, setUsers] = useState<{[key: number]: any}[]>([]);
   
   const addPolicyItem = async(docs:any, index:number, value:string) => {
     const privileges = objectPath.get(docs, index + '.privileges');
     privileges.push(value);
     objectPath.set(docs, index + '.privileges', privileges);
+    const publicKey = await fetch("/api/as/jwks",
+      { method: "GET", headers: {"Content-Type": "application/json"} })
+      .then((res) => res.json()).then((json) => json.key);
     const body = {
-      doc: {resource: docs[index]},
+      doc: {'access': docs[index],
+        'resource_server': {
+          'key': {
+            'proof': 'httpsig',
+            'jwk': publicKey
+          }
+        }
+      },
       urlinput: '/api/as/resource',
       method: 'PUT',
       jwt: props.jwt
@@ -71,7 +81,7 @@ export default function Policies(props:any) {
       { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body) })
       .then((res) => res.json());
     if (update.success) {
-      setNotification('Privilege Updated')
+      setNotification('Privilege Updated');
       setOpenNotification(true);
       setResources(docs);
       calcUsers(docs);
@@ -169,8 +179,18 @@ export default function Policies(props:any) {
       }
     }
     objectPath.set(doc, 'privileges', privileges);
+    const publicKey = await fetch("/api/as/jwks",
+      { method: "GET", headers: {"Content-Type": "application/json"} })
+      .then((res) => res.json()).then((json) => json.key);
     const body = {
-      doc: {resource: doc},
+      doc: {'access': doc,
+        'resource_server': {
+          'key': {
+            'proof': 'httpsig',
+            'jwk': publicKey
+          }
+        }
+      },
       urlinput: '/api/as/resource',
       method: 'PUT',
       jwt: props.jwt
@@ -220,8 +240,18 @@ export default function Policies(props:any) {
           privileges.push(email);
           objectPath.set(resources_edit, i + '.privileges', privileges);
           console.log(resources_edit[i])
+          const publicKey = await fetch("/api/as/jwks",
+            { method: "GET", headers: {"Content-Type": "application/json"} })
+            .then((res) => res.json()).then((json) => json.key);
           const body = {
-            doc: {resource: resources_edit[i]},
+            doc: {'access': resources_edit[i],
+              'resource_server': {
+                'key': {
+                  'proof': 'httpsig',
+                  'jwk': publicKey
+                }
+              }
+            },
             urlinput: '/api/as/resource',
             method: 'PUT',
             jwt: props.jwt
@@ -239,6 +269,8 @@ export default function Policies(props:any) {
     }
     setResources(resources_edit);
     calcUsers(resources_edit);
+    setNotification('Privileges Updated');
+    setOpenNotification(true);
   }
 
   const handleRemoveAllResources = async(email: string) => {
@@ -252,8 +284,18 @@ export default function Policies(props:any) {
           }
         }
         objectPath.set(resources_edit, i + '.privileges', privileges);
+        const publicKey = await fetch("/api/as/jwks",
+          { method: "GET", headers: {"Content-Type": "application/json"} })
+          .then((res) => res.json()).then((json) => json.key);
         const body = {
-          doc: {resource: resources_edit[i]},
+          doc: {'access': resources_edit[i],
+            'resource_server': {
+              'key': {
+                'proof': 'httpsig',
+                'jwk': publicKey
+              }
+            }
+          },
           urlinput: '/api/as/resource',
           method: 'PUT',
           jwt: props.jwt
@@ -269,6 +311,8 @@ export default function Policies(props:any) {
     }
     setResources(resources_edit);
     calcUsers(resources_edit);
+    setNotification('Privileges Updated');
+    setOpenNotification(true);
   }
 
   const handleUndo = () => {

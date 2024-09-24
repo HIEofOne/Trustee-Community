@@ -18,7 +18,7 @@ const Sign = async(req: any, res: any) => {
   const keyList = await keys.list();
   const my_key: any = await keys.get(keyList.rows[0].id);
   const rsaPrivateKey: any = await importJWK(my_key.privateKey, my_key.privateKey.alg);
-  const final_url = url + req.body.urlinput;
+  const final_url = url.origin + req.body.urlinput;
   const body = {
     ...req.body.doc,
     "client": {
@@ -34,7 +34,7 @@ const Sign = async(req: any, res: any) => {
   }
   const opt = {
     method: req.body.method,
-    url: req.body.urlinput,
+    url: final_url,
     headers: {
       "content-digest": "sha-256=:" + createHash('sha256').update(JSON.stringify(body)).digest('hex') + "=:",
       "content-type": "application/json",
@@ -68,11 +68,11 @@ const Sign = async(req: any, res: any) => {
     }, opt)
     try {
       const update = await fetch(final_url, signedRequest)
-        .then((res) => {
-          if (res.status > 400 && res.status < 600) { 
-            return {error: res.statusText};
+        .then((res1) => {
+          if (res1.status > 400 && res1.status < 600) { 
+            return {error: res1.statusText};
           } else {
-            return res.json();
+            return res1.json();
           }
         });
       res.status(200).json(update);
