@@ -116,8 +116,8 @@ export default function Policies(props:any) {
               const user = {
                 email: privilege,
                 resources: [resource]
-              }
-              users.push(user)
+              };
+              users.push(user);
             }
           }
         }
@@ -151,7 +151,7 @@ export default function Policies(props:any) {
       } else {
         if (validate(addValue)) {
           const docs = [...resources];
-          await addPolicyItem(docs, index, addValue)
+          await addPolicyItem(docs, index, addValue);
         } else {
           setIsError(true);
           setError('Email not valid');
@@ -239,7 +239,6 @@ export default function Policies(props:any) {
           const privileges = objectPath.get(resources_edit, i + '.privileges');
           privileges.push(email);
           objectPath.set(resources_edit, i + '.privileges', privileges);
-          console.log(resources_edit[i])
           const publicKey = await fetch("/api/as/jwks",
             { method: "GET", headers: {"Content-Type": "application/json"} })
             .then((res) => res.json()).then((json) => json.key);
@@ -259,7 +258,6 @@ export default function Policies(props:any) {
           const update = await fetch("/api/as/sign",
             { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body) })
             .then((res) => res.json());
-            console.log(update)
           if (!update.success) {
             setIsError(true);
             setError(update);

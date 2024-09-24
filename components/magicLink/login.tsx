@@ -323,7 +323,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               {isAvailable ? (
                 <Stack spacing={2}>
                   <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/><Fingerprint/></div>}>Sign In with PassKey</Button>
-                  {isChecking ? (<Grid style={{ textAlign: "center" }}><CircularProgress color="primary" />Verifying E-mail Address...</Grid>) : (<div></div>)}
+                  {isChecking ? (<Grid style={{ textAlign: "center" }}><CircularProgress color="primary" sx={{mr:2}}/>Check your e-mail to verify...</Grid>) : (<div></div>)}
                   {authonly || clinical ? (
                     <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Passkey</Link></Grid>
                   ) : (
