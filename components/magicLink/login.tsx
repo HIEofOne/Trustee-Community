@@ -68,7 +68,8 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
         let proceed = false;
         let timer = 0;
         while (!check) {
-          if (timer < 200) {
+          console.log(timer)
+          if (timer < 100) {
             await sleep(5);
             const nonce_check = await fetch("/api/auth/check",
               { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({nonce: nonce}) })
@@ -172,6 +173,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             setError(message);
           }
         } else {
+          setIsChecking(false);
           setIsTimeout(true);
         }
       } else {
