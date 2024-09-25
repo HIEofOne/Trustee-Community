@@ -67,17 +67,20 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
         let check = false;
         let proceed = false;
         let timer = 0;
-        while (!check || timer < 50) {
-          await sleep(5);
-          const nonce_check = await fetch("/api/auth/check",
-            { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({nonce: nonce}) })
-          .then((res) => res.json());
-          if (nonce_check.success) {
+        while (!check) {
+          if (timer < 200) {
+            await sleep(5);
+            const nonce_check = await fetch("/api/auth/check",
+              { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({nonce: nonce}) })
+            .then((res) => res.json());
+            if (nonce_check.success) {
+              check = true;
+              proceed = true;
+            }
+            timer++;
+          } else {
             check = true;
-            proceed = true;
           }
-          timer++;
-          console.log(timer)
         }
         if (proceed) {
           await fetch("/api/magicLink/login", 
