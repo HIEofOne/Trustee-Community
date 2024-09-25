@@ -101,7 +101,7 @@ export default function Policies(props:any) {
     setOpenNotification(false);
   }
 
-  const calcUsers = (resources_result: any) => {
+  const calcUsers = useCallback((resources_result: any) => {
     const users: any[] = [];
     for (const resource of resources_result) {
       for (const privilege of objectPath.get(resource, 'privileges')) {
@@ -124,7 +124,7 @@ export default function Policies(props:any) {
       }
     }
     setUsers(users);
-  }
+  },[props])
 
   const getResources = useCallback(async(filter="") => {
     const body = {email: props.email, filter: filter};
@@ -134,7 +134,7 @@ export default function Policies(props:any) {
     sortArray(resources_result, {by: 'type', order: 'asc'});
     setResources(resources_result);
     calcUsers(resources_result);
-  }, [props]);
+  }, [props, calcUsers]);
 
   const handleAddClick = async(value: string, index: number) => {
     setAddValue(value);
