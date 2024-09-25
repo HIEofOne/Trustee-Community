@@ -68,8 +68,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
         let proceed = false;
         let timer = 0;
         while (!check) {
-          console.log(timer)
-          if (timer < 100) {
+          if (timer < 230) {
             await sleep(5);
             const nonce_check = await fetch("/api/auth/check",
               { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({nonce: nonce}) })
