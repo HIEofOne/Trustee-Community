@@ -41,8 +41,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: req.body.privilege,
-            subject: "HIE of One - Resource Privilege Approved",
+            email: req.body.to,
+            subject: "HIE of One - Health Record Shared With You",
             html: htmlFinal,
           })
         });
