@@ -25,8 +25,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           proceed = true;
         }
       }
+      console.log(proceed)
       if (proceed) {
         const access = req.body.access.join(', ');
+        console.log(access)
         const message = req.body.from + '(' + req.body.from_email + ') has invited you to <b>' + access + '</b> the folowing health record:';
         const htmlContent = fs.readFileSync(path.join(process.cwd(), 'public', 'email.html'), 'utf-8');
         const htmlFinal = htmlContent.replace(/[\r\n]+/gm, '')
@@ -48,6 +50,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             html: htmlFinal,
           })
         });
+        console.log(sendmail)
         const { error } = await sendmail.json();
         if (error) { 
           console.log(error); 
