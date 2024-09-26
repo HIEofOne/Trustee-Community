@@ -338,7 +338,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                 <Stack spacing={2}>
                   <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/><Fingerprint/></div>}>Sign In with PassKey</Button>
                   {isChecking ? (<Grid style={{ textAlign: "center" }}><CircularProgress color="primary" sx={{mr:2}}/>Check your e-mail to verify...</Grid>) : (<div></div>)}
-                  {isTimeout ? (<Grid style={{ textAlign: "center" }}>Verification Timed Out - Click on the link below to try again...</Grid>) : (<div></div>)}
+                  {isTimeout ? (<Grid style={{ textAlign: "center" }}><Typography variant="body2" color="error.main">Verification Timed Out - Click on the link below to try again...</Typography></Grid>) : (<div></div>)}
                   {authonly || clinical ? (
                     <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Passkey</Link></Grid>
                   ) : (
