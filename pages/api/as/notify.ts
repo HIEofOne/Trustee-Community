@@ -15,6 +15,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     optionsSuccessStatus: 200
   });
   if (await verifySig(req)) {
+    console.log('notify')
+    console.log(req)
     if (objectPath.has(req, 'body.to')) {
       let proceed = false;
       if (req.headers['authorization'] !== undefined) {
