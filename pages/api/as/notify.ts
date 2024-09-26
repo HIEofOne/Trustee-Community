@@ -21,7 +21,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       let proceed = false;
       if (req.headers['authorization'] !== undefined) {
         const jwt = req.headers['authorization'].split(' ')[1];
-        if (await verifyJWT(jwt, objectPath.get(req, 'body.access.ro'))) {
+        if (await verifyJWT(jwt, objectPath.get(req, 'body.from_email'))) {
           proceed = true;
         }
       }
