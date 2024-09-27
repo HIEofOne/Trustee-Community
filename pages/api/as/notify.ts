@@ -15,8 +15,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     optionsSuccessStatus: 200
   });
   if (await verifySig(req)) {
-    console.log('notify')
-    console.log(req)
     if (objectPath.has(req, 'body.to')) {
       let proceed = false;
       if (req.headers['authorization'] !== undefined) {
@@ -25,7 +23,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           proceed = true;
         }
       }
-      console.log(proceed)
       if (proceed) {
         const access = req.body.access.join(', ');
         console.log(access)
@@ -50,7 +47,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             html: htmlFinal,
           })
         });
-        console.log(sendmail)
         const { error } = await sendmail.json();
         if (error) { 
           console.log(error); 
