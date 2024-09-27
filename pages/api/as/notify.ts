@@ -26,7 +26,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       if (proceed) {
         const access = req.body.access.join(', ');
         console.log(access)
-        const message = req.body.from + '(' + req.body.from_email + ') has invited you to <b>' + access + '</b> the folowing health record:';
+        const message = req.body.from + ' (' + req.body.from_email + ') has invited you to <b>' + access + '</b> the following health record:';
         const htmlContent = fs.readFileSync(path.join(process.cwd(), 'public', 'email.html'), 'utf-8');
         const htmlFinal = htmlContent.replace(/[\r\n]+/gm, '')
           .replace('@title', 'HIE of One - Health Record Shared With You')
