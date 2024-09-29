@@ -15,6 +15,7 @@ import CardActions from '@mui/material/CardActions';
 import Chip from '@mui/material/Chip';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Divider from '@mui/material/Divider';
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Fab from '@mui/material/Fab';
@@ -353,6 +354,9 @@ export default function Policies(props:any) {
         <li>
           You currently have {resources ? resources.length : 0} resources.
         </li>
+        <li>
+          You currently have {users ? users.length : 0} invited users.
+        </li>
       </ul>
       <Box>
       <ToggleButtonGroup
@@ -455,43 +459,6 @@ export default function Policies(props:any) {
                   <Typography>{value.email}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <List dense>
-                    {
-                      value.resources.map((value1: any, index1: number) => {
-                        return <ListItem 
-                          key={index1}
-                          secondaryAction={
-                            <IconButton aria-label="delete" onClick={() => handleDeleteResource(value1, value.email)}>
-                              <DeleteIcon/>
-                            </IconButton>
-                          }
-                          >
-                          <ListItemIcon>
-                            <FolderIcon />
-                          </ListItemIcon>
-                          {
-                            value1.actions.map((value2: string, index2: number) => {
-                              {
-                                if (value2 === 'read') {
-                                  return <Chip icon={<VisibilityIcon/>} label={value2} key={index2}/>
-                                }
-                                if (value2 === 'write') {
-                                  return <Chip icon={<EditIcon/>} label={value2} key={index2}/>
-                                }
-                                if (value2 === 'delete') {
-                                  return <Chip icon={<DeleteIcon/>} label={value2} key={index2}/>
-                                }
-                              }
-                            })
-                          }
-                          <ListItemText
-                            primary={value1.type}
-                            sx={{ml:2}}
-                          />
-                        </ListItem>
-                      })
-                    }
-                  </List>
                   <Stack spacing={1}>
                     <Button variant="contained" color='success' startIcon={<AddIcon />} onClick={() => handleAllResources(value.email, ['read', 'write', 'delete'])}>
                       Read, Write, and Delete for All Resources
@@ -503,6 +470,45 @@ export default function Policies(props:any) {
                       Remove Access to All Resources
                     </Button>
                   </Stack>
+                  <List dense>
+                    {
+                      value.resources.map((value1: any, index1: number) => {
+                        return <div key={index1}>
+                          <ListItem 
+                            secondaryAction={
+                              <IconButton aria-label="delete" onClick={() => handleDeleteResource(value1, value.email)}>
+                                <DeleteIcon/>
+                              </IconButton>
+                            }
+                            >
+                            <ListItemIcon>
+                              <FolderIcon />
+                            </ListItemIcon>
+                            {
+                              value1.actions.map((value2: string, index2: number) => {
+                                {
+                                  if (value2 === 'read') {
+                                    return <Chip icon={<VisibilityIcon/>} label={value2} key={index2}/>
+                                  }
+                                  if (value2 === 'write') {
+                                    return <Chip icon={<EditIcon/>} label={value2} key={index2}/>
+                                  }
+                                  if (value2 === 'delete') {
+                                    return <Chip icon={<DeleteIcon/>} label={value2} key={index2}/>
+                                  }
+                                }
+                              })
+                            }
+                            <ListItemText
+                              primary={value1.type}
+                              sx={{ml:2}}
+                            />
+                          </ListItem>
+                          <Divider variant="inset" component="li" />
+                        </div>
+                      })
+                    }
+                  </List>
                 </AccordionDetails>
               </Accordion>
             })
