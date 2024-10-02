@@ -53,7 +53,6 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     }
     if (localStorage.getItem('email') !== null) {
       setEmailValue(localStorage.getItem('email') || '');
-      createPassKey();
     }
   }, [client]);
 
