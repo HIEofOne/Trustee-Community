@@ -14,6 +14,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     origin: '*',
     optionsSuccessStatus: 200
   });
+  // const body = {
+  //   to: 'email@address.com',
+  //   from: '',
+  //   from_email: 'email@address.com',
+  //   subject: '',
+  //   title: '',
+  //   previewtext: '',
+  //   paragraphtext: '',
+  //   paragraphtext2: '',
+  //   link: 'https://example.com',
+  //   buttonstyle: 'display:block' || 'display:none',
+  //   buttontext: ''
+  // }
   if (await verifySig(req)) {
     if (objectPath.has(req, 'body.to')) {
       let proceed = false;
@@ -24,17 +37,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         }
       }
       if (proceed) {
-        const access = req.body.access.join(', ');
-        const message = req.body.from + ' (' + req.body.from_email + ') has invited you to <b>' + access + '</b> the following health record:';
         const htmlContent = fs.readFileSync(path.join(process.cwd(), 'public', 'email.html'), 'utf-8');
         const htmlFinal = htmlContent.replace(/[\r\n]+/gm, '')
-          .replace('@title', 'HIE of One - Health Record Shared With You')
-          .replace('@previewtext', 'HIE of One - Health Record Shared With You')
-          .replace('@paragraphtext', `<h3>${req.body.from} shared a health record resource</h3>${message}`)
-          .replace('@2paragraphtext', '')
-          .replaceAll('@link', req.body.url)
-          .replace('@buttonstyle', 'display:block')
-          .replace('@buttontext', 'Link to their Personal Health Record');
+          .replace('@title', req.body.title)
+          .replace('@previewtext', req.body.previewtext)
+          .replace('@paragraphtext', req.body.paragraphtext)
+          .replace('@2paragraphtext', req.body.paragraphtext2)
+          .replaceAll('@link', req.body.link)
+          .replace('@buttonstyle', req.body.buttonstyle)
+          .replace('@buttontext', req.body.buttontext);
         const sendmail = await fetch(domain + "/api/sendmail", {
           method: "POST",
           headers: {
@@ -42,7 +53,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           },
           body: JSON.stringify({
             email: req.body.to,
-            subject: "HIE of One - Health Record Shared With You",
+            subject: req.body.subject,
             html: htmlFinal,
           })
         });

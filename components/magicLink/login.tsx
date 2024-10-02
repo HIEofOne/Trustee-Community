@@ -51,19 +51,30 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     if (client !== '') {
       setClientExist(true)
     }
+    if (localStorage.getItem('email') !== null) {
+      setEmailValue(localStorage.getItem('email') || '');
+      createPassKey();
+    }
   }, [client]);
 
   const createPassKey = async () => {
     if (email !== '') {
       if (validate(email)) {
         // Check if user has an account
-        setIsChecking(true)
+        localStorage.setItem('email', email);
+        setIsChecking(true);
         const isRegistered = await fetch("/api/couchdb/patients/" + email,
           { method: "GET", headers: {"Content-Type": "application/json"} })
           .then((res) => res.json()).then((json) => json._id);
-        const nonce = await fetch("/api/auth/create",
-          { method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email: email} )})
-        .then((res) => res.json()).then((json) => json.nonce);
+        let nonce = '';
+        if (localStorage.getItem('nonce') === null || localStorage.getItem('nonce') === '') {
+          nonce = await fetch("/api/auth/create",
+            { method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email: email} )})
+          .then((res) => res.json()).then((json) => json.nonce);
+          localStorage.setItem('nonce', nonce);
+        } else {
+          nonce = localStorage.getItem('nonce') || '';
+        }
         let check = false;
         let proceed = false;
         let timer = 0;
@@ -83,6 +94,8 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
           }
         }
         if (proceed) {
+          localStorage.removeItem('email');
+          localStorage.removeItem('nonce');
           await fetch("/api/magicLink/login", 
             { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email: email}) });
           if (isRegistered === undefined) {
