@@ -52,7 +52,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         html: htmlFinal
       })
     });
-    res.status(200).json({success: true, nonce: nonce});
+    res.status(200).json({success: true, nonce: nonce, expires: expires});
   } catch (error) {
     console.log(error)
     res.status(500).send(error);

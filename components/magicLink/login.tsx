@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { supported, create, get, parseCreationOptionsFromJSON, parseRequestOptionsFromJSON } from '@github/webauthn-json/browser-ponyfill';
+import moment from 'moment';
 import { useEffect, useState } from 'react';
 import objectPath from 'object-path';
 
@@ -51,6 +52,13 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     if (client !== '') {
       setClientExist(true)
     }
+    if (localStorage.getItem('expires') !== null) {
+      if (moment().unix() > Number(localStorage.getItem('expires'))) {
+        localStorage.removeItem('email');
+        localStorage.removeItem('nonce');
+        localStorage.removeItem('expires');
+      }
+    }
     if (localStorage.getItem('email') !== null) {
       setEmailValue(localStorage.getItem('email') || '');
     }
@@ -67,10 +75,12 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
           .then((res) => res.json()).then((json) => json._id);
         let nonce = '';
         if (localStorage.getItem('nonce') === null || localStorage.getItem('nonce') === '') {
-          nonce = await fetch("/api/auth/create",
+          const create = await fetch("/api/auth/create",
             { method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email: email} )})
-          .then((res) => res.json()).then((json) => json.nonce);
+          .then((res) => res.json());
+          nonce = create.nonce;
           localStorage.setItem('nonce', nonce);
+          localStorage.setItem('expires', create.expires)
         } else {
           nonce = localStorage.getItem('nonce') || '';
         }
@@ -90,11 +100,14 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
             timer++;
           } else {
             check = true;
+            localStorage.removeItem('nonce');
+            localStorage.removeItem('expires');
           }
         }
         if (proceed) {
           localStorage.removeItem('email');
           localStorage.removeItem('nonce');
+          localStorage.removeItem('expires');
           await fetch("/api/magicLink/login", 
             { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email: email}) });
           if (isRegistered === undefined) {
