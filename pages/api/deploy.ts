@@ -44,19 +44,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const htmlFinal = htmlContent.replace(/[\r\n]+/gm, '')
     .replace('@title', 'HIE of One - New Account Confirmation')
     .replace('@previewtext', 'Your HIE of One Trustee Account has been created!')
-    .replace('@paragraphtext', 'An HIE of One Trustee Account has been created for ' + req.body.email)
-    .replace('@2paragraphtext', '')
+    .replace('@paragraphtext', 'An HIE of One Trustee Account has been created for ' + req.body.email + '.')
+    .replace('@2paragraphtext', '<a href="${domain}/myTrustee">Your HIE of One Trustee Account Dashboard</a>')
     .replaceAll('@link', url_full)
     .replace('@buttonstyle', 'display:block')
     .replace('@buttontext', 'Your Personal Health Record');
   const htmlFinal1 = htmlContent.replace(/[\r\n]+/gm, '')
     .replace('@title', 'HIE of One - New Account Confirmation')
     .replace('@previewtext', 'An HIE of One Trustee Account has been created!')
-    .replace('@paragraphtext', 'An HIE of One Trustee Account has been created for ' + req.body.email + `. <a href="${domain}/myTrustee">Your HIE of One Trustee Account Dashboard</a>`)
+    .replace('@paragraphtext', 'An HIE of One Trustee Account has been created for ' + req.body.email + `.`)
     .replace('@2paragraphtext', '')
-    .replaceAll('@link', url_full)
-    .replace('@buttonstyle', 'display:block')
-    .replace('@buttontext', 'Link to their Personal Health Record');
+    .replace('@buttonstyle', 'display:none');
   const sendmail = await fetch(domain + "/api/sendmail", {
     method: "POST",
     headers: {
