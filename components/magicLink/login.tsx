@@ -40,7 +40,8 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
   const [register, setRegister] = useState(false);
   const [progress, setProgress] = useState("");
   const [email, setEmailValue] = useState("");
-  const [clientExist, setClientExist] = useState(false); 
+  const [clientExist, setClientExist] = useState(false);
+  const [isContinue, setContinue] = useState(false);
 
   useEffect(() => {
     const checkAvailability = async () => {
@@ -61,6 +62,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     }
     if (localStorage.getItem('email') !== null) {
       setEmailValue(localStorage.getItem('email') || '');
+      setContinue(true);
     }
   }, [client]);
 
@@ -364,6 +366,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                   <Button variant="contained" onClick={passKey} startIcon={<div><PersonIcon/><KeyIcon/><Fingerprint/></div>}>Sign In with PassKey</Button>
                   {isChecking ? (<Grid style={{ textAlign: "center" }}><CircularProgress color="primary" sx={{mr:2}}/>Check your e-mail to verify...</Grid>) : (<div></div>)}
                   {isTimeout ? (<Grid style={{ textAlign: "center" }}><Typography variant="body2" color="error.main">Verification Timed Out - Click on the link below to try again...</Typography></Grid>) : (<div></div>)}
+                  {isContinue ? (<Grid style={{ textAlign: "center" }}><Typography variant="body2" color="error.main">Looks like you were in the middle of verifying your email, click on Create your Trustee and Passkey to continue...</Typography></Grid>) : (<div></div>)}
                   {authonly || clinical ? (
                     <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Passkey</Link></Grid>
                   ) : (
