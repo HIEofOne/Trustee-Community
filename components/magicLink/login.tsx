@@ -63,6 +63,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     if (localStorage.getItem('email') !== null) {
       setEmailValue(localStorage.getItem('email') || '');
       setContinue(true);
+      setIsError(true);
     }
   }, [client]);
 
@@ -72,6 +73,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
         // Check if user has an account
         localStorage.setItem('email', email);
         setIsChecking(true);
+        setIsError(true);
         const isRegistered = await fetch("/api/couchdb/patients/" + email,
           { method: "GET", headers: {"Content-Type": "application/json"} })
           .then((res) => res.json()).then((json) => json._id);
@@ -224,7 +226,8 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     event.preventDefault();
     if (email !== '') {
       if (validate(email)) {
-        setProgress('Authentication using PassKey...')
+        setProgress('Authentication using PassKey...');
+        setIsError(true);
         const cro = parseRequestOptionsFromJSON({
           publicKey: {
             challenge,
@@ -269,6 +272,9 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
   }
 
   const replay = () => {
+    localStorage.removeItem('email');
+    localStorage.removeItem('nonce');
+    localStorage.removeItem('expires');
     location.reload()
   }
 
