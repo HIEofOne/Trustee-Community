@@ -124,9 +124,9 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
           }
           console.log('registering passkey now...');
           let window_check = false;
+          const isVisible = usePageVisibility();
           while (!window_check) {
             await sleep(2);
-            const isVisible = usePageVisibility();
             if (isVisible) {
               window_check = true;
             }
