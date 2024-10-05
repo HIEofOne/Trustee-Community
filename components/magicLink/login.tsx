@@ -3,7 +3,6 @@ import { supported, create, get, parseCreationOptionsFromJSON, parseRequestOptio
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import objectPath from 'object-path';
-import { usePageVisibility } from 'react-page-visibility';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -43,7 +42,6 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
   const [email, setEmailValue] = useState("");
   const [clientExist, setClientExist] = useState(false);
   const [isContinue, setContinue] = useState(false);
-  const isVisible = usePageVisibility();
 
   useEffect(() => {
     const checkAvailability = async () => {
@@ -125,10 +123,9 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
           }
           console.log('registering passkey now...');
           let window_check = false;
-          console.log(isVisible)
           while (!window_check) {
             await sleep(2);
-            if (isVisible) {
+            if (document.visibilityState === 'visible') {
               window_check = true;
             }
           }
