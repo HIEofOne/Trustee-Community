@@ -123,6 +123,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               console.log('user added');
             }
           }
+          console.log(windowFocused);
           console.log('registering passkey now...');
           let window_check = false;
           while (!window_check) {
