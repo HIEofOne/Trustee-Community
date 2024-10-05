@@ -3,6 +3,7 @@ import { supported, create, get, parseCreationOptionsFromJSON, parseRequestOptio
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import objectPath from 'object-path';
+import useWindowFocus from 'use-window-focus';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -42,6 +43,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
   const [email, setEmailValue] = useState("");
   const [clientExist, setClientExist] = useState(false);
   const [isContinue, setContinue] = useState(false);
+  const windowFocused = useWindowFocus();
 
   useEffect(() => {
     const checkAvailability = async () => {
@@ -121,7 +123,14 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               console.log('user added');
             }
           }
-          console.log('registering passkey now...')
+          console.log('registering passkey now...');
+          let window_check = false;
+          while (!window_check) {
+            await sleep(2);
+            if (windowFocused) {
+              window_check = true;
+            }
+          }
           setProgress('Registering PassKey...');
           const cco = parseCreationOptionsFromJSON({
             publicKey: {
