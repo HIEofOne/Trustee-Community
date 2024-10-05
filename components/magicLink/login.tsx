@@ -43,6 +43,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
   const [email, setEmailValue] = useState("");
   const [clientExist, setClientExist] = useState(false);
   const [isContinue, setContinue] = useState(false);
+  const isVisible = usePageVisibility();
 
   useEffect(() => {
     const checkAvailability = async () => {
@@ -124,7 +125,6 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
           }
           console.log('registering passkey now...');
           let window_check = false;
-          const isVisible = usePageVisibility();
           while (!window_check) {
             await sleep(2);
             if (isVisible) {
