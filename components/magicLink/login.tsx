@@ -121,6 +121,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
               console.log('user added');
             }
           }
+          console.log('registering passkey now...')
           setProgress('Registering PassKey...');
           const cco = parseCreationOptionsFromJSON({
             publicKey: {
