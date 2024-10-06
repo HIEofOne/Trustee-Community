@@ -314,9 +314,9 @@ const NewPatient = () => {
           ) : (
             <div>
               <p>Your Trustee Account is now Active!</p>
-              <p>After 30 days, an email will ask you to provide payment information for your subscription.</p>
-              <p>Your personal health record is <Link href={url} target="_blank">{linkTitle}</Link></p>
-              <Button variant="contained" component="a" href="/myTrustee">Continue to review and modify the policies that control your Trustee.</Button>
+              <p><Link href="/myTrustee">Click here to review and modify the policies that control your resources in Trustee.</Link></p>
+              <p>Your personal health record is located at <Link href={url} target="_blank">{linkTitle}</Link></p>
+              <Button variant="contained" component="a" href={url} target="_blank">Continue to your personal health record</Button>
             </div>
           )}
         </div>

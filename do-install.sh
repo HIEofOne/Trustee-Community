@@ -53,6 +53,7 @@ EOF
   read -e -p "Enter your Root Domain Name (domain.com): " -i "" ROOT_DOMAIN
   read -e -p "Enter your E-Mail address for Let's Encrypt (your@email.com): " -i "" EMAIL
   read -e -p "Enter your MAIA URL (maia_domain.com): " -i "" MAIA_URL
+  read -e -p "Enter your Trustee Proxy URL (proxy_domain.com): " -i "" OIDC_RELAY_URL
   read -e -p "Enter your DigitalOcean API Token: " -i "" DIGITALOCEAN_API_TOKEN
   read -e -p "Enter your CouchDB/Traefik Password for admin user: " -i "" COUCHDB_PASSWORD
   read -e -p "Enter your From Email: " -i "" FROM_EMAIL
@@ -175,7 +176,7 @@ ssh_post_data1()
           {"key": "AUTH", "value": "magic"},
           {"key": "USPSTF_KEY", "value": "$USPSTF_KEY"},
           {"key": "UMLS_KEY", "value": "$UMLS_KEY"},
-          {"key": "OIDC_RELAY_URL", "value": "$OIDC_RELAY_URL"}
+          {"key": "OIDC_RELAY_URL", "value": "https://$OIDC_RELAY_URL"}
         ],
         "routes": [
           {"path": "/"}

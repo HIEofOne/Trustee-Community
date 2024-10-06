@@ -21,8 +21,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   //   subject: '',
   //   title: '',
   //   previewtext: '',
-  //   paragraphtext: '',
-  //   paragraphtext2: '',
+  //   paragraphtext: '' (btoa('')),
+  //   paragraphtext2: '' (btoa('')),
   //   link: 'https://example.com',
   //   buttonstyle: 'display:block' || 'display:none',
   //   buttontext: ''
@@ -41,8 +41,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         const htmlFinal = htmlContent.replace(/[\r\n]+/gm, '')
           .replace('@title', req.body.title)
           .replace('@previewtext', req.body.previewtext)
-          .replace('@paragraphtext', req.body.paragraphtext)
-          .replace('@2paragraphtext', req.body.paragraphtext2)
+          .replace('@paragraphtext', atob(req.body.paragraphtext))
+          .replace('@2paragraphtext', atob(req.body.paragraphtext2))
           .replaceAll('@link', req.body.link)
           .replace('@buttonstyle', req.body.buttonstyle)
           .replace('@buttontext', req.body.buttontext);
