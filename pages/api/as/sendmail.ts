@@ -46,6 +46,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           .replaceAll('@link', req.body.link)
           .replace('@buttonstyle', req.body.buttonstyle)
           .replace('@buttontext', req.body.buttontext);
+        console.log(htmlFinal)
+        console.log(req.body.to)
+        console.log(req.body.subject)
         const sendmail = await fetch(domain + "/api/sendmail", {
           method: "POST",
           headers: {
