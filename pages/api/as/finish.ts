@@ -67,8 +67,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                   const patient_doc = await patients.get(request_doc.email);
                   if (objectPath.has(patient_doc, 'vc')) {
                     objectPath.set(request_doc, 'vc', patient_doc.vc);
-                    check_privileges.push({location: a, privilege: request_doc.email});
                   }
+                  check_privileges.push({location: a, privilege: request_doc.email});
                 }
                 // check npi
                 if (check_privileges.length === 0) {
