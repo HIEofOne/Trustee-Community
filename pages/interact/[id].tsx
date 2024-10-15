@@ -92,17 +92,6 @@ export default function Interact({ challenge }: { challenge: string }) {
   if (!emailStatus) {
     return (
       <>
-        <Head>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-            if (document.cookie && document.cookie.includes('authed')) {
-              window.location.href = "/myTrustee/dashboard"
-            }
-          `,
-            }}
-          />
-        </Head>
         <div>
           <h2>Trustee Authorization Server</h2>
           <Login challenge={challenge} clinical={false} authonly={true} client={client} setEmail={setEmail} locations={locations}/>
