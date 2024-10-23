@@ -46,7 +46,7 @@ async function createJWT(doc: any) {
     .setIssuedAt()
     .setIssuer(domain)
     .setAudience(doc.client.display.uri)
-    .setExpirationTime('2h')
+    .setExpirationTime('6h')
     .setSubject(doc.email)
     .sign(rsaPrivateKey);
   const token_endpoint_access_token = Buffer.from(randomBytes(16)).toString('base64url');
