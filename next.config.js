@@ -7,8 +7,9 @@ const nextConfig = {
         config.resolve.fallback = {
           ...config.resolve.fallback,  
           fs: false,
-          path: false
+          path: false,
         };
+        config.cache = false;
         return config;
       },
 }
