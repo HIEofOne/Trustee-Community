@@ -126,7 +126,7 @@ const Layout = (props: any) => {
         'Trustee clinical data and authorization services are managed through typical hosting accounts at Digital Ocean, Inc. or Netlify, Inc. Neither HIE of One or our hosting providers share data with third-parties.',
         'As a free and non-commercial demonstration, Trustee accounts may be closed and data deleted at any time. Users are encouraged to make and keep local copies on their computer or mobile device.',
         'Trustee protects against unintended or overly broad data sharing in multiple ways:',
-        'Patients have fine-grained control over health record segments they capture from hospital records via SMART on FHIR',
+        'Patients have fine-grained control over health record segments they capture from hospital records via SMART on FHIR.',
         'As a free service, patients concerned about family access demands can easily create alternate health records by simply using a different email address.',
         'The use of passkeys instead of passwords discourages requests for password sharing.',
         'Patients also have fine-grained control over data shared through invited access via email or via policy.',

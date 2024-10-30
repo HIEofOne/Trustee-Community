@@ -37,7 +37,7 @@ const PolicySummary = (props:any) => {
             Trustee protects against unintended or overly broad data sharing in multiple ways:
             <ul>
               <li>
-                Patients have fine-grained control over health record segments they capture from hospital records via SMART on FHIR,
+                Patients have fine-grained control over health record segments they capture from hospital records via SMART on FHIR.
               </li>
               <li>
                 As a free service, patients concerned about family access demands can easily create alternate health records by simply using a different email address. 
