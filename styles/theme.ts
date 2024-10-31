@@ -5,6 +5,7 @@ export const appTheme = createTheme({
     primary: blue
   },
   typography: {
-    fontFamily: 'nunito'
+    fontFamily: 'nunito',
+    fontSize: 12
   }
 })
