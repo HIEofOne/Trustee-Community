@@ -58,7 +58,7 @@ async function createJWT(doc: any) {
     "access_token": {
       "value": jwt,
       "manage": {
-        "uri": url.protocol + "//" + url.hostname + "/as/token/" + doc.interact_nonce.value,
+        "uri": url.protocol + "//" + url.hostname + "/api/as/token/" + doc.interact_nonce.value,
         "access_token": {
           "value": token_endpoint_access_token
         } 
