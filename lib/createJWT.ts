@@ -58,13 +58,13 @@ async function createJWT(doc: any) {
     "access_token": {
       "value": jwt,
       "manage": {
-        "uri": url.protocol + "//" + url.hostname + "/token/" + doc.interact_nonce.value,
+        "uri": url.protocol + "//" + url.hostname + "/as/token/" + doc.interact_nonce.value,
         "access_token": {
           "value": token_endpoint_access_token
         } 
       },
       "access": doc.access_token.access,
-      "expires_in": 7200,
+      "expires_in": 21600,
       "flags": ["bearer"],
       "subject": {
         "sub_ids": subject
