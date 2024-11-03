@@ -34,6 +34,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
   const router = useRouter();
   const [error, setError] = useState("");
   const [isError, setIsError] = useState(false);
+  const [isProcess, setIsProcess] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [isTimeout, setIsTimeout] = useState(false);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
@@ -73,7 +74,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
         // Check if user has an account
         localStorage.setItem('email', email);
         setIsChecking(true);
-        setIsError(true);
+        setIsProcess(true);
         const isRegistered = await fetch("/api/couchdb/patients/" + email,
           { method: "GET", headers: {"Content-Type": "application/json"} })
           .then((res) => res.json()).then((json) => json._id);
@@ -227,7 +228,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
     if (email !== '') {
       if (validate(email)) {
         setProgress('Authentication using PassKey...');
-        setIsError(true);
+        setIsProcess(true);
         const cro = parseRequestOptionsFromJSON({
           publicKey: {
             challenge,
@@ -386,7 +387,7 @@ export default function Login({ challenge, clinical=false, authonly=false, clien
                   ) : (
                     <Grid style={{ textAlign: "center" }}>New to Trustee?  <Link component="button" onClick={createPassKey}>Create your Trustee and Passkey</Link></Grid>
                   )}
-                  {isError ? (
+                  {isError || isProcess ? (
                     <Button variant="contained" onClick={replay} startIcon={<div><ReplayIcon/></div>}>Start Over</Button>
                   ) : (<div></div>)}
                 </Stack>
