@@ -234,7 +234,7 @@ else
   apt-get update
   apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
   # get nvm
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
   echo "Now is also a good time to make sure your domain name is associated with the public IP of this droplet."
   echo "Afterwards, logout and log back in and run cd Trustee-Community;./do-install.sh again"
   exit 0

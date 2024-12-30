@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import objectPath from 'object-path';
 import { useQRCode } from 'next-qrcode';
-// import { useRouter } from 'next/router';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Backdrop from '@mui/material/Backdrop';
@@ -32,7 +31,6 @@ export default function Credentials(props:any) {
   const [openModal, setOpenModal] = useState(false);
   const [vcInstance, setVcInstance] = useState<{[key: string]: any}>([]);
   const { Canvas } = useQRCode();
-  // const { isReady } = useRouter();
   
   const back = () => {
     setQrStatus(false);
@@ -158,8 +156,8 @@ export default function Credentials(props:any) {
               <Button variant="contained" onClick={finish} startIcon={<div><DoneIcon/></div>}>Finished Gathering Credentials</Button>
             </Stack>
             <h4>or Gather Verifiable Credentials:</h4>
-            <p>First, make sure you have a <a href='https://github.com/Sphereon-Opensource/ssi-mobile-wallet' target='_blank'>Sphereon Verifiable Credentials Wallet</a> installed on your smartphone device.</p>
-            <p>If you are a provider - go to <a href='https://dir.hieofone.org/doximity' target='_blank'>HIE of One-Doximity Verifieable Credentials Issuer</a> to generate a Verifiable Credential.</p>
+            <p>First, make sure you have a <a href='https://github.com/Sphereon-Opensource/mobile-wallet' target='_blank'>Sphereon Verifiable Credentials Wallet</a> installed on your smartphone device.</p>
+            <p>If you are a provider - go to <a href='https://dir.hieofone.org/doximity' target='_blank'>HIE of One-Doximity Verifiable Credentials Issuer</a> to generate a Verifiable Credential.</p>
             <p>Then select the Verifiable Credential type below:</p>
           </div>
           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
