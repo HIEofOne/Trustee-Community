@@ -49,7 +49,8 @@ async function createJWT(doc: any) {
     .setExpirationTime('6h')
     .setSubject(doc.email)
     .sign(rsaPrivateKey);
-  const token_endpoint_access_token = Buffer.from(randomBytes(16)).toString('base64url');
+  // const token_endpoint_access_token = Buffer.from(randomBytes(16)).toString('base64url');
+  const token_endpoint_access_token = randomBytes(16).toString('base64url');
   const gnap = await nano.use("gnap");
   objectPath.set(doc, 'token_endpoint_access_token', token_endpoint_access_token);
   objectPath.set(doc, 'access_token.value', jwt);

@@ -101,7 +101,7 @@ export async function login(req: NextApiRequest) {
       expectedChallenge: challenge,
       authenticator: {
         credentialID: userCredential.credentials.create.externalId,
-        credentialPublicKey: Buffer.from(userCredential.credentials.create.publicKey.data),
+        credentialPublicKey: Buffer.from(userCredential.credentials.create.publicKey.data) as Uint8Array,
         counter: userCredential.credentials.create.signCount,
       },
       ...HOST_SETTINGS,
