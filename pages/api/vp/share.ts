@@ -49,7 +49,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       "registration": {
         "id_token_signing_alg_values_supported": [
           "RS256",
-          "ES256K"
+          "ES256K",
+          "EdDSA"
         ],
         "response_types_supported": [
           "id_token"
