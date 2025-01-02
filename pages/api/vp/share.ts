@@ -38,6 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const jwk = createJWK("Ed25519", identifier.keys[0].publicKeyHex);
     const payload = {
       "sub_jwk": jwk,
+      "sub": identifier.did,
       "aud": identifier.did,
       "response_type": "vp_token id_token",
       "scope": "openid",
