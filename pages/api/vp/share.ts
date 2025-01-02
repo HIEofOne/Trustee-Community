@@ -3,9 +3,8 @@ import NextCors from '../../../lib/cors';
 import { agent } from '../../../lib/veramo';
 import objectPath from 'object-path';
 import { v4 as uuidv4 } from 'uuid';
-import * as jose from 'jose';
-import Docker from 'dockerode';
-import streams from 'memory-streams';
+import { EdDSASigner, hexToBytes, createJWT } from 'did-jwt';
+import { createJWK } from '@veramo/utils';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -103,7 +102,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         }
       }
     }
-    const jwt:any = await agent.keyManagerSignJWT({kid: identifier.keys[0].kid, data: JSON.stringify(payload)})
+    const signer = EdDSASigner(hexToBytes(identifier.keys[0].publicKeyHex));
+    const jwk = createJWK("Ed25519", identifier.keys[0].publicKeyHex);
+    const jwt = createJWT(payload, {issuer: identifier.did, signer}, {alg: 'EdDSA', typ: 'JWT', jwk: jwk });
     console.log(jwt)
     console.log(payload)
     objectPath.set(doc, 'vp_jwt', jwt);
