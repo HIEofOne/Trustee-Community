@@ -107,7 +107,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         }
       }
     }
-    const signer = EdDSASigner(hexToBytes(identifier.keys[0].publicKeyHex));
+    // const signer = EdDSASigner(hexToBytes(identifier.keys[0].publicKeyHex));
+    const signer = () => {
+      return agent.keyManagerSign({ keyRef: identifier.keys[0].kid, data: JSON.stringify(payload), encoding: 'utf-8', algorithm: 'EdDSA' })
+    }
     const jwt = await createJWT(payload, {issuer: identifier.did, signer}, {alg: 'EdDSA', typ: 'JWT', jwk: jwk });
     console.log(jwt)
     console.log(payload)
