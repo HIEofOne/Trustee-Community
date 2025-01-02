@@ -36,6 +36,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const nonce = uuidv4();
     const state = uuidv4();
     const payload = {
+      "iss": identifier.did,
+      "aud": identifier.did,
       "response_type": "vp_token id_token",
       "scope": "openid",
       "client_id": identifier.did,
