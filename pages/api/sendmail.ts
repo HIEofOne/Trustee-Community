@@ -1,5 +1,5 @@
 import sendgrid from '@sendgrid/mail';
-import NextCors from 'nextjs-cors';
+import NextCors from '../../lib/cors';
 import nodemailer from 'nodemailer';
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 type EmailPayload = {

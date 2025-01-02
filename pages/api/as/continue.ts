@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextCors from 'nextjs-cors';
+import NextCors from '../../../lib/cors';
 import createJWT from '../../../lib/createJWT';
 import verifySig from '../../../lib/verifySig';
 import parseSig from '../../../lib/parseSig';

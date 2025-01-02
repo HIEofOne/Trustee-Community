@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextCors from 'nextjs-cors';
+import NextCors from '../../../../lib/cors';
 
 const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
 const url = new URL(domain);

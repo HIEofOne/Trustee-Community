@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextCors from 'nextjs-cors';
+import NextCors from '../../../lib/cors';
 import moment from 'moment';
 
 var user = process.env.COUCHDB_USER;

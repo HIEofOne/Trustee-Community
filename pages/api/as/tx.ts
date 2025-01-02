@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextCors from 'nextjs-cors';
-import { randomBytes } from 'crypto';
+import NextCors from '../../../lib/cors';
 import verifySig from '../../../lib/verifySig';
 import parseSig from '../../../lib/parseSig';
 import objectPath from 'object-path';
 import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -47,8 +47,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const gnap = await nano.db.use("gnap");
       const gnap_public_keys = await nano.db.use("gnap_public_keys");
       const nonce = uuidv4();
-      const access_token = Buffer.from(randomBytes(16)).toString('base64url');
-      const interact_nonce = Buffer.from(randomBytes(16)).toString('base64url');
+      const access_token = nanoid(22);
+      const interact_nonce = nanoid(22);
       objectPath.set(req, 'body.access_token.value', access_token);
       objectPath.set(req, 'body.interact_nonce.value', interact_nonce);
       const parsed = parseSig(req);
@@ -64,7 +64,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const response = {
         interact: {
           redirect: url.protocol + "//" + url.hostname + "/interact/" + interact_nonce,
-          finish: Buffer.from(randomBytes(16)).toString('base64url')
+          finish: nanoid(22)
         },
         continue: {
           access_token: {value: access_token},

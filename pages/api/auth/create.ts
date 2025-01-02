@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextCors from 'nextjs-cors';
+import NextCors from '../../../lib/cors';
 import moment from 'moment';
-import { randomBytes } from 'crypto';
+import { nanoid } from 'nanoid';
 import fs from 'fs';
 import path from 'path';
 
@@ -23,7 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   });
   const magic = await nano.db.use("magic");
   try {
-    const nonce = Buffer.from(randomBytes(16)).toString('base64url');
+    const nonce = nanoid(22);
     const expires = moment().add(20, 'minutes').unix();
     const response = await magic.insert(
       { email: req.body.email, nonce: nonce, expires: expires, verified: 'false' },

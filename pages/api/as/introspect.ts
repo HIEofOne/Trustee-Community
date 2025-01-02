@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextCors from 'nextjs-cors';
+import NextCors from '../../../lib/cors';
 import verifySig from '../../../lib/verifySig';
 
 var user = process.env.COUCHDB_USER;

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextCors from 'nextjs-cors';
+import NextCors from '../../../../../lib/cors';
 import fs from 'fs';
 import path from 'path';
 

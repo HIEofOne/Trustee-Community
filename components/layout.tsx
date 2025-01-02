@@ -159,7 +159,7 @@ const Layout = (props: any) => {
     router.push("/");
   };
   return (
-    <Box sx={{ display: 'flex' }}>
+    (<Box sx={{ display: 'flex' }}>
       {/* <CssBaseline /> */}
       <AppBar position="fixed">
         <Toolbar>
@@ -237,7 +237,7 @@ const Layout = (props: any) => {
         </LayoutDialogTitle>
         <DialogContent dividers>
           <ul>
-            {content.map((text: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined, index: any) => (
+            {content.map((text: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined, index: any) => (
               <li key={index}>
                 <Typography gutterBottom>
                   {text}
@@ -251,7 +251,7 @@ const Layout = (props: any) => {
         <DrawerHeader/>
         {props.children}
       </Main>
-    </Box>
+    </Box>)
   );
 }
 

@@ -1,5 +1,6 @@
 import { importJWK } from 'jose';
-import { createHash, randomBytes } from 'crypto';
+import { createHash } from 'crypto';
+import { nanoid } from 'nanoid';
 import { createSigner, httpbis } from 'http-message-signatures';
 
 var user = process.env.COUCHDB_USER;
@@ -61,7 +62,7 @@ const Sign = async(req: any, res: any) => {
         'alg'
       ],
       paramValues: {
-        nonce: randomBytes(16).toString('base64url'),
+        nonce: nanoid(22),
         tag: "gnap",
         keyid: my_key.publicKey.kid
       }

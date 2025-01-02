@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextCors from 'nextjs-cors';
+import NextCors from '../../../lib/cors';
 import { v4 as uuidv4 } from 'uuid';
-import { randomBytes } from 'crypto';
+import { nanoid } from 'nanoid';
 import objectPath from 'object-path';
 
 var user = process.env.COUCHDB_USER;
@@ -21,7 +21,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     optionsSuccessStatus: 200
   });
   const gnap = await nano.db.use("gnap");
-  const interact_nonce = Buffer.from(randomBytes(16)).toString('base64url');
+  const interact_nonce = nanoid(22);
   const doc = {
     "state": "pending",
     "pending_resources": [],
