@@ -35,8 +35,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // const header = { alg: alg, kid: kid_did_final, typ: 'JWT' };
     const nonce = uuidv4();
     const state = uuidv4();
+    const jwk = createJWK("Ed25519", identifier.keys[0].publicKeyHex);
     const payload = {
-      "iss": identifier.did,
+      "sub_jwk": jwk,
       "aud": identifier.did,
       "response_type": "vp_token id_token",
       "scope": "openid",
@@ -105,7 +106,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
     }
     const signer = EdDSASigner(hexToBytes(identifier.keys[0].publicKeyHex));
-    const jwk = createJWK("Ed25519", identifier.keys[0].publicKeyHex);
     const jwt = await createJWT(payload, {issuer: identifier.did, signer}, {alg: 'EdDSA', typ: 'JWT', jwk: jwk });
     console.log(jwt)
     console.log(payload)
