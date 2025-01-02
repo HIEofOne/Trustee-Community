@@ -11,6 +11,7 @@ import Dialog from '@mui/material/Dialog';
 import DoneIcon from '@mui/icons-material/Done';
 import { FormControl } from "@mui/material";
 import InputLabel from '@mui/material/InputLabel';
+import Link from '@mui/material/Link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -213,6 +214,7 @@ export default function Credentials(props:any) {
               }}
             />
           </Box>
+          <Link href={qrCode}>{qrCode}</Link>
           <Button variant="contained" onClick={back} startIcon={<div><ArrowBackIcon/></div>}>Back</Button>
         </div>
       )

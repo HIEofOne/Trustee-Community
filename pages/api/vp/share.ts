@@ -104,6 +104,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
     }
     const jwt:any = await agent.keyManagerSignJWT({kid: identifier.keys[0].kid, data: JSON.stringify(payload)})
+    console.log(jwt)
+    console.log(payload)
     objectPath.set(doc, 'vp_jwt', jwt);
     objectPath.set(doc, 'vp_state', state);
     objectPath.set(doc, 'vp_status', 'pending');
