@@ -104,7 +104,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
     const signer = EdDSASigner(hexToBytes(identifier.keys[0].publicKeyHex));
     const jwk = createJWK("Ed25519", identifier.keys[0].publicKeyHex);
-    const jwt = createJWT(payload, {issuer: identifier.did, signer}, {alg: 'EdDSA', typ: 'JWT', jwk: jwk });
+    const jwt = await createJWT(payload, {issuer: identifier.did, signer}, {alg: 'EdDSA', typ: 'JWT', jwk: jwk });
     console.log(jwt)
     console.log(payload)
     objectPath.set(doc, 'vp_jwt', jwt);
