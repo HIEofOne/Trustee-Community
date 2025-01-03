@@ -4,8 +4,8 @@ import { agent } from '../../../lib/veramo';
 import objectPath from 'object-path';
 import { v4 as uuidv4 } from 'uuid';
 import { EdDSASigner, hexToBytes, createJWT } from 'did-jwt';
-import { createJWK } from '@veramo/utils';
-import fs from 'fs';
+import { bytesToBase64url, bytesToHex, createJWK, stringToUtf8Bytes } from '@veramo/utils';
+import { sha256 } from '@noble/hashes/sha256'
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -38,6 +38,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const state = uuidv4();
     const jwk = createJWK("Ed25519", identifier.keys[0].publicKeyHex);
     const payload = {
+      "iss": identifier.did,
+      "iat": Math.floor(Date.now() / 1000),
       "sub_jwk": jwk,
       "sub": identifier.did,
       "aud": identifier.did,
@@ -108,12 +110,20 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         }
       }
     }
-    const store = JSON.parse(fs.readFileSync('/data/store.json', 'utf8'))
-    const privKey = objectPath.get(store, 'privateKeys.' + identifier.keys[0].kid + '.privateKeyHex')
-    const signer = EdDSASigner(hexToBytes(privKey));
-    const jwt = await createJWT(payload, {issuer: identifier.did, signer}, {alg: 'EdDSA', typ: 'JWT', jwk: jwk });
+    const header = {alg: 'EdDSA', typ: 'JWT', jwk: jwk };
+    const encodedHeader = bytesToBase64url(stringToUtf8Bytes(JSON.stringify(header)));
+    const encodedPayload = bytesToBase64url(stringToUtf8Bytes(JSON.stringify(payload)));
+    const toBeSigned = `${encodedHeader}.${encodedPayload}`;
+    const message = stringToUtf8Bytes(toBeSigned);
+    const digest = bytesToHex(sha256(message));
+    const encodedSignature = await agent.keyManagerSign({
+      keyRef: identifier.keys[0].kid,
+      algorithm: header.alg,
+      data: digest,
+      encoding: 'hex'
+    });
+    const jwt = `${encodedHeader}.${encodedPayload}.${encodedSignature}`
     console.log(jwt)
-    console.log(payload)
     objectPath.set(doc, 'vp_jwt', jwt);
     objectPath.set(doc, 'vp_state', state);
     objectPath.set(doc, 'vp_status', 'pending');
