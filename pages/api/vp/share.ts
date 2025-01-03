@@ -38,8 +38,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const state = uuidv4();
     const jwk = createJWK("Ed25519", identifier.keys[0].publicKeyHex);
     const payload = {
-      "iss": identifier.did,
-      "iat": Math.floor(Date.now() / 1000),
       "sub_jwk": jwk,
       "sub": identifier.did,
       "aud": identifier.did,
@@ -56,7 +54,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           "ES256K",
           "EdDSA"
         ],
+        "request_object_signing_alg_values_supported": [
+          "EdDSA",
+          "ES256K",
+          "RS256"
+        ],
         "response_types_supported": [
+          "vp_token",
           "id_token"
         ],
         "scopes_supported": [
@@ -72,7 +76,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           "did:ion",
           "did:jwk"
         ],
-        "vp_formats": {
+        "vp_formats_supported": {
           "jwt_vp": {
             "alg": [
               "RS256",
@@ -111,18 +115,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       }
     }
     const header: any = {alg: 'EdDSA', typ: 'JWT', jwk: jwk };
-    // const encodedHeader = bytesToBase64url(stringToUtf8Bytes(JSON.stringify(header)));
-    // const encodedPayload = bytesToBase64url(stringToUtf8Bytes(JSON.stringify(payload)));
-    // const toBeSigned = `${encodedHeader}.${encodedPayload}`;
-    // const message = stringToUtf8Bytes(toBeSigned);
-    // const digest = bytesToHex(sha256(message));
-    // const encodedSignature = await agent.keyManagerSign({
-    //   keyRef: identifier.keys[0].kid,
-    //   algorithm: header.alg,
-    //   data: digest,
-    //   encoding: 'hex'
-    // });
-    // const jwt = `${encodedHeader}.${encodedPayload}.${encodedSignature}`
     const signer = (data: string | Uint8Array ) => {
       let dataString, encoding: 'base64' | undefined
       if (typeof data === 'string') {
