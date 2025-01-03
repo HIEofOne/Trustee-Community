@@ -3,8 +3,8 @@ import NextCors from '../../../lib/cors';
 import { agent } from '../../../lib/veramo';
 import objectPath from 'object-path';
 import { v4 as uuidv4 } from 'uuid';
-import { EdDSASigner, hexToBytes, createJWT } from 'did-jwt';
-import { bytesToBase64url, bytesToHex, createJWK, stringToUtf8Bytes } from '@veramo/utils';
+import { EdDSASigner, hexToBytes, createJWT, Signer } from 'did-jwt';
+import { bytesToBase64url, bytesToBase64, bytesToHex, createJWK, stringToUtf8Bytes } from '@veramo/utils';
 import { sha256 } from '@noble/hashes/sha256'
 
 var user = process.env.COUCHDB_USER;
@@ -110,19 +110,34 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         }
       }
     }
-    const header = {alg: 'EdDSA', typ: 'JWT', jwk: jwk };
-    const encodedHeader = bytesToBase64url(stringToUtf8Bytes(JSON.stringify(header)));
-    const encodedPayload = bytesToBase64url(stringToUtf8Bytes(JSON.stringify(payload)));
-    const toBeSigned = `${encodedHeader}.${encodedPayload}`;
-    const message = stringToUtf8Bytes(toBeSigned);
-    const digest = bytesToHex(sha256(message));
-    const encodedSignature = await agent.keyManagerSign({
-      keyRef: identifier.keys[0].kid,
-      algorithm: header.alg,
-      data: digest,
-      encoding: 'hex'
-    });
-    const jwt = `${encodedHeader}.${encodedPayload}.${encodedSignature}`
+    const header: any = {alg: 'EdDSA', typ: 'JWT', jwk: jwk };
+    // const encodedHeader = bytesToBase64url(stringToUtf8Bytes(JSON.stringify(header)));
+    // const encodedPayload = bytesToBase64url(stringToUtf8Bytes(JSON.stringify(payload)));
+    // const toBeSigned = `${encodedHeader}.${encodedPayload}`;
+    // const message = stringToUtf8Bytes(toBeSigned);
+    // const digest = bytesToHex(sha256(message));
+    // const encodedSignature = await agent.keyManagerSign({
+    //   keyRef: identifier.keys[0].kid,
+    //   algorithm: header.alg,
+    //   data: digest,
+    //   encoding: 'hex'
+    // });
+    // const jwt = `${encodedHeader}.${encodedPayload}.${encodedSignature}`
+    const signer = (data: string | Uint8Array ) => {
+      let dataString, encoding: 'base64' | undefined
+      if (typeof data === 'string') {
+        dataString = data
+        encoding = undefined
+      } else {
+        ;(dataString = bytesToBase64(data)), (encoding = 'base64')
+      }
+      return agent.keyManagerSign({ keyRef: identifier.keys[0].kid, data: dataString, alg: header.alg })
+    }
+    const jwt = await createJWT(
+      payload,
+      { issuer: identifier.did, signer, alg: header.alg },
+      header
+    )
     console.log(jwt)
     objectPath.set(doc, 'vp_jwt', jwt);
     objectPath.set(doc, 'vp_state', state);
