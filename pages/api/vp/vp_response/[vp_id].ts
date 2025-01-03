@@ -19,6 +19,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
+  console.log('got to response');
   const gnap = await nano.db.use("gnap");
   const patients = await nano.db.use("patients");
   const {state} = req.body;
