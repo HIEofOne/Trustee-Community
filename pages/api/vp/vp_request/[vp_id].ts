@@ -31,6 +31,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (response.docs[0]) {
       if (objectPath.has(response, 'docs.0.vp_jwt')) {
         res.setHeader('content-type', 'application/jwt');
+        console.log(response.docs[0].vp_jwt)
         res.status(200).send(response.docs[0].vp_jwt);
       } else {
         res.status(400).json({error: 'invalid_request'});
