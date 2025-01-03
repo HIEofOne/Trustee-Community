@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextCors from '../../../lib/cors';
 import { agent } from '../../../lib/veramo';
-import { createJWK } from '@veramo/utils'
+import { createJWK } from '@veramo/utils';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   await NextCors(req, res, {

@@ -5,6 +5,7 @@ import objectPath from 'object-path';
 import { v4 as uuidv4 } from 'uuid';
 import { EdDSASigner, hexToBytes, createJWT } from 'did-jwt';
 import { createJWK } from '@veramo/utils';
+import fs from 'fs';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -107,10 +108,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         }
       }
     }
-    // const signer = EdDSASigner(hexToBytes(identifier.keys[0].publicKeyHex));
-    const signer = () => {
-      return agent.keyManagerSign({ keyRef: identifier.keys[0].kid, data: JSON.stringify(payload), encoding: 'utf-8', algorithm: 'EdDSA' })
-    }
+    const store = JSON.parse(fs.readFileSync('/data/store.json', 'utf8'))
+    const privKey = objectPath.get(store, 'privateKeys.' + identifier.keys[0].kid + '.privateKeyHex')
+    const signer = EdDSASigner(hexToBytes(privKey));
     const jwt = await createJWT(payload, {issuer: identifier.did, signer}, {alg: 'EdDSA', typ: 'JWT', jwk: jwk });
     console.log(jwt)
     console.log(payload)
