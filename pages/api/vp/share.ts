@@ -41,15 +41,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       "sub_jwk": jwk,
       "sub": identifier.did,
       "aud": identifier.did,
-      "response_type": "vp_token id_token",
+      "response_type": "id_token",
       "scope": "openid",
       "id_token_type": "subject_signed",
       "client_id": identifier.did,
       "redirect_uri": url_res,
-      "response_mode": "direct_post",
+      "response_mode": "post",
       "nonce": nonce,
       "state": state,
-      "client_metadata": {
+      "registration": {
         "id_token_signing_alg_values_supported": [
           "RS256",
           "ES256K",
