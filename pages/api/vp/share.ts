@@ -38,7 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const state = uuidv4();
     const jwk = createJWK("Ed25519", identifier.keys[0].publicKeyHex);
     const payload = {
-      "sub_jwk": jwk,
+      // "sub_jwk": jwk,
       "sub": identifier.did,
       "aud": identifier.did,
       "response_type": "id_token",
@@ -50,6 +50,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       "nonce": nonce,
       "state": state,
       "registration": {
+        "did_methods_supported": [
+          "did:key",
+          "did:ethr:",
+          "did:web:"
+        ],
         "id_token_signing_alg_values_supported": [
           "RS256",
           "ES256K",
