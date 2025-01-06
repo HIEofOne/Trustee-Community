@@ -120,7 +120,10 @@ export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
     idTokenSigningAlgValuesSupported: [SigningAlgo.EDDSA, SigningAlgo.ES256],
     requestObjectSigningAlgValuesSupported: [SigningAlgo.EDDSA, SigningAlgo.ES256],
     responseTypesSupported: [ResponseType.ID_TOKEN],
-    vpFormatsSupported: { jwt_vc: { alg: [SigningAlgo.EDDSA, SigningAlgo.RS256, SigningAlgo.ES256] } },
+    vpFormatsSupported: { 
+      jwt_vc_json: { alg: [SigningAlgo.EDDSA, SigningAlgo.RS256, SigningAlgo.ES256] },
+      jwt_vp_json: { alg: [SigningAlgo.EDDSA, SigningAlgo.RS256, SigningAlgo.ES256] } 
+    },
     scopesSupported: [Scope.OPENID_DIDAUTHN, Scope.OPENID],
     subjectTypesSupported: [SubjectType.PAIRWISE],
     subject_syntax_types_supported: ['did', 'did:ethr', 'did:key', 'did:jwk', 'did:web', 'did:ion'],
