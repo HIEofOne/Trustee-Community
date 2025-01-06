@@ -49,11 +49,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                 "id": "1",
                 "name": doc.vc_type + " Verifiable Credential",
                 "purpose": "We want a VC of this type to proof provider claim",
-                "schema": [
-                  {
-                    "uri": "VerifiableCredential"
-                  }
-                ],
+                // "schema": [
+                //   {
+                //     "uri": "VerifiableCredential"
+                //   }
+                // ],
                 "format": {
                   "jwt_vc": {
                     "alg": [
