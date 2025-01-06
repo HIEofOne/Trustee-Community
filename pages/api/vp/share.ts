@@ -38,7 +38,26 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       correlationId: req.body._id,
       nonce: nonce,
       state: state,
-      jwtIssuer: {method: 'did', alg: 'EdDSA', didUrl: identifier.did}
+      jwtIssuer: {method: 'did', alg: 'EdDSA', didUrl: identifier.did},
+      claims: {
+        "vp_token": {
+          "presentation_definition": {
+            "id": vp_id,
+            "input_descriptors": [
+              {
+                "id": "1",
+                "name": doc.vc_type + " Verifiable Credential",
+                "purpose": "We want a VC of this type to proof provider claim",
+                "schema": [
+                  {
+                    "uri": "VerifiableCredential"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
     });
     objectPath.set(doc, 'vp_jwt', authrequest.requestObjectJwt)
     try {
