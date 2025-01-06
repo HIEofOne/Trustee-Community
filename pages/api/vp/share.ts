@@ -37,7 +37,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       nonce: nonce,
       state: state,
       jwtIssuer: {method: 'did', alg: 'EdDSA', didUrl: identifier.did}
-    })
+    });
+    console.log(link);
     try {
       const response = await gnap.insert(doc);
       if (response.error) {
