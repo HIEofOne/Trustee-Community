@@ -4,6 +4,7 @@ import { agent } from '../../../lib/veramo';
 import objectPath from 'object-path';
 import { v4 as uuidv4 } from 'uuid';
 import { rp } from '../../../lib/rp';
+import { createPresentationDefinitionClaimsProperties } from '@sphereon/did-auth-siop';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -45,7 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             "id": vp_id,
             "input_descriptors": [
               {
-                "id": "npi credential",
+                "id": "1",
                 "name": doc.vc_type + " Verifiable Credential",
                 "purpose": "We want a VC of this type to proof provider claim",
                 "schema": [
