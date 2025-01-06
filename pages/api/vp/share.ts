@@ -4,7 +4,6 @@ import { agent } from '../../../lib/veramo';
 import objectPath from 'object-path';
 import { v4 as uuidv4 } from 'uuid';
 import { rp } from '../../../lib/rp';
-import { createPresentationDefinitionClaimsProperties } from '@sphereon/did-auth-siop';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;

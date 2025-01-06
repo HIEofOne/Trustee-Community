@@ -114,6 +114,7 @@ export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
   .withVerifyJwtCallback(verifyJwtCallback(resolver))
   .withRequestBy(PassBy.VALUE)
   .withCreateJwtCallback(createJwtCallback())
+  .withSupportedVersions(SupportedVersion.SIOPv2_ID1)
   .withClientMetadata({
     client_id: identifier.did,
     idTokenSigningAlgValuesSupported: [SigningAlgo.EDDSA, SigningAlgo.ES256],
