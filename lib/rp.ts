@@ -70,7 +70,6 @@ const verifyJwtCallback = (
 
 const createJwtCallback = (): CreateJwtCallback => {
   return async (jwtIssuer, jwt) => {
-    console.log('creating jwt')
     if (jwtIssuer.method === 'did') {
       const jwk = createJWK("Ed25519", identifier.keys[0].publicKeyHex);
       jwt.header = {alg: 'EdDSA', typ: 'JWT', jwk: jwk };
@@ -89,7 +88,6 @@ const createJwtCallback = (): CreateJwtCallback => {
         { issuer: identifier.did, signer, alg: jwt.header.alg },
         jwt.header as Partial<JWTHeader>
       );
-      console.log(jwt_created);
       return jwt_created;
     }
     throw new Error('Not implemented yet')

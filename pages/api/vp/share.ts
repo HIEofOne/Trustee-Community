@@ -38,13 +38,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       state: state,
       jwtIssuer: {method: 'did', alg: 'EdDSA', didUrl: identifier.did}
     });
-    console.log(link);
     try {
       const response = await gnap.insert(doc);
       if (response.error) {
         res.status(500).send({error: response.error, reason:response.reason});
       }
-      res.status(200).json({success: true, link: link, rev: response.rev});
+      res.status(200).json({success: true, link: link.encodedUri, rev: response.rev});
     } catch (error){
       res.status(500).send(error);
     }
