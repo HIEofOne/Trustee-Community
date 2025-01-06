@@ -32,18 +32,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const state = uuidv4();
     objectPath.set(doc, 'vp_state', state);
     objectPath.set(doc, 'vp_status', 'pending');
-    const link = await rp.createAuthorizationRequestURI({
+    const url_req = url.protocol + "//" + url.hostname + "/api/vp/vp_request/" + vp_id;
+    const link = "openid-vc://?request_uri=" + encodeURIComponent(url_req);
+    const authrequest = await rp.createAuthorizationRequestURI({
       correlationId: req.body._id,
       nonce: nonce,
       state: state,
       jwtIssuer: {method: 'did', alg: 'EdDSA', didUrl: identifier.did}
     });
+    objectPath.set(doc, 'vp_jwt', authrequest.requestObjectJwt)
     try {
       const response = await gnap.insert(doc);
       if (response.error) {
         res.status(500).send({error: response.error, reason:response.reason});
       }
-      res.status(200).json({success: true, link: link.encodedUri, rev: response.rev});
+      res.status(200).json({success: true, link: link, rev: response.rev});
     } catch (error){
       res.status(500).send(error);
     }
