@@ -50,7 +50,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                 "purpose": "We want a VC of this type to proof provider claim",
                 "schema": [
                   {
-                    "uri": "VerifiableCredential"
+                    "uri": "https://www.w3.org/2018/credentials/v1"
+                    // "uri": "VerifiableCredential"
                   }
                 ]
                 // "format": {

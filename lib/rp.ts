@@ -119,7 +119,7 @@ export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
     client_id: identifier.did,
     idTokenSigningAlgValuesSupported: [SigningAlgo.EDDSA, SigningAlgo.ES256],
     requestObjectSigningAlgValuesSupported: [SigningAlgo.EDDSA, SigningAlgo.ES256],
-    responseTypesSupported: [ResponseType.ID_TOKEN],
+    responseTypesSupported: [ResponseType.ID_TOKEN, ResponseType.VP_TOKEN],
     vpFormatsSupported: { 
       jwt_vc: { alg: [SigningAlgo.EDDSA, SigningAlgo.RS256, SigningAlgo.ES256] },
       jwt_vp: { alg: [SigningAlgo.EDDSA, SigningAlgo.RS256, SigningAlgo.ES256] } 
