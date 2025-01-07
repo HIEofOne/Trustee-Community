@@ -104,7 +104,7 @@ const verifyDidJWT = async(jwt: string, resolver: Resolvable, options: JWTVerify
 
 const resolver = getResolver('ethr');
 
-export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
+export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_D12_OID4VP_D20 })
   .withClientId(identifier.did)
   .withScope('openid')
   .withResponseType('id_token')
@@ -114,7 +114,7 @@ export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
   .withVerifyJwtCallback(verifyJwtCallback(resolver))
   .withRequestBy(PassBy.VALUE)
   .withCreateJwtCallback(createJwtCallback())
-  .withSupportedVersions(SupportedVersion.SIOPv2_ID1)
+  .withSupportedVersions(SupportedVersion.SIOPv2_D12_OID4VP_D20)
   .withClientMetadata({
     client_id: identifier.did,
     idTokenSigningAlgValuesSupported: [SigningAlgo.EDDSA, SigningAlgo.ES256],
