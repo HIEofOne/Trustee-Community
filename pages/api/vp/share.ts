@@ -48,13 +48,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                 "id": "1",
                 "name": doc.vc_type + " Verifiable Credential",
                 "purpose": "We want a VC of this type to proof provider claim",
-                "format": {
-                  "jwt_vc_json": {
-                    "alg": [
-                      "EdDSA"
-                    ]
+                "schema": [
+                  {
+                    "uri": "VerifiableCredential"
                   }
-                }
+                ]
+                // "format": {
+                //   "jwt_vc_json": {
+                //     "alg": [
+                //       "EdDSA"
+                //     ]
+                //   }
+                // }
               }
             ]
           }
