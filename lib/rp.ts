@@ -104,7 +104,7 @@ const verifyDidJWT = async(jwt: string, resolver: Resolvable, options: JWTVerify
 
 const resolver = getResolver('ethr');
 
-export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_D12_OID4VP_D20 })
+export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
   .withClientId(identifier.did)
   .withScope('openid')
   .withResponseType('id_token')
@@ -114,15 +114,15 @@ export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_D12_OID4V
   .withVerifyJwtCallback(verifyJwtCallback(resolver))
   .withRequestBy(PassBy.VALUE)
   .withCreateJwtCallback(createJwtCallback())
-  .withSupportedVersions(SupportedVersion.SIOPv2_D12_OID4VP_D20)
+  .withSupportedVersions(SupportedVersion.SIOPv2_ID1)
   .withClientMetadata({
     client_id: identifier.did,
     idTokenSigningAlgValuesSupported: [SigningAlgo.EDDSA, SigningAlgo.ES256],
     requestObjectSigningAlgValuesSupported: [SigningAlgo.EDDSA, SigningAlgo.ES256],
     responseTypesSupported: [ResponseType.ID_TOKEN],
     vpFormatsSupported: { 
-      jwt_vc_json: { alg: [SigningAlgo.EDDSA, SigningAlgo.RS256, SigningAlgo.ES256] },
-      jwt_vp_json: { alg: [SigningAlgo.EDDSA, SigningAlgo.RS256, SigningAlgo.ES256] } 
+      jwt_vc: { alg: [SigningAlgo.EDDSA, SigningAlgo.RS256, SigningAlgo.ES256] },
+      jwt_vp: { alg: [SigningAlgo.EDDSA, SigningAlgo.RS256, SigningAlgo.ES256] } 
     },
     scopesSupported: [Scope.OPENID_DIDAUTHN, Scope.OPENID],
     subjectTypesSupported: [SubjectType.PAIRWISE],
