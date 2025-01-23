@@ -42,7 +42,6 @@ export default function Dashboard({
     return (
       <div>
         <div>
-          <PolicySummary />
           <Stack spacing={2} direction="row">
             <Button variant="contained" onClick={() => logout()}>
               Logout
@@ -54,6 +53,7 @@ export default function Dashboard({
               Review Pending Requests
             </Button>
           </Stack>
+          <PolicySummary />
         </div>
       </div>
     );

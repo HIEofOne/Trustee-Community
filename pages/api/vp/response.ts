@@ -37,20 +37,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         const patient_doc = await patients.get(doc.email);
         console.log(doc);
         console.log(req.body);
-        console.log(req.body.vp_token);
-        const { payload } = decodeJWT(req.body.vp_token);
-        const verifiedAuthResponse = await rp.verifyAuthorizationResponse(payload, {
-          correlationId: doc._id,
-          audience: url.protocol + "//" + url.hostname + "/api/vp/vp_response",
-        })
-        console.log(verifiedAuthResponse)
-        if (objectPath.get(verifiedAuthResponse, 'payload.state') === doc.vp_state) {
-          console.log('state matches')
+        const { payload } = decodeJWT(req.body.id_token);
+        try {
+          const verifiedAuthResponse = await rp.verifyAuthorizationResponse(payload, {
+            correlationId: doc._id,
+            audience: url.protocol + "//" + url.hostname + "/api/vp/vp_response",
+          })
+          console.log(verifiedAuthResponse)
+          if (objectPath.get(verifiedAuthResponse, 'payload.state') === doc.vp_state) {
+            console.log('state matches')
+          }
+          if (objectPath.get(verifiedAuthResponse, 'payload.nonce') === doc.vp_state) {
+            console.log('state matches')
+          }
+          res.status(200).json({message: 'OK'});
+        } catch (e) {
+          console.log(e)
+          res.status(400).json({error: 'invalid_request'});
         }
-        if (objectPath.get(verifiedAuthResponse, 'payload.nonce') === doc.vp_state) {
-          console.log('state matches')
-        }
-        res.status(200).json({message: 'OK'});
         // if (objectPath.has(payload, 'vp.verifiableCredential')) {
         //   const vc = jose.decodeJwt(objectPath.get(payload, 'vp.verifiableCredential.0'));
         //   if (objectPath.has(doc, 'vc')) {
