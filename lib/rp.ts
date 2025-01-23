@@ -107,7 +107,7 @@ const resolver = getResolver('ethr');
 export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
   .withClientId(identifier.did)
   .withScope('openid')
-  .withResponseType('id_token')
+  .withResponseType('vp_token')
   .withResponseMode(ResponseMode.POST)
   .withAuthorizationEndpoint(url_auth)
   .withRedirectUri(url_res)
