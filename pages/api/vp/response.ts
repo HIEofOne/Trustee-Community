@@ -41,6 +41,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         try {
           const verifiedAuthResponse = await rp.verifyAuthorizationResponse(payload, {
             correlationId: doc._id,
+            state: req.body.state,
             audience: url.protocol + "//" + url.hostname + "/api/vp/vp_response",
           })
           console.log(verifiedAuthResponse)

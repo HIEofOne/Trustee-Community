@@ -202,7 +202,7 @@ export default function Credentials(props:any) {
     } else {
       return (
         <div>
-          <h4>Scan this QR code using  your Sphereon Wallet app to retrieve the Verifiable Credential:</h4>
+          <h4>Scan this QR code using your Sphereon Wallet app to retrieve the Verifiable Credential:</h4>
           <Box sx={{ display: 'flex', flexDirection: 'row', py: 2 }}>
             <Canvas
               text={qrCode}
@@ -214,7 +214,9 @@ export default function Credentials(props:any) {
               }}
             />
           </Box>
-          <Link href={qrCode}>{qrCode}</Link>
+          <Box sx={{ display: 'flex', flexDirection: 'row', py: 2 }}>
+            <Link href={qrCode}>If QR Code is not readable, click here.</Link>
+          </Box>
           <Button variant="contained" onClick={back} startIcon={<div><ArrowBackIcon/></div>}>Back</Button>
         </div>
       )
