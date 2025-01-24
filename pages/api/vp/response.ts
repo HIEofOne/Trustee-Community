@@ -23,6 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log('got to response');
   const gnap = await nano.db.use("gnap");
   const patients = await nano.db.use("patients");
+  console.log(req.body);
   const {state} = req.body;
   const q = {
     selector: {
@@ -36,7 +37,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         const doc = response.docs[0];
         const patient_doc = await patients.get(doc.email);
         console.log(doc);
-        console.log(req.body);
         const { payload } = decodeJWT(req.body.vp_token);
         // try {
         //   const verifiedAuthResponse = await rp.verifyAuthorizationResponse(req.body.id_token, {
