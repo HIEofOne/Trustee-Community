@@ -34,39 +34,40 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     objectPath.set(doc, 'vp_status', 'pending');
     const url_req = url.protocol + "//" + url.hostname + "/api/vp/vp_request/" + vp_id;
     const link = "openid-vc://?request_uri=" + encodeURIComponent(url_req);
-    const authrequest = await rp.createAuthorizationRequestURI({
+    const authrequest = await rp(doc.vc_type, doc.vp_id).createAuthorizationRequestURI({
       correlationId: req.body._id,
       nonce: nonce,
       state: state,
       jwtIssuer: {method: 'did', alg: 'EdDSA', didUrl: identifier.did},
-      claims: {
-        "vp_token": {
-          "presentation_definition": {
-            "id": vp_id,
-            "input_descriptors": [
-              {
-                "id": "1",
-                "name": doc.vc_type + " Verifiable Credential",
-                "purpose": "We want a VC of this type to proof provider claim",
-                "schema": [
-                  {
-                    "uri": "https://www.w3.org/2018/credentials/v1"
-                    // "uri": "VerifiableCredential"
-                  }
-                ]
-                // "format": {
-                //   "jwt_vc_json": {
-                //     "alg": [
-                //       "EdDSA"
-                //     ]
-                //   }
-                // }
-              }
-            ]
-          }
-        }
-      }
+      // claims: {
+      //   "vp_token": {
+      //     "presentation_definition": {
+      //       "id": vp_id,
+      //       "input_descriptors": [
+      //         {
+      //           "id": "1",
+      //           "name": doc.vc_type + " Verifiable Credential",
+      //           "purpose": "We want a VC of this type to proof provider claim",
+      //           "schema": [
+      //             {
+      //               "uri": "https://www.w3.org/2018/credentials/v1"
+      //               // "uri": "VerifiableCredential"
+      //             }
+      //           ]
+      //           // "format": {
+      //           //   "jwt_vc_json": {
+      //           //     "alg": [
+      //           //       "EdDSA"
+      //           //     ]
+      //           //   }
+      //           // }
+      //         }
+      //       ]
+      //     }
+      //   }
+      // }
     });
+    console.log(authrequest)
     objectPath.set(doc, 'vp_jwt', authrequest.requestObjectJwt)
     try {
       const response = await gnap.insert(doc);

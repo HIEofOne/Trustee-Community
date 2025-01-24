@@ -104,7 +104,8 @@ const verifyDidJWT = async(jwt: string, resolver: Resolvable, options: JWTVerify
 
 const resolver = getResolver('ethr');
 
-export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
+export const rp = (type:string, id:string) => {
+  return RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
   .withClientId(identifier.did)
   .withScope('openid')
   .withResponseType('vp_token')
@@ -115,6 +116,23 @@ export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
   .withRequestBy(PassBy.VALUE)
   .withCreateJwtCallback(createJwtCallback())
   .withSupportedVersions(SupportedVersion.SIOPv2_ID1)
+  .withPresentationDefinition({
+    definition: {
+      id: id,
+      input_descriptors: [
+        {
+          "id": "1",
+          "name": type + " Verifiable Credential",
+          "purpose": "We want a VC of this type to proof provider claim",
+          "schema": [
+            {
+              "uri": "https://www.w3.org/2018/credentials/v1"
+            }
+          ]
+        }
+      ]
+    }
+  })
   .withClientMetadata({
     client_id: identifier.did,
     idTokenSigningAlgValuesSupported: [SigningAlgo.EDDSA, SigningAlgo.ES256],
@@ -133,3 +151,4 @@ export const rp = RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
     clientPurpose: "Grant Negotiation and Authorization Protocol (GNAP) Server"
   })
   .build();
+}

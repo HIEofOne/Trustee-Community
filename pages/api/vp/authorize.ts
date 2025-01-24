@@ -39,7 +39,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         console.log(req.body);
         console.log(req.body.vp_token);
         const { payload } = decodeJWT(req.body.vp_token);
-        const verifiedAuthResponse = await rp.verifyAuthorizationResponse(payload, {
+        const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id).verifyAuthorizationResponse(payload, {
           correlationId: doc._id,
           audience: url.protocol + "//" + url.hostname + "/api/vp/vp_response",
         })
