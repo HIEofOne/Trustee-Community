@@ -3,6 +3,7 @@ import { agent } from '../../lib/veramo';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import objectPath from 'object-path';
+import { rp } from '../../lib/rp';
 
 const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
 const url = new URL(domain);
@@ -12,11 +13,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (method) {
     case 'GET':
       try {
+        const nonce = uuidv4();
+        const state = uuidv4();
+        const vp_id = uuidv4();
+        const vc_type = "NPI";
         const identifier = await agent.didManagerGetOrCreate({ alias: 'default' });
-        console.log(identifier)
-        const store = JSON.parse(fs.readFileSync('./store.json', 'utf8'))
-        const keyInfo = objectPath.get(store, 'privateKeys.' + identifier.keys[0].kid + '.privateKeyHex')
-        console.log(keyInfo)
+        const authrequest = await rp(vc_type, vp_id).createAuthorizationRequest({
+          correlationId: uuidv4(),
+          nonce: nonce,
+          state: state,
+          jwtIssuer: {method: 'did', alg: 'EdDSA', didUrl: identifier.did},
+        });
         // const nonce = uuidv4();
         // const state = uuidv4();
         // const vp_id = uuidv4();
@@ -90,7 +97,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         //   }
         // }
         // const jwt:any = await agent.keyManagerSignJWT({kid: identifier.keys[0].kid, data: JSON.stringify(payload)})
-        res.send(keyInfo)
+        res.send(authrequest)
       } catch (e) {
         console.log(e)
         res.send('error')

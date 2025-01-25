@@ -27,6 +27,8 @@ const INFURA_PROJECT_ID = process.env.INFURIA_API_KEY
 let KMS_SECRET_KEY = null
 const kmsfile = '/data/kms';
 const storefile = '/data/store.json';
+// const kmsfile = './kms';
+// const storefile = './store.json';
 
 if (fs.existsSync(kmsfile)) {
   KMS_SECRET_KEY = fs.readFileSync(kmsfile, 'utf8')
