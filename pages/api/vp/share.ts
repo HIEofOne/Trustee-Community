@@ -31,6 +31,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const nonce = uuidv4();
     const state = uuidv4();
     objectPath.set(doc, 'vp_state', state);
+    objectPath.set(doc, 'vp_nonce', nonce);
     objectPath.set(doc, 'vp_status', 'pending');
     const url_req = url.protocol + "//" + url.hostname + "/api/vp/vp_request/" + vp_id;
     const link = "openid-vc://?request_uri=" + encodeURIComponent(url_req);

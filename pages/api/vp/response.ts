@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import NextCors from '../../../lib/cors';
 import objectPath from 'object-path';
 import { rp } from '../../../lib/rp';
-import { decodeJWT } from 'did-jwt';
+import { decodeJWT, verifyJWT } from 'did-jwt';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -37,11 +37,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         const doc = response.docs[0];
         const patient_doc = await patients.get(doc.email);
         console.log(doc);
-        // const { payload } = decodeJWT(req.body.vp_token);
+        const { payload } = decodeJWT(req.body.vp_token);
+        objectPath.set(payload, 'state', req.body.state);
+        console.log(payload);
         try {
-          const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id).verifyAuthorizationResponse(req.body.vp_token, {
+          const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id).verifyAuthorizationResponse(payload, {
             correlationId: doc._id,
-            state: req.body.state,
+            state: doc.vp_state,
+            nonce: doc.vp_nonce,
             audience: url.protocol + "//" + url.hostname + "/api/vp/vp_response",
           })
           console.log(verifiedAuthResponse)
