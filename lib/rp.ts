@@ -105,6 +105,41 @@ const verifyDidJWT = async(jwt: string, resolver: Resolvable, options: JWTVerify
 const resolver = getResolver('ethr');
 
 export const rp = (type:string, id:string) => {
+  let constraints = {};
+  if (type === 'NPI') {
+    constraints = {
+      "fields": [
+        {
+          "path": [
+            "$.vc.credentialSubject.npi",
+            "$.vc.credentialSubject.name",
+            "$.vc.credentialSubject.description",
+            "$.vc.credentialSubject.gender",
+            "$.vc.credentialSubject.city",
+            "$.vc.credentialSubject.state",
+            "$.vc.credentialSubject.zip",
+            "$.vc.credentialSubject.credentials",
+            "$.vc.credentialSubject.specialty",
+            "$.vc.credentialSubject.medicalSchools",
+            "$.vc.credentialSubject.residencies",
+            "$.vc.credentialSubject.profilePhoto",
+          ]
+        }
+      ]
+    } 
+  } else {
+    constraints = {
+      "fields": [
+        {
+          "path": [
+            "$.vc.credentialSubject.name",
+            "$.vc.credentialSubject.email",
+            "$.vc.credentialSubject.dob"
+          ]
+        }
+      ]
+    }
+  }
   return RP.builder()
   // return RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
   .withClientId(identifier.did)
@@ -126,6 +161,7 @@ export const rp = (type:string, id:string) => {
           "id": "1",
           "name": type + " Verifiable Credential",
           "purpose": "We want a VC of this type to proof provider claim",
+          "constraints": constraints,
           "schema": [
             {
               "uri": "https://www.w3.org/2018/credentials/v1"
