@@ -37,13 +37,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         const doc = response.docs[0];
         const patient_doc = await patients.get(doc.email);
         console.log(doc);
-        const { payload } = decodeJWT(req.body.vp_token);
-        objectPath.set(payload, 'state', req.body.state);
-        console.log(payload);
+        // const { payload } = decodeJWT(req.body.vp_token);
+        // objectPath.set(payload, 'state', req.body.state);
+        // console.log(payload);
         try {
-          const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id).verifyAuthorizationResponse(payload, {
+          const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id).verifyAuthorizationResponse(req.body.vp_token, {
             correlationId: doc._id,
-            state: doc.vp_state,
+            // state: doc.vp_state,
             nonce: doc.vp_nonce,
             audience: url.protocol + "//" + url.hostname + "/api/vp/vp_response",
           })
