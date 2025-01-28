@@ -56,7 +56,7 @@ const verifyJwtCallback = (
   },
 ): VerifyJwtCallback => {
   return async (jwtVerifier, jwt) => {
-    resolver = resolver ?? getResolver(['ethr', 'ion'])
+    resolver = resolver ?? getResolver(['ethr', 'ion', 'jwk'])
     const audience =
       jwtVerifier.type === 'request-object'
         ? (verifyOpts?.audience ?? getAudience(jwt.raw))
