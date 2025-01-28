@@ -144,7 +144,7 @@ export const rp = (type:string, id:string) => {
   // return RP.builder({ requestVersion: SupportedVersion.SIOPv2_ID1 })
   .withClientId(identifier.did)
   .withScope('openid')
-  .withResponseType('vp_token')
+  .withResponseType('vp_token id_token')
   .withResponseMode(ResponseMode.POST)
   .withAuthorizationEndpoint(url_auth)
   .withRedirectUri(url_res)
