@@ -159,6 +159,13 @@ export const rp = (type:string, id:string, aud:any) => {
   .withPresentationDefinition({
     definition: {
       id: id,
+      format: {
+        "jwt_vc_json": {
+          "alg": [
+            "EdDSA"
+          ]
+        }
+      },
       input_descriptors: [
         {
           "id": "1",
