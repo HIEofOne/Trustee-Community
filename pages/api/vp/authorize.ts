@@ -21,6 +21,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     optionsSuccessStatus: 200
   });
   console.log('got to authorize');
+  console.log(req.body);
   const gnap = await nano.db.use("gnap");
   const patients = await nano.db.use("patients");
   const {state} = req.body;
@@ -38,9 +39,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         console.log(doc);
         console.log(req.body);
         console.log(req.body.vp_token);
-        const { payload } = decodeJWT(req.body.vp_token);
-        const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id).verifyAuthorizationResponse(payload, {
+        // const { payload } = decodeJWT(req.body.vp_token);
+        const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id).verifyAuthorizationResponse(req.body, {
           correlationId: doc._id,
+          state: doc.vp_state,
+          nonce: doc.vp_nonce,
           audience: url.protocol + "//" + url.hostname + "/api/vp/vp_response",
         })
         console.log(verifiedAuthResponse)

@@ -56,7 +56,7 @@ const verifyJwtCallback = (
   },
 ): VerifyJwtCallback => {
   return async (jwtVerifier, jwt) => {
-    resolver = resolver ?? getResolver(['ethr', 'ion', 'jwk'])
+    resolver = resolver ?? getResolver(['ethr', 'ion', 'jwk', 'key', 'web'])
     const audience =
       jwtVerifier.type === 'request-object'
         ? (verifyOpts?.audience ?? getAudience(jwt.raw))
@@ -102,7 +102,7 @@ const verifyDidJWT = async(jwt: string, resolver: Resolvable, options: JWTVerify
   }
 }
 
-const resolver = getResolver('ethr');
+// const resolver = getResolver('ethr');
 
 export const rp = (type:string, id:string) => {
   let constraints = {};
@@ -148,7 +148,7 @@ export const rp = (type:string, id:string) => {
   .withResponseMode(ResponseMode.POST)
   .withAuthorizationEndpoint(url_auth)
   .withRedirectUri(url_res)
-  .withVerifyJwtCallback(verifyJwtCallback(resolver))
+  .withVerifyJwtCallback(verifyJwtCallback())
   .withRequestBy(PassBy.VALUE)
   .withCreateJwtCallback(createJwtCallback())
   // .withSupportedVersions(SupportedVersion.SIOPv2_ID1)

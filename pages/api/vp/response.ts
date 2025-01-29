@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import NextCors from '../../../lib/cors';
 import objectPath from 'object-path';
 import { rp } from '../../../lib/rp';
-import { decodeJWT, verifyJWT } from 'did-jwt';
+import { decodeJWT } from 'did-jwt';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
