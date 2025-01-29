@@ -1,4 +1,4 @@
-import { RP, CreateJwtCallback, VerifyJwtCallback, ResponseType, ResponseMode, Scope, PassBy, SupportedVersion, SubjectType } from '@sphereon/did-auth-siop';
+import { RP, CreateJwtCallback, VerifyJwtCallback, ResponseType, ResponseMode, Scope, PassBy, SupportedVersion, SubjectType, RequestAud } from '@sphereon/did-auth-siop';
 import { agent } from './veramo';
 import { getUniResolver } from '@sphereon/did-uni-client';
 import { Resolvable, Resolver, ResolverRegistry } from 'did-resolver';
@@ -106,9 +106,7 @@ const verifyDidJWT = async(jwt: string, resolver: Resolvable, options: JWTVerify
   }
 }
 
-// const resolver = getResolver('ethr');
-
-export const rp = (type:string, id:string) => {
+export const rp = (type:string, id:string, aud:any) => {
   let constraints = {};
   if (type === 'NPI') {
     constraints = {
@@ -155,6 +153,7 @@ export const rp = (type:string, id:string) => {
   .withVerifyJwtCallback(verifyJwtCallback())
   .withRequestBy(PassBy.VALUE)
   .withCreateJwtCallback(createJwtCallback())
+  .withAudience(aud)
   // .withSupportedVersions(SupportedVersion.SIOPv2_ID1)
   .withSupportedVersions(SupportedVersion.SIOPv2_D12_OID4VP_D20)
   .withPresentationDefinition({
