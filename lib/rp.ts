@@ -8,6 +8,7 @@ import { VerifyCallback } from '@sphereon/wellknown-dids-client';
 import { parseJWT, SigningAlgo } from '@sphereon/oid4vc-common';
 import { VerifiedJWT } from '@sphereon/did-auth-siop';
 import { bytesToBase64, createJWK } from '@veramo/utils';
+import objectPath from 'object-path';
 
 const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
 const url = new URL(domain);
@@ -42,6 +43,7 @@ const getResolver = (methods: string | string[]): Resolvable => {
   }
   const uniResolvers: ResolverRegistry[] = [];
   for (const didMethod of typeof methods === 'string' ? [methods] : methods) {
+    console.log(didMethod)
     const uniResolver = getUniResolver(getMethodFromDid(didMethod));
     uniResolvers.push(uniResolver);
   }
@@ -56,7 +58,7 @@ const verifyJwtCallback = (
   },
 ): VerifyJwtCallback => {
   return async (jwtVerifier, jwt) => {
-    resolver = resolver ?? getResolver(['ethr', 'ion', 'jwk', 'key', 'web'])
+    resolver = resolver ?? getResolver(objectPath.get(jwtVerifier, 'didUrl'))
     console.log(resolver)
     console.log(jwtVerifier)
     const audience =
