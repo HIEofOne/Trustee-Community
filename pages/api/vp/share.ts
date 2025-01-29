@@ -35,7 +35,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     objectPath.set(doc, 'vp_status', 'pending');
     const url_req = url.protocol + "//" + url.hostname + "/api/vp/vp_request/" + vp_id;
     const link = "openid-vc://?request_uri=" + encodeURIComponent(url_req);
-    const authrequest = await rp(doc.vc_type, doc.vp_id, url_req).createAuthorizationRequestURI({
+    const authrequest = await rp(doc.vc_type, doc.vp_id).createAuthorizationRequestURI({
       correlationId: req.body._id,
       nonce: nonce,
       state: state,

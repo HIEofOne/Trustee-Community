@@ -42,7 +42,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         // objectPath.set(payload, 'state', req.body.state);
         // console.log(payload);
         try {
-          const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id, aud).verifyAuthorizationResponse(req.body, {
+          const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id).verifyAuthorizationResponse(req.body, {
             correlationId: doc._id,
             state: doc.vp_state,
             nonce: doc.vp_nonce,

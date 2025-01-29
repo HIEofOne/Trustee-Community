@@ -41,7 +41,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         console.log(req.body);
         console.log(req.body.vp_token);
         // const { payload } = decodeJWT(req.body.vp_token);
-        const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id, aud).verifyAuthorizationResponse(req.body, {
+        const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id).verifyAuthorizationResponse(req.body, {
           correlationId: doc._id,
           state: doc.vp_state,
           nonce: doc.vp_nonce,
