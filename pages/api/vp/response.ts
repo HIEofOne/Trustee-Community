@@ -38,65 +38,45 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         const patient_doc = await patients.get(doc.email);
         console.log(doc);
         try {
-          const verifiedAuthResponse = await verifyAuthResponse(req.body.vp_token)
-          console.log(verifiedAuthResponse)
-          if (objectPath.has(verifiedAuthResponse, 'payload.vp.verifiableCredential')) {
-            const vc = decodeJWT(objectPath.get(verifiedAuthResponse, 'payload.vp.verifiableCredential.0'));
-            if (objectPath.has(doc, 'vc')) {
-              const vc_arr = objectPath.get(doc, 'vc');
-              vc_arr.push(vc);
-              objectPath.set(doc, 'vc', vc_arr);
+          if (req.body.state === doc.vp_state) {
+            const verifiedAuthResponse = await verifyAuthResponse(req.body.vp_token)
+            console.log(verifiedAuthResponse)
+            if (objectPath.get(verifiedAuthResponse, 'payload.nonce') === doc.vp_nonce) {
+              if (objectPath.has(verifiedAuthResponse, 'payload.vp.verifiableCredential')) {
+                const vc = decodeJWT(objectPath.get(verifiedAuthResponse, 'payload.vp.verifiableCredential.0'));
+                if (objectPath.has(doc, 'vc')) {
+                  const vc_arr = objectPath.get(doc, 'vc');
+                  vc_arr.push(vc);
+                  objectPath.set(doc, 'vc', vc_arr);
+                } else {
+                  objectPath.set(doc, 'vc.0', vc);
+                }
+                objectPath.set(doc, 'vp_status', 'complete');
+                await gnap.insert(doc);
+                if (objectPath.has(patient_doc, 'vc')) {
+                  const vc_arr1 = objectPath.get(patient_doc, 'vc');
+                  vc_arr1.push(vc);
+                  objectPath.set(patient_doc, 'vc', vc_arr1);
+                } else {
+                  objectPath.set(patient_doc, 'vc.0', vc);
+                }
+                await patients.insert(patient_doc);
+                res.status(200).json({message: 'OK'});
+              } else {
+                res.status(400).json({error: 'invalid_token'});
+              }
             } else {
-              objectPath.set(doc, 'vc.0', vc);
+              res.status(400).json({error: 'invalid_token'});
             }
-            objectPath.set(doc, 'vp_status', 'complete');
-            await gnap.insert(doc);
-            if (objectPath.has(patient_doc, 'vc')) {
-              const vc_arr1 = objectPath.get(patient_doc, 'vc');
-              vc_arr1.push(vc);
-              objectPath.set(patient_doc, 'vc', vc_arr1);
-            } else {
-              objectPath.set(patient_doc, 'vc.0', vc);
-            }
-            await patients.insert(patient_doc);
             res.status(200).json({message: 'OK'});
           } else {
-            res.status(400).json({error: 'invalid_token'});
+            console.log('state does not match');
+            res.status(400).json({error: 'invalid_request'});
           }
-          // if (objectPath.get(verifiedAuthResponse, 'payload.state') === doc.vp_state) {
-          //   console.log('state matches')
-          // }
-          // if (objectPath.get(verifiedAuthResponse, 'payload.nonce') === doc.vp_state) {
-          //   console.log('state matches')
-          // }
-          res.status(200).json({message: 'OK'});
         } catch (e) {
           console.log(e)
           res.status(400).json({error: 'invalid_request'});
         }
-        // if (objectPath.has(payload, 'vp.verifiableCredential')) {
-        //   const vc = decodeJWT(objectPath.get(payload, 'vp.verifiableCredential.0'));
-        //   if (objectPath.has(doc, 'vc')) {
-        //     const vc_arr = objectPath.get(doc, 'vc');
-        //     vc_arr.push(vc);
-        //     objectPath.set(doc, 'vc', vc_arr);
-        //   } else {
-        //     objectPath.set(doc, 'vc.0', vc);
-        //   }
-        //   objectPath.set(doc, 'vp_status', 'complete');
-        //   await gnap.insert(doc);
-        //   if (objectPath.has(patient_doc, 'vc')) {
-        //     const vc_arr1 = objectPath.get(patient_doc, 'vc');
-        //     vc_arr1.push(vc);
-        //     objectPath.set(patient_doc, 'vc', vc_arr1);
-        //   } else {
-        //     objectPath.set(patient_doc, 'vc.0', vc);
-        //   }
-        //   await patients.insert(patient_doc);
-        //   res.status(200).json({message: 'OK'});
-        // } else {
-        //   res.status(400).json({error: 'invalid_token'});
-        // }
       } else {
         res.status(400).json({error: 'invalid_request'});
       }
