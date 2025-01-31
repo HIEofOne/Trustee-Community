@@ -153,7 +153,7 @@ const verifyAuthResponse = async(jwt:string) => {
   let decoded = decodeJWT(jwt);
   const resolver = getResolver(decoded.header.kid);
   try {
-    return await verifyJWT(jwt, { resolver })
+    return await verifyJWT(jwt, { resolver, audience: "null" })
   } catch (e: any) {
     return Promise.reject(e)
   }
