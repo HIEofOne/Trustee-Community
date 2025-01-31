@@ -5,6 +5,8 @@ import { createJWT, decodeJWT, verifyJWT } from 'did-jwt';
 import { JWTHeader } from 'did-jwt/lib/JWT';
 import { bytesToBase64, createJWK } from '@veramo/utils';
 import moment from 'moment';
+import objectPath from 'object-path';
+import { get } from 'http';
 
 const domain: string = process.env.DOMAIN !== undefined ? process.env.DOMAIN: '';
 const url = new URL(domain);
@@ -143,7 +145,12 @@ const createAuthRequest = async(nonce:string, state:string, type:string, pd_id:s
 
 const verifyAuthResponse = async(jwt:string) => {
   let decoded = decodeJWT(jwt);
-  const resolver = getResolver(decoded.header.kid);
+  let resolver = null;
+  if (objectPath.has(decoded, 'payload.cnf')) {
+    resolver = getResolver(decoded.payload.cnf.kid)
+  } else {
+    resolver = getResolver(decoded.header.kid);
+  }
   try {
     return await verifyJWT(jwt, { resolver, audience: "null" })
   } catch (e: any) {
