@@ -124,7 +124,9 @@ export default function Credentials(props:any) {
     const vcs = await fetch("/api/vp/load",
       { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body) })
       .then((res) => res.json());
-    props.update_doc(objectPath.get(vcs, 'doc'));
+    if (objectPath.has(vcs, 'doc')) {
+      props.update_doc(objectPath.get(vcs, 'doc'));
+    }
     const vc_arr = []
     if (objectPath.has(vcs, 'vc')) {
       for (const vc of objectPath.get(vcs, 'vc')) {
@@ -137,7 +139,8 @@ export default function Credentials(props:any) {
   }, [props]);
 
   useEffect(() => {
-    load().catch(console.error);
+      console.log(props.doc)
+      load().catch(console.error);
   },[load]);
 
   if (pendingStatus) {
