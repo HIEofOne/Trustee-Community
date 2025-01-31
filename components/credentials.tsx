@@ -45,6 +45,8 @@ export default function Credentials(props:any) {
     setLoading(true);
     if (value !== '') {
       const doc = props.doc;
+      console.log(doc)
+      console.log(props.doc)
       objectPath.set(doc, 'vc_type', value);
       const result = await fetch("/api/vp/share",
         { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(doc) })
@@ -157,7 +159,7 @@ export default function Credentials(props:any) {
               <Button variant="contained" onClick={finish} startIcon={<div><DoneIcon/></div>}>Finished Gathering Credentials</Button>
             </Stack>
             <h4>or Gather Verifiable Credentials:</h4>
-            <p>First, make sure you have a <a href='https://github.com/Sphereon-Opensource/mobile-wallet' target='_blank'>Sphereon Verifiable Credentials Wallet</a> installed on your smartphone device.</p>
+            <p>First, make sure you have a <a href='https://talao.io/talao-wallet/' target='_blank'>Talao Credentials Wallet</a> installed on your smartphone device.</p>
             <p>If you are a provider - go to <a href='https://dir.hieofone.org/doximity' target='_blank'>HIE of One-Doximity Verifiable Credentials Issuer</a> to generate a Verifiable Credential.</p>
             <p>Then select the Verifiable Credential type below:</p>
           </div>
@@ -173,7 +175,7 @@ export default function Credentials(props:any) {
               >
                 <MenuItem value={''}>Select Credential...</MenuItem>
                 <MenuItem value={'NPI'}>NPI Credential</MenuItem>
-                <MenuItem value={'sphereon'}>Sphereon Wallet Identity Credential</MenuItem>
+                <MenuItem value={'Email'}>Proof of Email Credential</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -202,7 +204,7 @@ export default function Credentials(props:any) {
     } else {
       return (
         <div>
-          <h4>Scan this QR code using your Sphereon Wallet app to retrieve the Verifiable Credential:</h4>
+          <h4>Scan this QR code using your <Link href="https://talao.io/talao-wallet/" target="_blank">Talao</Link> app to retrieve the Verifiable Credential:</h4>
           <Box sx={{ display: 'flex', flexDirection: 'row', py: 2 }}>
             <Canvas
               text={qrCode}

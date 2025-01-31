@@ -40,9 +40,7 @@ const createAuthRequest = async(nonce:string, state:string, type:string, pd_id:s
       "fields": [
         {
           "path": [
-            "$.vc.credentialSubject.name",
-            "$.vc.credentialSubject.email",
-            "$.vc.credentialSubject.dob"
+            "$.email"
           ]
         }
       ]
