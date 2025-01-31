@@ -1,9 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextCors from '../../../lib/cors';
-import { agent } from '../../../lib/veramo';
 import objectPath from 'object-path';
 import { v4 as uuidv4 } from 'uuid';
-import { rp } from '../../../lib/rp';
+import { createAuthRequest } from '../../../lib/rp';
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -27,7 +26,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   objectPath.set(doc, 'vp_id', vp_id);
   objectPath.set(doc, 'vc_type', req.body.vc_type);
   try {
-    const identifier = await agent.didManagerGetOrCreate({ alias: 'default' });
     const nonce = uuidv4();
     const state = uuidv4();
     objectPath.set(doc, 'vp_state', state);
@@ -35,14 +33,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     objectPath.set(doc, 'vp_status', 'pending');
     const url_req = url.protocol + "//" + url.hostname + "/api/vp/vp_request/" + vp_id;
     const link = "openid-vc://?request_uri=" + encodeURIComponent(url_req);
-    const authrequest = await rp(doc.vc_type, doc.vp_id).createAuthorizationRequestURI({
-      correlationId: req.body._id,
-      nonce: nonce,
-      state: state,
-      jwtIssuer: {method: 'did', alg: 'EdDSA', didUrl: identifier.did}
-    });
-    console.log(authrequest)
-    objectPath.set(doc, 'vp_jwt', authrequest.requestObjectJwt)
+    const vp_jwt = await createAuthRequest(nonce, state, doc.vc_type, doc.vp_id);
+    objectPath.set(doc, 'vp_jwt', vp_jwt)
     try {
       const response = await gnap.insert(doc);
       if (response.error) {

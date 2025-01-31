@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextCors from '../../../lib/cors';
 import objectPath from 'object-path';
-import { rp } from '../../../lib/rp';
+import { verifyAuthResponse } from '../../../lib/rp';
 import { decodeJWT } from 'did-jwt';
 
 var user = process.env.COUCHDB_USER;
@@ -36,18 +36,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       if (objectPath.has(response, 'docs.0.vp_jwt')) {
         const doc = response.docs[0];
         const patient_doc = await patients.get(doc.email);
-        const aud = url.protocol + "//" + url.hostname + "/api/vp/response";
         console.log(doc);
-        // const { payload } = decodeJWT(req.body.vp_token);
-        // objectPath.set(payload, 'state', req.body.state);
-        // console.log(payload);
         try {
-          const verifiedAuthResponse = await rp(doc.vc_type, doc.vc_id).verifyAuthorizationResponse(req.body, {
-            correlationId: doc._id,
-            state: doc.vp_state,
-            nonce: doc.vp_nonce,
-            audience: aud,
-          })
+          const verifiedAuthResponse = await verifyAuthResponse(req.body.vp_token)
           console.log(verifiedAuthResponse)
           if (objectPath.has(verifiedAuthResponse, 'payload.vp.verifiableCredential')) {
             const vc = decodeJWT(objectPath.get(verifiedAuthResponse, 'payload.vp.verifiableCredential.0'));
