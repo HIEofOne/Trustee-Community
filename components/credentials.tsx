@@ -45,8 +45,6 @@ export default function Credentials(props:any) {
     setLoading(true);
     if (value !== '') {
       const doc = props.doc;
-      console.log(doc)
-      console.log(props.doc)
       objectPath.set(doc, 'vc_type', value);
       const result = await fetch("/api/vp/share",
         { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(doc) })
@@ -57,16 +55,19 @@ export default function Credentials(props:any) {
       setQrCode(result.link);
       setQrStatus(true);
       let check = false;
+      let a = {};
       while (!check) {
         await sleep(5);
-        const a = await fetch("/api/vp/status",
+        a = await fetch("/api/vp/status",
         { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({id: props.id}) })
         .then((res) => res.json());
-        if (a.success) {
+        if (objectPath.get(a, 'success', true)) {
           check = true;
-          await load();
-          setVcStatus(a.success);
         }
+      }
+      if (objectPath.get(a, 'success', true)) {
+        await load();
+        setVcStatus(true);
       }
     }
   }
@@ -139,7 +140,6 @@ export default function Credentials(props:any) {
   }, [props]);
 
   useEffect(() => {
-      console.log(props.doc)
       load().catch(console.error);
   },[load]);
 
