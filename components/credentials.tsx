@@ -136,11 +136,12 @@ export default function Credentials(props:any) {
     } else {
       vc_arr.push({'Credentials': 'None presented'})
     }
+    console.log(vc_arr)
     setVcInstance(vc_arr);
   }, [props]);
 
   useEffect(() => {
-      load().catch(console.error);
+    load().catch(console.error);
   },[load]);
 
   if (pendingStatus) {
@@ -163,6 +164,7 @@ export default function Credentials(props:any) {
             </Stack>
             <h4>or Gather Verifiable Credentials:</h4>
             <p>First, make sure you have a <a href='https://talao.io/talao-wallet/' target='_blank'>Talao Credentials Wallet</a> installed on your smartphone device.</p>
+            <p>Once the wallet is installed, click on Settings and select Wallet Profile, and then select Custom.  Leave all settings as it is and save and go back to the Settings screen.</p>
             <p>If you are a provider - go to <a href='https://dir.hieofone.org/doximity' target='_blank'>HIE of One-Doximity Verifiable Credentials Issuer</a> to generate a Verifiable Credential.</p>
             <p>Then select the Verifiable Credential type below:</p>
           </div>

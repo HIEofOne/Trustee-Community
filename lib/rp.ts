@@ -42,7 +42,7 @@ const createAuthRequest = async(nonce:string, state:string, type:string, pd_id:s
       "fields": [
         {
           "path": [
-            "$.email"
+            "$.vc.credentialSubject.email"
           ]
         }
       ]
@@ -112,7 +112,7 @@ const createAuthRequest = async(nonce:string, state:string, type:string, pd_id:s
         {
           "id": "1",
           "name": type + " Verifiable Credential",
-          "purpose": "We want a VC of this type to proof provider claim",
+          "purpose": "We want a VC of this type to proof claim",
           "constraints": constraints,
           "schema": [
             {
