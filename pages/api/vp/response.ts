@@ -20,10 +20,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     origin: process.env.DOMAIN,
     optionsSuccessStatus: 200
   });
-  console.log('got to response');
   const gnap = await nano.db.use("gnap");
   const patients = await nano.db.use("patients");
-  console.log(req.body);
   const {state} = req.body;
   const q = {
     selector: {
@@ -36,11 +34,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       if (objectPath.has(response, 'docs.0.vp_jwt')) {
         const doc = response.docs[0];
         const patient_doc = await patients.get(doc.email);
-        console.log(doc);
         try {
           if (req.body.state === doc.vp_state) {
             const verifiedAuthResponse = await verifyAuthResponse(req.body.vp_token)
-            console.log(verifiedAuthResponse)
             if (objectPath.get(verifiedAuthResponse, 'payload.nonce') === doc.vp_nonce) {
               if (objectPath.has(verifiedAuthResponse, 'payload.vp.verifiableCredential')) {
                 const vc = decodeJWT(objectPath.get(verifiedAuthResponse, 'payload.vp.verifiableCredential.0'));

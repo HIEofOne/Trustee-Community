@@ -136,7 +136,6 @@ export default function Credentials(props:any) {
     } else {
       vc_arr.push({'Credentials': 'None presented'})
     }
-    console.log(vc_arr)
     setVcInstance(vc_arr);
   }, [props]);
 
@@ -164,8 +163,10 @@ export default function Credentials(props:any) {
             </Stack>
             <h4>or Gather Verifiable Credentials:</h4>
             <p>First, make sure you have a <a href='https://talao.io/talao-wallet/' target='_blank'>Talao Credentials Wallet</a> installed on your smartphone device.</p>
-            <p>Once the wallet is installed, click on Settings and select Wallet Profile, and then select Custom.  Leave all settings as it is and save and go back to the Settings screen.</p>
-            <p>If you are a provider - go to <a href='https://dir.hieofone.org/doximity' target='_blank'>HIE of One-Doximity Verifiable Credentials Issuer</a> to generate a Verifiable Credential.</p>
+            <p>Once the wallet is installed, click on Settings, select Wallet Profile, select Custom, and select Yes.</p>
+            <p>Leave all settings as it is then click on the go back button to the Settings screen to save.</p>
+            <p>If you are a provider - go to <a href='https://dir.hieofone.org/doximity' target='_blank'>HIE of One-Doximity Verifiable Credentials Issuer</a> to generate a NPI Verifiable Credential.</p>
+            <p>If you are a proxy or patient user, click on Add cards and select Proof of email credential to create an Email Verifiable Credential</p>
             <p>Then select the Verifiable Credential type below:</p>
           </div>
           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>

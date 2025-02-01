@@ -173,7 +173,6 @@ const getResolver = (methods: string | string[]): Resolvable => {
   }
   const uniResolvers: ResolverRegistry[] = [];
   for (const didMethod of typeof methods === 'string' ? [methods] : methods) {
-    console.log(didMethod)
     const uniResolver = getUniResolver(getMethodFromDid(didMethod));
     uniResolvers.push(uniResolver);
   }
