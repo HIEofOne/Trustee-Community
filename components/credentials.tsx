@@ -142,7 +142,7 @@ export default function Credentials(props:any) {
 
   useEffect(() => {
     load().catch(console.error);
-  },[load]);
+  },[]);
 
   if (pendingStatus) {
     return (
