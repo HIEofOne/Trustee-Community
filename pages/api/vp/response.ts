@@ -46,7 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                 const vc = decodeJWT(objectPath.get(verifiedAuthResponse, 'payload.vp.verifiableCredential.0'));
                 if (objectPath.has(doc, 'vc')) {
                   const vc_arr = objectPath.get(doc, 'vc');
-                  vc_arr.push(vc);
+                  vc_arr.push(vc.payload);
                   objectPath.set(doc, 'vc', vc_arr);
                 } else {
                   objectPath.set(doc, 'vc.0', vc);
@@ -55,7 +55,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                 await gnap.insert(doc);
                 if (objectPath.has(patient_doc, 'vc')) {
                   const vc_arr1 = objectPath.get(patient_doc, 'vc');
-                  vc_arr1.push(vc);
+                  vc_arr1.push(vc.payload);
                   objectPath.set(patient_doc, 'vc', vc_arr1);
                 } else {
                   objectPath.set(patient_doc, 'vc.0', vc);
