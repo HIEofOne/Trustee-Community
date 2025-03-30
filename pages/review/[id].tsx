@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
-import { withIronSessionSsr } from 'iron-session/next';
-import { isLoggedIn } from '../../lib/auth';
-import { sessionOptions } from '../../lib/session';
+import { getIronSession } from 'iron-session';
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { SessionData, sessionOptions } from '../../lib/session';
 import objectPath from 'object-path';
 import Image from 'next/image';
 import siwePic from '../../public/siwe.webp';
@@ -31,7 +31,9 @@ import Typography from '@mui/material/Typography';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-export default function Review() {
+export default function Review({
+  session,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [pageStatus, setPageStatus] = useState(false);
   const [docInstance, setDocInstance] = useState<{[key: string]: any}>({});
   const [openNotification, setOpenNotification] = useState(false);
@@ -228,24 +230,42 @@ export default function Review() {
   );
 }
 
-export const getServerSideProps = withIronSessionSsr(async function ({
-  req,
-  res,
-  resolvedUrl
-}) {
-  if (!isLoggedIn(req)) {
+// export const getServerSideProps = withIronSessionSsr(async function ({
+//   req,
+//   res,
+//   resolvedUrl
+// }) {
+//   if (!isLoggedIn(req)) {
+//     return {
+//       redirect: {
+//         destination: `/?from=${encodeURIComponent(resolvedUrl)}`,
+//         permanent: false,
+//       },
+//     };
+//   }
+//   return {
+//     props: {
+//       userId: req.session.userId ?? null
+//     }
+//   };
+// },
+// sessionOptions);
+export const getServerSideProps = (async (context) => {
+  const session = await getIronSession<SessionData>(
+    context.req,
+    context.res,
+    sessionOptions,
+  );
+  if (!session.isLoggedIn) {
     return {
       redirect: {
-        destination: `/?from=${encodeURIComponent(resolvedUrl)}`,
+        destination: `/?from=${encodeURIComponent(context.resolvedUrl)}`,
         permanent: false,
       },
     };
   }
-  return {
-    props: {
-      userId: req.session.userId ?? null
-    }
-  };
-},
-sessionOptions);
+  return { props: { session } };
+}) satisfies GetServerSideProps<{
+  session: SessionData;
+}>;
 

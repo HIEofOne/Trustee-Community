@@ -1,4 +1,3 @@
-import { withIronSessionApiRoute } from 'iron-session/next';
 import { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 import objectPath from 'object-path';
@@ -32,10 +31,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(200).json(result_arr)
 }
 
-export default withIronSessionApiRoute(handler, {
-  cookieName: 'siwe',
-  password: `yGB%@)'8FPudp5";E{s5;fq>c7:evVeU`,
-  cookieOptions: {
-    secure: process.env.NODE_ENV === 'production',
-  },
-})
+export default handler;

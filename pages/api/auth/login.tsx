@@ -1,18 +1,21 @@
-import { withIronSessionApiRoute } from 'iron-session/next';
-import { sessionOptions } from '../../../lib/session';
+import { getIronSession } from "iron-session";
+import { SessionData, sessionOptions } from '../../../lib/session';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { login } from '../../../lib/auth';
 
-async function handler(request: NextApiRequest, response: NextApiResponse) {
+export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   try {
-    const {userId, jwt} = await login(request);
-    request.session.userId = userId;
-    request.session.jwt = jwt;
-    await request.session.save();
+    const {userId, jwt} = await login(request, response);
+    const session = await getIronSession<SessionData>(
+      request,
+      response,
+      sessionOptions,
+    );
+    session.userId = userId;
+    session.jwt = jwt;
+    await session.save();
     response.json(userId);
   } catch (error) {
     response.status(500).json({ message: (error as Error).message });
   }
 }
-
-export default withIronSessionApiRoute(handler, sessionOptions);

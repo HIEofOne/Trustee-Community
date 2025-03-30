@@ -1,20 +1,26 @@
-import { withIronSessionApiRoute } from 'iron-session/next'
+import { getIronSession } from "iron-session";
+import { SessionData, sessionOptions } from '../../lib/session';
 import { NextApiRequest, NextApiResponse } from 'next'
 import { SiweMessage } from 'siwe'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req
+  const session = await getIronSession<SessionData>(
+    req,
+    res,
+    sessionOptions,
+  );
   switch (method) {
     case 'POST':
       try {
         const { message, signature } = req.body;
         const siweMessage = new SiweMessage(message);
         const fields = await siweMessage.validate(signature);
-        if (fields.nonce !== req.session.nonce) {
+        if (fields.nonce !== session.nonce) {
           return res.status(422).json({ message: 'Invalid nonce.' });
         }
-        req.session.siwe = fields;
-        await req.session.save();
+        session.siwe = fields;
+        await session.save();
         res.json({ ok: true });
       } catch (_error) {
         res.json({ ok: false });
@@ -26,11 +32,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 }
 
-export default withIronSessionApiRoute(handler, {
-    cookieName: 'siwe',
-    password: `yGB%@)'8FPudp5";E{s5;fq>c7:evVeU`,
-    cookieOptions: {
-      secure: process.env.NODE_ENV === 'production',
-    },
-  }
-)
+export default handler;

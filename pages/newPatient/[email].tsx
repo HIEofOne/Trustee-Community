@@ -1,9 +1,9 @@
 import { MouseEvent, useState } from 'react';
 import { useRouter } from 'next/router';
 import moment, { Moment } from 'moment';
-import { isLoggedIn } from '../../lib/auth';
-import { withIronSessionSsr } from 'iron-session/next';
-import { sessionOptions } from '../../lib/session';
+import { getIronSession } from 'iron-session';
+import type { GetServerSideProps } from "next";
+import { SessionData, sessionOptions } from '../../lib/session';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -325,26 +325,23 @@ const NewPatient = () => {
   );
 };
 
-export const getServerSideProps = withIronSessionSsr(async function ({
-  req,
-  res,
-  resolvedUrl
-}) {
-    if (!isLoggedIn(req)) {
-      return {
-        redirect: {
-          destination: `/?from=${encodeURIComponent(resolvedUrl)}`,
-          permanent: false
-        }
-      };
-    }
+export const getServerSideProps = (async (context) => {
+  const session = await getIronSession<SessionData>(
+    context.req,
+    context.res,
+    sessionOptions,
+  );
+  if (!session.isLoggedIn) {
     return {
-      props: {
-        userId: req.session.userId ?? null
-      }
+      redirect: {
+        destination: `/?from=${encodeURIComponent(context.resolvedUrl)}`,
+        permanent: false,
+      },
     };
-  },
-  sessionOptions
-);
+  }
+  return { props: { session } };
+}) satisfies GetServerSideProps<{
+  session: SessionData;
+}>;
 
 export default NewPatient;

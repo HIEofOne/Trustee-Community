@@ -1,12 +1,11 @@
-import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { getIronSession } from "iron-session";
+import { SessionData, sessionOptions } from './session';
 import type { VerifiedAuthenticationResponse, VerifiedRegistrationResponse } from '@simplewebauthn/server';
 import { verifyAuthenticationResponse, verifyRegistrationResponse } from '@simplewebauthn/server';
-// import type { PublicKeyCredentialWithAssertionJSON, PublicKeyCredentialWithAttestationJSON } from '@github/webauthn-json';
 import crypto from 'crypto';
 import * as jose from 'jose';
 import objectPath from 'object-path';
-
-type SessionRequest = NextApiRequest | GetServerSidePropsContext["req"];
 
 var user = process.env.COUCHDB_USER;
 var pass = process.env.COUCHDB_PASSWORD;
@@ -35,11 +34,13 @@ function clean(str: string) {
 export function generateChallenge() {
   return clean(crypto.randomBytes(32).toString("base64"));
 }
-export function isLoggedIn(req: SessionRequest) {
-  return req.session.userId != null;
-}
-export async function register(req: NextApiRequest) {
-  const challenge = req.session.challenge ?? "";
+export async function register(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getIronSession<SessionData>(
+    req,
+    res,
+    sessionOptions,
+  );
+  const challenge = session.challenge ?? "";
   const credential = req.body.credential as any;
   const { email } = req.body;
   let verification: VerifiedRegistrationResponse;
@@ -79,8 +80,13 @@ export async function register(req: NextApiRequest) {
   console.log(`Registered new user ${req.body.email}`);
   return user;
 }
-export async function login(req: NextApiRequest) {
-  const challenge = req.session.challenge ?? "";
+export async function login(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getIronSession<SessionData>(
+    req,
+    res,
+    sessionOptions,
+  );
+  const challenge = session.challenge ?? "";
   const credential = req.body.credential;
   const email = req.body.email;
   if (credential?.id == null) {

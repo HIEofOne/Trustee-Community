@@ -1,8 +1,9 @@
 import * as React from 'react';
 import Login from '../components/magicLink/login';
-import { withIronSessionSsr } from 'iron-session/next';
+import { getIronSession } from "iron-session";
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { SessionData, sessionOptions } from '../lib/session';
 import { generateChallenge } from '../lib/auth';
-import { sessionOptions } from '../lib/session';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -12,7 +13,9 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 
 //Landing Page
-const Home = ({ challenge }: { challenge: string }) => {
+const Home = ({
+  session,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [expanded, setExpanded] = React.useState<string | false>('panel1');
   const handleChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -42,7 +45,7 @@ const Home = ({ challenge }: { challenge: string }) => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Login challenge={challenge} clinical={false} authonly={false}/>
+          <Login challenge={session.challenge} clinical={false} authonly={false}/>
         </AccordionDetails>
       </Accordion>
       <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
@@ -56,7 +59,7 @@ const Home = ({ challenge }: { challenge: string }) => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Login challenge={challenge} clinical={true} authonly={false}/>
+          <Login challenge={session.challenge} clinical={true} authonly={false}/>
         </AccordionDetails>
       </Accordion>
       <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
@@ -79,15 +82,18 @@ const Home = ({ challenge }: { challenge: string }) => {
   );
 };
 
-export const getServerSideProps = withIronSessionSsr(async function ({
-  req,
-  res,
-}) {
+export const getServerSideProps = (async (context) => {
+  const session = await getIronSession<SessionData>(
+    context.req,
+    context.res,
+    sessionOptions,
+  );
   const challenge = generateChallenge();
-  req.session.challenge = challenge;
-  await req.session.save();
-  return { props: { challenge } };
-},
-sessionOptions);
+  session.challenge = challenge;
+  await session.save();
+  return { props: { session } };
+}) satisfies GetServerSideProps<{
+  session: SessionData;
+}>;
 
 export default Home;

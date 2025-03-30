@@ -1,14 +1,17 @@
-import { withIronSessionApiRoute } from 'iron-session/next';
-import { sessionOptions } from '../../../lib/session';
+import { getIronSession } from "iron-session";
+import { SessionData, sessionOptions } from '../../../lib/session';
 import { NextApiRequest, NextApiResponse } from 'next';
 import CookieService from '../../../lib/cookie';
 
-function handler(request: NextApiRequest, response: NextApiResponse) {
+export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+  const session = await getIronSession<SessionData>(
+    request,
+    response,
+    sessionOptions,
+  );
   CookieService.removeCookies(response);
-  request.session.destroy();
+  session.destroy();
   response.setHeader("location", "/");
   response.statusCode = 302;
   response.end();
 }
-
-export default withIronSessionApiRoute(handler, sessionOptions);

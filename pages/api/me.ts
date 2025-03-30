@@ -1,11 +1,17 @@
-import { withIronSessionApiRoute } from 'iron-session/next'
+import { getIronSession } from "iron-session";
+import { SessionData, sessionOptions } from '../../lib/session';
 import { NextApiRequest, NextApiResponse } from 'next'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req
+  const session = await getIronSession<SessionData>(
+    req,
+    res,
+    sessionOptions,
+  );
   switch (method) {
     case 'GET':
-      res.send({ address: req.session.siwe?.address })
+      res.send({ address: session.siwe?.address })
       break
     default:
       res.setHeader('Allow', ['GET'])
@@ -13,10 +19,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 }
 
-export default withIronSessionApiRoute(handler, {
-    cookieName: 'siwe',
-    password: `yGB%@)'8FPudp5";E{s5;fq>c7:evVeU`,
-    cookieOptions: {
-      secure: process.env.NODE_ENV === 'production',
-    },
-  })
+export default handler;

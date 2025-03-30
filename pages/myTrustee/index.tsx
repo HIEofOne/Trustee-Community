@@ -1,10 +1,13 @@
 import Head from 'next/head';
 import Login from '../../components/magicLink/login';
-import { withIronSessionSsr } from 'iron-session/next';
-import { generateChallenge, isLoggedIn } from '../../lib/auth';
-import { sessionOptions } from '../../lib/session';
+import { getIronSession } from 'iron-session';
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { SessionData, sessionOptions } from '../../lib/session';
+import { generateChallenge } from '../../lib/auth';
 
-export default function Home({ challenge }: { challenge: string }) {
+export default function Home({
+  session,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <>
       <Head>
@@ -20,17 +23,19 @@ export default function Home({ challenge }: { challenge: string }) {
       </Head>
       <div>
         <h2>My Trustee</h2>
-        <Login challenge={challenge} clinical={false} authonly={false}/>
+        <Login challenge={session.challenge} clinical={false} authonly={false}/>
       </div>
     </>
   );
 }
 
-export const getServerSideProps = withIronSessionSsr(async function ({
-  req,
-  res,
-}) {
-  if (isLoggedIn(req)) {
+export const getServerSideProps = (async (context) => {
+  const session = await getIronSession<SessionData>(
+    context.req,
+    context.res,
+    sessionOptions,
+  );
+  if (!session.isLoggedIn) {
     return {
       redirect: {
         destination: "/myTrustee/dashboard",
@@ -39,8 +44,9 @@ export const getServerSideProps = withIronSessionSsr(async function ({
     };
   }
   const challenge = generateChallenge();
-  req.session.challenge = challenge;
-  await req.session.save();
-  return { props: { challenge } };
-},
-sessionOptions);
+  session.challenge = challenge;
+  await session.save();
+  return { props: { session } };
+}) satisfies GetServerSideProps<{
+  session: SessionData
+}>;

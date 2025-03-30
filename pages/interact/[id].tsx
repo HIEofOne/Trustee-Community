@@ -2,14 +2,17 @@ import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import Login from '../../components/magicLink/login';
 import Credentials from '../../components/credentials';
-import { withIronSessionSsr } from 'iron-session/next';
+import { getIronSession } from 'iron-session';
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { SessionData, sessionOptions } from '../../lib/session';
 import { generateChallenge } from '../../lib/auth';
-import { sessionOptions } from '../../lib/session';
 import objectPath from 'object-path';
 
 import Snackbar from '@mui/material/Snackbar';
 
-export default function Interact({ challenge }: { challenge: string }) {
+export default function Interact({
+  session,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [pageStatus, setPageStatus] = useState(true);
   const [emailStatus, setEmailStatus] = useState(false);
   const [email, setEmailValue] = useState("");
@@ -93,7 +96,7 @@ export default function Interact({ challenge }: { challenge: string }) {
       <>
         <div>
           <h2>Trustee Authorization Server</h2>
-          <Login challenge={challenge} clinical={false} authonly={true} client={client} setEmail={setEmail} locations={locations}/>
+          <Login challenge={session.challenge} clinical={false} authonly={true} client={client} setEmail={setEmail} locations={locations}/>
         </div>
       </>
     );
@@ -112,13 +115,26 @@ export default function Interact({ challenge }: { challenge: string }) {
   }
 }
 
-export const getServerSideProps = withIronSessionSsr(async function ({
-  req,
-  res,
-}) {
+// export const getServerSideProps = withIronSessionSsr(async function ({
+//   req,
+//   res,
+// }) {
+//   const challenge = generateChallenge();
+//   req.session.challenge = challenge;
+//   await req.session.save();
+//   return { props: { challenge } };
+// },
+// sessionOptions);
+export const getServerSideProps = (async (context) => {
+  const session = await getIronSession<SessionData>(
+    context.req,
+    context.res,
+    sessionOptions,
+  );
   const challenge = generateChallenge();
-  req.session.challenge = challenge;
-  await req.session.save();
-  return { props: { challenge } };
-},
-sessionOptions);
+  session.challenge = challenge;
+  await session.save();
+  return { props: { session } };
+}) satisfies GetServerSideProps<{
+  session: SessionData;
+}>;

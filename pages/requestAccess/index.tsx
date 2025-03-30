@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { isLoggedIn } from '../../lib/auth';
 import Credentials from '../../components/credentials';
 import moment from 'moment';
 import objectPath from 'object-path';
 import sortArray from 'sort-array';
-import { withIronSessionSsr } from 'iron-session/next';
-import { sessionOptions } from '../../lib/session';
-import { InferGetServerSidePropsType } from 'next';
+import { getIronSession } from 'iron-session';
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { SessionData, sessionOptions } from '../../lib/session';
 import { SSX, SiweMessage } from '@spruceid/ssx';
 import fs from 'fs';
 import path from 'path';
@@ -33,7 +32,7 @@ import Typography from '@mui/material/Typography';
 
 //Landing Page
 const RequestAccess = ({
-  userId, jwt
+  session,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const steps = ['Select Patient', 'Requested Data', 'Purpose', 'Gather Credentials'];
   const purpose = [
@@ -263,14 +262,14 @@ const RequestAccess = ({
   const generateRequest = useCallback(async() => {
     if (!objectPath.has(doc, '_id')) {
       const generate = await fetch("/api/as/generate",
-        { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({ email: userId })})
+        { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({ email: session.userId })})
         .then((res) => res.json());
       if (generate.success) {
         setDoc(generate.doc);
         setCredsStatus(true);
       }
     }
-  }, [doc, userId]);
+  }, [doc, session.userId]);
   const validate = (inputText: string) => {
     const emailRegex = new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, "gm");
     return emailRegex.test(inputText);
@@ -289,7 +288,7 @@ const RequestAccess = ({
   if (!finishStatus) {
     if (credsStatus) {
       return (
-        <Credentials id={objectPath.get(doc, 'interact_nonce.value')} doc={doc} update_doc={updateDoc} interact={false} close={closeCredential} email={userId}/>
+        <Credentials id={objectPath.get(doc, 'interact_nonce.value')} doc={doc} update_doc={updateDoc} interact={false} close={closeCredential} email={session.userId}/>
       );
     } else {
       return (
@@ -441,25 +440,21 @@ const RequestAccess = ({
 
 export default RequestAccess;
 
-export const getServerSideProps = withIronSessionSsr(async function ({
-  req,
-  res,
-  resolvedUrl
-}) {
-    if (!isLoggedIn(req)) {
-      return {
-        redirect: {
-          destination: `/?from=${encodeURIComponent(resolvedUrl)}`,
-          permanent: false
-        }
-      };
-    }
+export const getServerSideProps = (async (context) => {
+  const session = await getIronSession<SessionData>(
+    context.req,
+    context.res,
+    sessionOptions,
+  );
+  if (!session.isLoggedIn) {
     return {
-      props: {
-        userId: req.session.userId ?? null,
-        jwt: req.session.jwt ?? null,
-      }
+      redirect: {
+        destination: `/?from=${encodeURIComponent(context.resolvedUrl)}`,
+        permanent: false,
+      },
     };
-  },
-  sessionOptions
-);
+  }
+  return { props: { session } };
+}) satisfies GetServerSideProps<{
+  session: SessionData;
+}>;

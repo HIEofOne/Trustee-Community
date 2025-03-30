@@ -1,19 +1,18 @@
 import * as React from 'react';
 import PolicySummary from './PolicySummary';
-import { isLoggedIn } from '../../lib/auth';
 import router from 'next/router';
 import { useState } from 'react';
 import Policies from '../../components/policies';
 import Pending from '../../components/pending';
-import { withIronSessionSsr } from 'iron-session/next';
-import { sessionOptions } from '../../lib/session';
-import { InferGetServerSidePropsType } from 'next';
+import { getIronSession } from 'iron-session';
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { SessionData, sessionOptions } from '../../lib/session';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
 export default function Dashboard({
-  userId, jwt
+  session,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [page, setPage] = useState("dashboard");
 
@@ -28,7 +27,7 @@ export default function Dashboard({
     router.push("/");
   };
 
-  if (userId === null) {
+  if (session.userId === null) {
     return (
       <div>
         <p>Session expired: Please sign in to continue</p>
@@ -61,8 +60,8 @@ export default function Dashboard({
     return (
       <div>
         <Policies
-          email={userId}
-          jwt={jwt}
+          email={session.userId}
+          jwt={session.jwt}
           changePage={changePage}
         />
       </div>
@@ -71,7 +70,7 @@ export default function Dashboard({
     return (
       <div>
         <Pending
-          email={userId}
+          email={session.userId}
           changePage={changePage}
         />
       </div>
@@ -81,25 +80,21 @@ export default function Dashboard({
   }
 }
 
-export const getServerSideProps = withIronSessionSsr(async function ({
-  req,
-  res,
-  resolvedUrl
-}) {
-    if (!isLoggedIn(req)) {
-      return {
-        redirect: {
-          destination: `/?from=${encodeURIComponent(resolvedUrl)}`,
-          permanent: false
-        }
-      };
-    }
+export const getServerSideProps = (async (context) => {
+  const session = await getIronSession<SessionData>(
+    context.req,
+    context.res,
+    sessionOptions,
+  );
+  if (!session.isLoggedIn) {
     return {
-      props: {
-        userId: req.session.userId ?? null,
-        jwt: req.session.jwt ?? null,
-      }
+      redirect: {
+        destination: `/?from=${encodeURIComponent(context.resolvedUrl)}`,
+        permanent: false,
+      },
     };
-  },
-  sessionOptions
-);
+  }
+  return { props: { session } };
+}) satisfies GetServerSideProps<{
+  session: SessionData;
+}>;
