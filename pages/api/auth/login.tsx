@@ -13,6 +13,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     );
     session.userId = userId;
     session.jwt = jwt;
+    session.isLoggedIn = true;
     await session.save();
     response.json(userId);
   } catch (error) {
