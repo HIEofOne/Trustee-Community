@@ -23,7 +23,6 @@ import {
 type ConfiguredAgent = TAgent<IDIDManager & IKeyManager & IResolver & IDataStore & ICredentialIssuer>
 
 const INFURA_PROJECT_ID = process.env.INFURIA_API_KEY
-// const INFURA_PROJECT_ID = '62cfe5babc774c1aaffa9eac6dbbf47f'
 let KMS_SECRET_KEY = null
 const kmsfile = '/data/kms';
 const storefile = '/data/store.json';
